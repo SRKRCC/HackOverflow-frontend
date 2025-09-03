@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react"
-import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { Menu, X, Calendar, Users, Trophy, Zap, Home, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -13,6 +15,13 @@ const Navbar = () => {
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
+
+    const handleLogout = () => {
+        // Remove authentication flag
+        localStorage.removeItem("isAuthenticated")
+        // Navigate to login page
+        navigate("/login", { replace: true })
+    }
 
     const navItems = [
         { name: "Home", icon: Home, href: "#home" },
@@ -59,8 +68,13 @@ const Navbar = () => {
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
-                        <Button variant="outline" className="hover:scale-105 transition-transform duration-300 bg-transparent">
-                            Login
+                        <Button
+                            onClick={handleLogout}
+                            variant="outline"
+                            className="hover:scale-105 transition-transform duration-300 bg-transparent flex items-center space-x-2"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            <span>Logout</span>
                         </Button>
                         <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Register Now
@@ -99,8 +113,13 @@ const Navbar = () => {
                             </a>
                         ))}
                         <div className="px-4 py-3 space-y-2 border-t border-border">
-                            <Button variant="outline" className="w-full bg-transparent">
-                                Login
+                            <Button
+                                onClick={handleLogout}
+                                variant="outline"
+                                className="w-full bg-transparent flex items-center justify-center space-x-2"
+                            >
+                                <LogOut className="h-4 w-4" />
+                                <span>Logout</span>
                             </Button>
                             <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
                         </div>
