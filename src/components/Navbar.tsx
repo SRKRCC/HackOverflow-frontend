@@ -23,6 +23,11 @@ const Navbar = () => {
         navigate("/login", { replace: true })
     }
 
+    const handleRegister = () => {
+        // Navigate to register page
+        navigate("/register")
+    }
+
     const navItems = [
         { name: "Home", icon: Home, href: "#home" },
         { name: "Schedule", icon: Calendar, href: "#schedule" },
@@ -76,7 +81,10 @@ const Navbar = () => {
                             <LogOut className="h-4 w-4" />
                             <span>Logout</span>
                         </Button>
-                        <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <Button
+                            onClick={handleRegister}
+                            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                        >
                             Register Now
                         </Button>
                     </div>
@@ -121,7 +129,12 @@ const Navbar = () => {
                                 <LogOut className="h-4 w-4" />
                                 <span>Logout</span>
                             </Button>
-                            <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
+                            <Button
+                                onClick={handleRegister}
+                                className="w-full bg-gradient-to-r from-primary to-secondary"
+                            >
+                                Register Now
+                            </Button>
                         </div>
                     </div>
                 </div>

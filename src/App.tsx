@@ -1,6 +1,11 @@
+"use client"
+
+import type React from "react"
+
 import { Routes, Route, Navigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import LoginPage from "../pages/LoginPage"
+import RegisterPage from "../pages/RegisterPage"
 import Navbar from "./components/Navbar"
 import "./App.css"
 import HeroSection from "./components/HeroSection"
@@ -27,12 +32,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Show loading state while checking authentication
   if (isAuthenticated === null) {
     return (
-      <div style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center"
-      }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         Loading...
       </div>
     )
@@ -52,6 +59,9 @@ export default function App() {
     <Routes>
       {/* Login page - accessible without authentication */}
       <Route path="/login" element={<LoginPage />} />
+
+      {/* Public registration route */}
+      <Route path="/register" element={<RegisterPage />} />
 
       {/* Protected home page - requires authentication */}
       <Route
