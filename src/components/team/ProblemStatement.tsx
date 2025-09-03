@@ -1,6 +1,9 @@
 function ProblemStatement() {
-  const problemStatements =
-    "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In blanditiis neque placeat veritatis enim exercitationem voluptas accusantium voluptatibus explicabo error? Dolore quos sequi quod quia fuga suscipit veniam, neque alias. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores repellat blanditiis accusantium ullam modi necessitatibus nisi eligendi voluptatem voluptatibus consequuntur eveniet expedita adipisci, earum commodi, eos numquam excepturi, veritatis qui!";
+  const problemStatements ={
+    statement: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In blanditiis neque placeat veritatis enim exercitationem voluptas accusantium voluptatibus explicabo error? Dolore quos sequi quod quia fuga suscipit veniam, neque alias. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores repellat blanditiis accusantium ullam modi necessitatibus nisi eligendi voluptatem voluptatibus consequuntur eveniet expedita adipisci, earum commodi, eos numquam excepturi, veritatis qui!",
+    title: "Problem Statement Title",
+    shortDesc:"this project on AI"
+  }
   return (
     <section className="relative bg-background text-foreground px-6 py-16 md:py-20 overflow-hidden">
       {/* Background decorative elements */}
@@ -75,7 +78,7 @@ function ProblemStatement() {
         <div className="flex flex-col items-center mb-12 text-center">
           <div className="relative">
             <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4 animate-fade-in">
-              Problem Statement
+              {problemStatements.title}
             </h1>
 
             {/* Decorative underline */}
@@ -105,9 +108,9 @@ function ProblemStatement() {
               </defs>
             </svg>
           </div>
-
-          <p className="text-muted-foreground text-lg max-w-2xl mt-4">
-            Understanding the core challenges we aim to solve
+          {/* Short description */}
+          <p className="text-primary font-medium text-xl mt-4">
+            {problemStatements.shortDesc}
           </p>
         </div>
 
@@ -203,7 +206,7 @@ function ProblemStatement() {
               </div>
 
               <p className="text-lg leading-relaxed md:leading-loose text-center">
-                {problemStatements}
+                {problemStatements.statement}
               </p>
             </div>
           </div>
