@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -15,10 +16,10 @@ const Navbar = () => {
     }, [])
 
     const navItems = [
-        { name: "Home", icon: Home, href: "#home" },
-        { name: "Schedule", icon: Calendar, href: "#schedule" },
-        { name: "Teams", icon: Users, href: "#teams" },
-        { name: "Prizes", icon: Trophy, href: "#prizes" },
+        { name: "Home", icon: Home, href: "/" },
+        { name: "Schedule", icon: Calendar, href: "/schedule" },
+        { name: "Teams", icon: Users, href: "/teams" },
+        { name: "Prizes", icon: Trophy, href: "/prizes" },
     ]
 
     return (
@@ -42,9 +43,9 @@ const Navbar = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-1">
                         {navItems.map((item, index) => (
-                            <a
+                            <Link
                                 key={item.name}
-                                href={item.href}
+                                to={item.href}
                                 className="group relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10 animate-fade-in"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
@@ -53,18 +54,22 @@ const Navbar = () => {
                                     <span className="font-medium">{item.name}</span>
                                 </div>
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
-                            </a>
+                            </Link>
                         ))}
                     </div>
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
-                        <Button variant="outline" className="hover:scale-105 transition-transform duration-300 bg-transparent">
-                            Login
-                        </Button>
-                        <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            Register Now
-                        </Button>
+                        <Link to="/login">
+                            <Button variant="outline" className="hover:scale-105 transition-transform duration-300 bg-transparent">
+                                Login
+                            </Button>
+                        </Link>
+                        <Link to="/register">
+                            <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                Register Now
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -87,22 +92,26 @@ const Navbar = () => {
                 >
                     <div className="py-4 space-y-2 bg-card/95 backdrop-blur-md rounded-lg mt-2 border border-border shadow-xl">
                         {navItems.map((item, index) => (
-                            <a
+                            <Link
                                 key={item.name}
-                                href={item.href}
+                                to={item.href}
                                 onClick={() => setIsOpen(false)}
                                 className="flex items-center space-x-3 px-4 py-3 text-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 animate-slide-in"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <item.icon className="h-5 w-5" />
                                 <span className="font-medium">{item.name}</span>
-                            </a>
+                            </Link>
                         ))}
                         <div className="px-4 py-3 space-y-2 border-t border-border">
-                            <Button variant="outline" className="w-full bg-transparent">
-                                Login
-                            </Button>
-                            <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
+                            <Link to="/login">
+                                <Button variant="outline" className="w-full bg-transparent">
+                                    Login
+                                </Button>
+                            </Link>
+                            <Link to="/register">
+                                <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
