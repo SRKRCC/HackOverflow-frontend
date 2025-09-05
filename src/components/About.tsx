@@ -134,7 +134,7 @@ const About: FC = () => {
               { theme: "IoT & Smart Devices", color: "bg-orange-100 text-orange-800" },
               { theme: "Open Innovation", color: "bg-pink-100 text-pink-800" },
             ].map((item, index) => (
-              <div key={index} className={`p-4 rounded-lg ${item.color} text-center hover:shadow-md transition-shadow transform hover:scale-105 transition-transform duration-300`}>
+              <div key={index} className={`p-4 rounded-lg ${item.color} text-center hover:shadow-md transform hover:scale-105 transition-transform duration-300`}>
                 <h3 className="font-semibold">{item.theme}</h3>
               </div>
             ))}

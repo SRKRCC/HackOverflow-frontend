@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface TeamMember {
   id: number;
@@ -139,7 +139,7 @@ export default function TeamCompass() {
     
     // Calculate positions dynamically based on team size
     const visibleCards = Math.min(teamSize, 5); // Maximum 5 visible cards
-    const centerIndex = Math.floor(visibleCards / 2);
+    // const centerIndex = Math.floor(visibleCards / 2);
     
     if (teamSize <= 3) {
       // For small teams (3 or less), use simpler positioning
@@ -234,7 +234,7 @@ export default function TeamCompass() {
                    OUR TEAM
             </h1>
             </div></div>
-        <p className="text-lg text-gray-600 font-medium text-xl">{teamDetails.title}</p>
+        <p className="text-lg text-gray-600 font-medium">{teamDetails.title}</p>
         <div className="flex items-center justify-center space-x-4 mt-2">
           <p className="text-sm text-gray-500"><b>SCC ID:</b> {teamDetails.scc_id}</p>
           <span className="text-gray-300 text-2xl">•</span>
