@@ -4,6 +4,8 @@ import './App.css'
 import HeroSection from './components/HeroSection'
 import Structure from './Structure'
 import Login from './components/Login'
+import Footer from './components/Footer'
+import About from './components/About'
 
 function AppContent() {
   const location = useLocation()
@@ -12,8 +14,11 @@ function AppContent() {
   return (
     <>
       {!hideNavbar && <Navbar />}
+      
+      
       <Routes>
         <Route path="/" element={<HeroSection />} />
+        
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<div>Register Page</div>} />
         <Route path="/schedule" element={<div>Schedule Page</div>} />
@@ -21,6 +26,8 @@ function AppContent() {
         <Route path="/prizes" element={<div>Prizes Page</div>} />
         <Route path='/*' element={<Structure/>}  />
       </Routes>
+      <About/>
+<Footer/>
     </>
   )
 }
