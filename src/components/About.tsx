@@ -20,9 +20,9 @@ const About: FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#7715e8]/5 via-white to-[#b35605]/5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#7715e8]/5 via-background to-[#b35605]/5" />
 
       <div className="absolute top-20 left-10 w-20 h-20 bg-[#7715e8]/10 rounded-full animate-float" />
       <div
@@ -42,10 +42,10 @@ const About: FC = () => {
               <Code size={36} className="text-white" />
             </div>
           </div>
-          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
             About <span className="text-[#b35605]">HackOverflow</span> <span className="text-[#7715e8]">2K25</span>
           </h1>
-          <p className={`text-lg text-gray-700 max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
+          <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
             India's premier nationwide hackathon bringing together innovators to solve real-world challenges
           </p>
         </div>
@@ -90,22 +90,22 @@ const About: FC = () => {
               Organized by SRKR Coding Club
             </h2>
             
-            <div className="bg-gray-50 p-6 rounded-lg mb-6">
+            <div className="bg-muted p-6 rounded-lg mb-6">
               <div className="flex items-center mb-4">
                 <div className="w-16 h-16 bg-[#7715e8] rounded-full flex items-center justify-center mr-4">
                   <Code className="text-white" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">SRKR Coding Club</h3>
-                  <p className="text-gray-600">SRKR Engineering College, Bhimavaram</p>
+                  <h3 className="font-bold text-lg text-foreground">SRKR Coding Club</h3>
+                  <p className="text-muted-foreground">SRKR Engineering College, Bhimavaram</p>
                 </div>
               </div>
               
-              <p className="text-gray-700 mb-4">
+              <p className="text-muted-foreground mb-4">
                 A student-run community dedicated to promoting coding culture, technical skills, and innovation among students. We organize workshops, coding competitions, and hackathons to nurture the next generation of developers.
               </p>
               
-              <div className="flex items-center text-gray-600">
+              <div className="flex items-center text-muted-foreground">
                 <MapPin size={16} className="mr-2" />
                 <span>West Godavari District, Andhra Pradesh</span>
               </div>
@@ -122,17 +122,17 @@ const About: FC = () => {
 
         {/* Themes Section */}
         <div className={`mb-16 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.5s" }}>
-          <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">Hackathon Themes</h2>
+          <h2 className="text-2xl font-bold mb-8 text-center text-foreground">Hackathon Themes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { theme: "AI & Machine Learning", color: "bg-purple-100 text-purple-800" },
-              { theme: "Web3 & Blockchain", color: "bg-blue-100 text-blue-800" },
-              { theme: "Healthcare Technology", color: "bg-green-100 text-green-800" },
-              { theme: "Sustainable Development", color: "bg-emerald-100 text-emerald-800" },
-              { theme: "FinTech Innovation", color: "bg-amber-100 text-amber-800" },
-              { theme: "Education Technology", color: "bg-cyan-100 text-cyan-800" },
-              { theme: "IoT & Smart Devices", color: "bg-orange-100 text-orange-800" },
-              { theme: "Open Innovation", color: "bg-pink-100 text-pink-800" },
+              { theme: "AI & Machine Learning", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300" },
+              { theme: "Web3 & Blockchain", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300" },
+              { theme: "Healthcare Technology", color: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300" },
+              { theme: "Sustainable Development", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300" },
+              { theme: "FinTech Innovation", color: "bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300" },
+              { theme: "Education Technology", color: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-300" },
+              { theme: "IoT & Smart Devices", color: "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-300" },
+              { theme: "Open Innovation", color: "bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-300" },
             ].map((item, index) => (
               <div key={index} className={`p-4 rounded-lg ${item.color} text-center hover:shadow-md transform hover:scale-105 transition-transform duration-300`}>
                 <h3 className="font-semibold">{item.theme}</h3>
@@ -142,36 +142,7 @@ const About: FC = () => {
         </div>
       </div>
 
-      {/* Add CSS for animations */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(5deg); }
-        }
-        @keyframes slide-up {
-          0% { 
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% { 
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out forwards;
-        }
-        .animate-pulse {
-          animation: pulse 2s ease-in-out infinite;
-        }
-      `}</style>
+      {/* CSS animations are defined in index.css */}
     </div>
   );
 };
