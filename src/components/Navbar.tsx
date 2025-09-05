@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -15,11 +16,12 @@ const Navbar = () => {
     }, [])
 
     const navItems = [
-        { name: "Home", icon: Home, href: "#home" },
-        { name: "Schedule", icon: Calendar, href: "#schedule" },
-        { name: "Teams", icon: Users, href: "#teams" },
-        { name: "Prizes", icon: Trophy, href: "#prizes" },
-    ]
+        { name: "Home", icon: Home, to: "/" },
+        { name: "Schedule", icon: Calendar, to: "/#schedule" },
+        { name: "Teams", icon: Trophy, to: "/teams" },
+        { name: "Gallery", icon: Trophy, to: "/gallery" },
+        { name: "Prizes", icon: Trophy, to: "/#prizes" },
+    ];
 
     return (
         <nav
@@ -42,18 +44,18 @@ const Navbar = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-1">
                         {navItems.map((item, index) => (
-                            <a
+                            <Link
                                 key={item.name}
-                                href={item.href}
+                                to={item.to}
                                 className="group relative px-4 py-2 rounded-lg transition-all duration-300 hover:bg-primary/10 animate-fade-in"
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
                                 <div className="flex items-center space-x-2 text-foreground group-hover:text-primary transition-colors duration-300">
                                     <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                                    <span className="font-medium">{item.name}</span>
+                                    <span className="font-medium nav-anim-text">{item.name}</span>
                                 </div>
-                                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
-                            </a>
+                                <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300 nav-anim-underline" />
+                            </Link>
                         ))}
                     </div>
 
@@ -87,16 +89,16 @@ const Navbar = () => {
                 >
                     <div className="py-4 space-y-2 bg-card/95 backdrop-blur-md rounded-lg mt-2 border border-border shadow-xl">
                         {navItems.map((item, index) => (
-                            <a
+                            <Link
                                 key={item.name}
-                                href={item.href}
+                                to={item.to}
                                 onClick={() => setIsOpen(false)}
                                 className="flex items-center space-x-3 px-4 py-3 text-foreground hover:text-primary hover:bg-primary/10 transition-all duration-300 animate-slide-in"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <item.icon className="h-5 w-5" />
-                                <span className="font-medium">{item.name}</span>
-                            </a>
+                                <span className="font-medium nav-anim-text">{item.name}</span>
+                            </Link>
                         ))}
                         <div className="px-4 py-3 space-y-2 border-t border-border">
                             <Button variant="outline" className="w-full bg-transparent">
