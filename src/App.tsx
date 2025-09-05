@@ -18,7 +18,6 @@ function AppContent() {
 
       <Routes>
         <Route path="/" element={<HeroSection />} />
-
         <Route path="/login" element={<Login />} />
         <Route path="/about" element={<About />} />
         <Route path="/register" element={<div>Register Page</div>} />

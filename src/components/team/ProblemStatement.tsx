@@ -2,7 +2,7 @@ function ProblemStatement() {
   const problemStatements ={
     statement: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. In blanditiis neque placeat veritatis enim exercitationem voluptas accusantium voluptatibus explicabo error? Dolore quos sequi quod quia fuga suscipit veniam, neque alias. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores repellat blanditiis accusantium ullam modi necessitatibus nisi eligendi voluptatem voluptatibus consequuntur eveniet expedita adipisci, earum commodi, eos numquam excepturi, veritatis qui!",
     title: "Problem Statement Title",
-    shortDesc:"This project is on AI"
+    shortDesc:"this project on AI"
   }
   return (
     <section className="relative bg-background text-foreground px-6 py-16 md:py-20 overflow-hidden">
@@ -215,5 +215,4 @@ function ProblemStatement() {
     </section>
   );
 }
-
 export default ProblemStatement;
