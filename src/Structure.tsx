@@ -18,11 +18,11 @@ const Structure = () => {
       <div className="flex-1 h-full sm:ml-[60px] transition-all duration-300">
         <Routes>
           <Route path="/" element={<HeroSection />} />
-          <Route path="/problem-statement" element={<ProblemStatement />} />
-          <Route path="/team-details" element={<TeamDetails />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/gallery" element={<Gallery />} />
-          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/team/problem-statement" element={<ProblemStatement />} />
+          <Route path="/team/team-details" element={<TeamDetails />} />
+          <Route path="/team/tasks" element={<Tasks />} />
+          <Route path="/team/gallery" element={<Gallery />} />
+          <Route path="/team/attendance" element={<Attendance />} />
         </Routes>
       </div>
     </div>
