@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar'
 import './App.css'
 import HeroSection from './components/HeroSection'
+import Structure from './Structure'
 import Login from './components/Login'
 
 function AppContent() {
@@ -18,6 +19,7 @@ function AppContent() {
         <Route path="/schedule" element={<div>Schedule Page</div>} />
         <Route path="/teams" element={<div>Teams Page</div>} />
         <Route path="/prizes" element={<div>Prizes Page</div>} />
+        <Route path='/*' element={<Structure/>}  />
       </Routes>
     </>
   )
