@@ -1,13 +1,18 @@
-import Navbar from './components/Navbar'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import HeroSection from './components/HeroSection'
+import Structure from './Structure'
+
+
 
 function App() {
+
   return (
-    <>
-      <Navbar />
-      <HeroSection />
-    </>
+    <BrowserRouter>
+        <Routes>
+          <Route path='/*' element={<Structure/>}  />
+        </Routes>
+
+    </BrowserRouter>
   )
 }
 
