@@ -14,20 +14,20 @@ function AppContent() {
   return (
     <>
       {!hideNavbar && <Navbar />}
-      
-      
+
+
       <Routes>
         <Route path="/" element={<HeroSection />} />
-        
+
         <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<About />} />
         <Route path="/register" element={<div>Register Page</div>} />
         <Route path="/schedule" element={<div>Schedule Page</div>} />
         <Route path="/teams" element={<div>Teams Page</div>} />
         <Route path="/prizes" element={<div>Prizes Page</div>} />
-        <Route path='/*' element={<Structure/>}  />
+        <Route path='/*' element={<Structure />} />
       </Routes>
-      <About/>
-<Footer/>
+      <Footer />
     </>
   )
 }
