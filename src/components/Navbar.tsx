@@ -51,7 +51,7 @@ const Navbar = () => {
                             >
                                 <div className="flex items-center space-x-2 text-foreground group-hover:text-primary transition-colors duration-300">
                                     <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                                    <span className="font-medium">{item.name}</span>
+                                    <span className="font-medium nav-anim-text">{item.name}</span>
                                 </div>
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
                             </Link>
