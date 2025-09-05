@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Gallery.css';
-import { Zap, Trophy, Calendar, Home, X, Download } from 'lucide-react';
+import { X, Download } from 'lucide-react';
+import Navbar from './Navbar';
 
 const images = [
   '/HS1.webp',
@@ -10,13 +11,18 @@ const images = [
   'https://images.unsplash.com/photo-1465101178521-c1a4c8a0a8b7',
 ];
 
-const formats = ['png', 'jpg', 'webp', 'svg'];
+
 
 const Gallery: React.FC = () => {
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 700);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleDownload = (img: string, format: string) => {
-    // For demo: just download the original image
     const link = document.createElement('a');
     link.href = img;
     link.download = `gallery-image.${format}`;
@@ -25,23 +31,13 @@ const Gallery: React.FC = () => {
 
   return (
     <div className="gallery-page">
-      <header className="gallery-header">
-        <div className="gallery-logo-wrap">
-          <Zap className="gallery-zap" />
-          <h1 className="gallery-brand">HackOverflow <span className="accent">2k25</span></h1>
-        </div>
-        <nav className="gallery-nav">
-          <a href="/" className="nav-btn"><Home className="nav-icon" /> Home</a>
-          <a href="#schedule" className="nav-btn"><Calendar className="nav-icon" /> Schedule</a>
-          <a href="/gallery" className="nav-btn"><Trophy className="nav-icon" /> Gallery</a>
-          <a href="#prizes" className="nav-btn"><Trophy className="nav-icon" /> Prizes</a>
-        </nav>
-        <div className="gallery-actions">
-          <button className="login-btn">Login</button>
-          <button className="register-btn">Register Now</button>
-        </div>
-      </header>
+      <Navbar />
       <main className="gallery-main">
+        {loading && (
+          <div className="page-loader">
+            <div className="loader-spinner"></div>
+          </div>
+        )}
         {/* Abstract background shapes */}
         <div className="gallery-bg-shapes">
           <div className="bg-circle bg-circle-1"></div>
