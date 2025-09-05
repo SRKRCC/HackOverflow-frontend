@@ -234,7 +234,7 @@ export default function TeamCompass() {
                    OUR TEAM
             </h1>
             </div></div>
-        <p className="text-lg text-gray-600 font-medium">{teamDetails.title}</p>
+        <p className="text-gray-600 font-medium">{teamDetails.title}</p>
         <div className="flex items-center justify-center space-x-4 mt-2">
           <p className="text-sm text-gray-500"><b>SCC ID:</b> {teamDetails.scc_id}</p>
           <span className="text-gray-300 text-2xl">•</span>
