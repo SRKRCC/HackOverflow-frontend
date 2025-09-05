@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CalendarCheck, CheckSquare, FileText, Images, Users, Menu, X, Home } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
 
 interface SidebarProps {
   openSidebar: boolean;
@@ -76,6 +77,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
           </Link>
         ))}
       </nav>
+      
     </motion.div>
   );
 };

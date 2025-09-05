@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import ThemeToggle from "./ThemeToggle"
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
@@ -38,6 +39,12 @@ const Navbar = () => {
                         <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             HackOverflow 2k25
                         </h1>
+                        <div className="md:hidden">
+                            <ThemeToggle/>
+
+                        </div>
+
+
                     </div>
 
                     {/* Desktop Navigation */}
@@ -56,7 +63,10 @@ const Navbar = () => {
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
                             </Link>
                         ))}
+                        <ThemeToggle/>
+
                     </div>
+                            
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
