@@ -227,7 +227,7 @@ export default function TeamCompass() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden py-10">
       {/* Header */}
       <div className="pt-8 pb-4 px-4 text-center">
         <div className="flex flex-col items-center mb-2 text-center">
@@ -328,58 +328,61 @@ export default function TeamCompass() {
           {/* Path Indicator - Hidden on mobile */}
           <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
           
-          {teamDetails.team_members.map((member, index) => {
-            const position = getCardPosition(index);
-            const shape = getCardShape(index);
-            const isCenter = shape === 'center';
+          {/* Cards Container - This creates a positioned context for the cards */}
+          <div className="relative w-full h-full">
+            {teamDetails.team_members.map((member, index) => {
+              const position = getCardPosition(index);
+              const shape = getCardShape(index);
+              const isCenter = shape === 'center';
 
-            if (!position) return null;
-            
-            return (
-              <div
-                key={member.id}
-                className="absolute md:fixed transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
-                style={{
-                  top: position.top,
-                  right: window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
-                  left: window.innerWidth < 768 && 'left' in position ? position.left : undefined,
-                  transform: `translate(-50%, -50%) scale(${position.scale})`,
-                  opacity: position.opacity,
-                  zIndex: position.zIndex,
-                }}
-                onClick={() => handleMemberClick(index)}
-              >
-                {isCenter ? (
-                  // Center Card - Always detailed
-                  <div className={`${member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
-                        <ProfileImage member={member} size="large" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-foreground text-base md:text-lg">{member.name}</h3>
-                        <p className={`text-xs md:text-sm font-medium bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>Team {member.role}</p>
-                        <p className="text-xs md:text-sm text-muted-foreground">{member.department}</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Non-center Cards - Uniform card style
-                  <div className={`${member.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
-                        <ProfileImage member={member} size="small" className="w-full h-full" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground text-xs md:text-sm truncate">{member.name}</h4>
-                        <p className="text-xs text-muted-foreground truncate">Team {member.role}</p>
+              if (!position) return null;
+              
+              return (
+                <div
+                  key={member.id}
+                  className="absolute transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
+                  style={{
+                    top: position.top,
+                    right: window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
+                    left: window.innerWidth < 768 && 'left' in position ? position.left : undefined,
+                    transform: `translate(-50%, -50%) scale(${position.scale})`,
+                    opacity: position.opacity,
+                    zIndex: position.zIndex,
+                  }}
+                  onClick={() => handleMemberClick(index)}
+                >
+                  {isCenter ? (
+                    // Center Card - Always detailed
+                    <div className={`${member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
+                          <ProfileImage member={member} size="large" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground text-base md:text-lg">{member.name}</h3>
+                          <p className={`text-xs md:text-sm font-medium bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>Team {member.role}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{member.department}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  ) : (
+                    // Non-center Cards - Uniform card style
+                    <div className={`${member.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
+                          <ProfileImage member={member} size="small" className="w-full h-full" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground text-xs md:text-sm truncate">{member.name}</h4>
+                          <p className="text-xs text-muted-foreground truncate">Team {member.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -388,7 +391,7 @@ export default function TeamCompass() {
         {teamSize > 1 && (
           <button
             onClick={() => setAutoScroll(!autoScroll)}
-            className={`px-4 py-2 rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-1 rounded-full shadow-lg transition-all duration-300 ${
               autoScroll 
                 ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
                 : 'bg-primary hover:bg-primary/90 text-primary-foreground'
@@ -397,8 +400,6 @@ export default function TeamCompass() {
             {autoScroll ? 'Pause' : 'Play'}
           </button>
         )}
-        
-        {/* Manual navigation buttons */}
         <button
           onClick={() => handleMemberClick((currentIndex - 1 + teamSize) % teamSize)}
           className="p-2 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-all duration-300"
