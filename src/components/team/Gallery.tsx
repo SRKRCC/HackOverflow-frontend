@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Download } from 'lucide-react';
-import Navbar from './Navbar';
+import Navbar from '../Navbar';
 
 const images = [
   'https://www.gstatic.com/webp/gallery/1.webp',
