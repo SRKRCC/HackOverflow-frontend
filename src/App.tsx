@@ -1,17 +1,41 @@
-// import Navbar from './components/Navbar'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import Navbar from './components/Navbar'
 import './App.css'
-// import ProblemStatement from './components/team/ProblemStatement'
-import TeamDetails from './components/team/TeamDetails'
-// import HeroSection from './components/HeroSection'
+import HeroSection from './components/HeroSection'
+import Structure from './Structure'
+import Login from './components/Login'
+import Footer from './components/Footer'
+import About from './components/About'
+
+function AppContent() {
+  const location = useLocation()
+  const hideNavbar = ['/login', '/register'].includes(location.pathname)
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+
+
+      <Routes>
+        <Route path="/" element={<HeroSection />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/register" element={<div>Register Page</div>} />
+        <Route path="/schedule" element={<div>Schedule Page</div>} />
+        <Route path="/teams" element={<div>Teams Page</div>} />
+        <Route path="/prizes" element={<div>Prizes Page</div>} />
+        <Route path='/*' element={<Structure />} />
+      </Routes>
+      <Footer />
+    </>
+  )
+}
 
 function App() {
   return (
-    <>
-    <TeamDetails/>
-    {/* <ProblemStatement/> */}
-      {/* <Navbar />
-      <HeroSection /> */}
-    </>
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 

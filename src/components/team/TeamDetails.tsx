@@ -326,7 +326,7 @@ export default function TeamCompass() {
         {/* Right Side - Dynamic Carousel */}
         <div className="md:col-span-2 relative h-80 md:h-auto order-1 md:order-2">
           {/* Path Indicator - Hidden on mobile */}
-          <div className="hidden md:block absolute top-1/2 right-16 w-1 h-96 bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
+          <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
           
           {teamDetails.team_members.map((member, index) => {
             const position = getCardPosition(index);
