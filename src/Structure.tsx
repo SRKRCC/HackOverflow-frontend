@@ -2,10 +2,10 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import ProblemStatement from "./components/team/ProblemStatement";
-import Attendance from "./components/Attendance";
+import Attendance from "./components/team/Attendance";
 import TeamDetails from "./components/team/TeamDetails";
-import Tasks from "./components/Tasks";
-import Gallery from "./components/Gallery";
+import Tasks from "./components/team/Tasks";
+import Gallery from "./components/team/Gallery";
 import HeroSection from "./components/HeroSection";
 
 const Structure = () => {
