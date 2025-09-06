@@ -12,7 +12,7 @@ const Structure = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full min-h-auto flex">
       <Sidebar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
 
       <div className="flex-1 h-full sm:ml-[60px] transition-all duration-300">
