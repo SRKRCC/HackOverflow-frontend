@@ -1,7 +1,8 @@
 "use client"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import Button from "./ui/button"
+import { Users, FileText, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles } from "lucide-react"
 
 type Member = {
     name: string
@@ -92,102 +93,130 @@ export default function RegisterPage() {
 
     function renderStep1() {
         return (
-            <div className="bg-card border border-border rounded-xl p-8 shadow-sm max-w-4xl mx-auto">
-                <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-primary mb-4">HACKOVERFLOW-2K24</h1>
-                    <div className="w-16 h-1 bg-primary mx-auto mb-6"></div>
-                    <p className="text-lg text-muted-foreground">National-Level Hackathon by SRKR Coding Club</p>
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
+                <div className="text-center mb-10">
+                    <div className="inline-flex p-4 bg-primary/10 rounded-3xl mb-6">
+                        <Sparkles className="h-12 w-12 text-primary" />
+                    </div>
+                    <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            HACKOVERFLOW
+                        </span>
+                        <span className="text-foreground">-2K24</span>
+                    </h1>
+                    <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6 rounded-full"></div>
+                    <p className="text-xl text-muted-foreground font-medium">National-Level Hackathon by SRKR Coding Club</p>
                 </div>
 
-                <div className="space-y-6 text-foreground">
-                    <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-6">
-                        <p className="text-muted-foreground leading-relaxed">
+                <div className="space-y-8 text-foreground">
+                    <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 rounded-2xl p-8 border border-border/50">
+                        <p className="text-muted-foreground leading-relaxed text-lg">
                             The SRKR Coding Club at SRKR Engineering College, Bhimavaram, is excited to announce HACKOVERFLOW-2K24, a
-                            prestigious national-level hackathon scheduled for <strong>October 18th and 19th, 2024</strong>. This
-                            24-hour event is designed to challenge engineering students from across the country, providing a platform
-                            to showcase their coding skills and innovative thinking.
+                            prestigious national-level hackathon scheduled for{" "}
+                            <strong className="text-primary">October 18th and 19th, 2024</strong>. This 24-hour event is designed to
+                            challenge engineering students from across the country, providing a platform to showcase their coding
+                            skills and innovative thinking.
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 className="text-lg font-medium mb-3 text-primary">Event Highlights</h3>
-                            <ul className="space-y-2 text-muted-foreground">
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">•</span>
+                    <div className="grid lg:grid-cols-2 gap-8">
+                        <div className="bg-card/50 rounded-2xl p-6 border border-border/50">
+                            <h3 className="text-xl font-semibold mb-4 text-primary flex items-center gap-2">
+                                <CheckCircle className="h-5 w-5" />
+                                Event Highlights
+                            </h3>
+                            <ul className="space-y-3 text-muted-foreground">
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-primary mt-1 font-bold">📅</span>
                                     <span>
-                                        <strong>Dates:</strong> October 18th - 19th, 2024
+                                        <strong className="text-foreground">Dates:</strong> October 18th - 19th, 2024
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">•</span>
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-primary mt-1 font-bold">⏰</span>
                                     <span>
-                                        <strong>Duration:</strong> 24 hours
+                                        <strong className="text-foreground">Duration:</strong> 24 hours
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">•</span>
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-primary mt-1 font-bold">💰</span>
                                     <span>
-                                        <strong>Total Prize Pool:</strong> ₹30,000
+                                        <strong className="text-foreground">Total Prize Pool:</strong> ₹30,000
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">•</span>
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-primary mt-1 font-bold">📝</span>
                                     <span>
-                                        <strong>Registration Deadline:</strong> October 11th, 2024
+                                        <strong className="text-foreground">Registration Deadline:</strong> October 11th, 2024
                                     </span>
                                 </li>
                             </ul>
                         </div>
 
-                        <div>
-                            <h3 className="text-lg font-medium mb-3 text-primary">Themes</h3>
-                            <ul className="space-y-2 text-muted-foreground">
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">🌾</span>
-                                    <span>Agriculture</span>
+                        <div className="bg-card/50 rounded-2xl p-6 border border-border/50">
+                            <h3 className="text-xl font-semibold mb-4 text-primary flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Themes
+                            </h3>
+                            <ul className="space-y-3 text-muted-foreground">
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-2xl">🌾</span>
+                                    <span className="text-foreground font-medium">Agriculture</span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">🏥</span>
-                                    <span>Healthcare</span>
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-2xl">🏥</span>
+                                    <span className="text-foreground font-medium">Healthcare</span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-primary mt-1">👩‍👧‍👦</span>
-                                    <span>Women & Child Safety</span>
+                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
+                                    <span className="text-2xl">👩‍👧‍👦</span>
+                                    <span className="text-foreground font-medium">Women & Child Safety</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="bg-muted/50 rounded-lg p-6">
-                        <h3 className="text-lg font-medium mb-3">Why Participate?</h3>
-                        <div className="grid md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                            <div>
-                                <strong className="text-foreground">Innovation:</strong> A platform to push the boundaries of technical
-                                expertise.
+                    <div className="bg-gradient-to-r from-secondary/10 to-primary/10 rounded-2xl p-6 border border-border/50">
+                        <h3 className="text-xl font-semibold mb-4 text-foreground">Why Participate?</h3>
+                        <div className="grid md:grid-cols-3 gap-6 text-muted-foreground">
+                            <div className="text-center p-4 bg-background/50 rounded-xl">
+                                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Sparkles className="h-6 w-6 text-primary" />
+                                </div>
+                                <strong className="text-foreground block mb-2">Innovation</strong>
+                                <p className="text-sm">Push the boundaries of technical expertise and creativity.</p>
                             </div>
-                            <div>
-                                <strong className="text-foreground">Networking:</strong> Opportunities for collaboration and
-                                professional connections.
+                            <div className="text-center p-4 bg-background/50 rounded-xl">
+                                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <Users className="h-6 w-6 text-primary" />
+                                </div>
+                                <strong className="text-foreground block mb-2">Networking</strong>
+                                <p className="text-sm">Connect with like-minded developers and industry professionals.</p>
                             </div>
-                            <div>
-                                <strong className="text-foreground">Growth:</strong> Experience and showcase your skills in a
-                                high-stakes environment.
+                            <div className="text-center p-4 bg-background/50 rounded-xl">
+                                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <CheckCircle className="h-6 w-6 text-primary" />
+                                </div>
+                                <strong className="text-foreground block mb-2">Growth</strong>
+                                <p className="text-sm">Showcase your skills in a competitive environment.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                        <p className="text-sm text-amber-800">
+                    <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
+                        <p className="text-amber-800 text-center">
                             <strong>Objective:</strong> Develop tech-driven solutions addressing pressing societal issues. Open to
                             engineering students from various disciplines and institutions nationwide.
                         </p>
                     </div>
                 </div>
 
-                <div className="mt-8 flex justify-center">
-                    <Button onClick={handleNextStep} className="px-8 py-2 bg-primary text-primary-foreground hover:opacity-90">
+                <div className="mt-10 flex justify-center">
+                    <Button
+                        onClick={handleNextStep}
+                        className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2"
+                    >
                         Proceed to Registration
+                        <ArrowRight className="h-5 w-5" />
                     </Button>
                 </div>
             </div>
@@ -196,26 +225,36 @@ export default function RegisterPage() {
 
     function renderStep2() {
         return (
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-                <header className="mb-6">
-                    <h2 className="text-2xl font-semibold text-pretty">Team Registration</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
+                <header className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-xl">
+                            <Users className="h-6 w-6 text-primary" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-foreground">Team Registration</h2>
+                    </div>
+                    <p className="text-muted-foreground">
                         Enter the Team Lead details and up to five team members with their photos.
                     </p>
                 </header>
 
                 {error && (
-                    <div role="alert" className="mb-4 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-red-800 text-sm">
+                    <div
+                        role="alert"
+                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                    >
                         {error}
                     </div>
                 )}
 
-                {/* Team Lead */}
-                <fieldset className="mb-8">
-                    <legend className="text-base font-medium mb-3">Team Lead</legend>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="leadName" className="text-sm">
+                <fieldset className="mb-10">
+                    <legend className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5" />
+                        Team Lead
+                    </legend>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-background/50 rounded-xl border border-border/50">
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadName" className="text-sm font-medium text-foreground">
                                 Team Lead Name
                             </label>
                             <input
@@ -224,12 +263,12 @@ export default function RegisterPage() {
                                 required
                                 value={lead.name}
                                 onChange={(e) => setLead((p) => ({ ...p, name: e.target.value }))}
-                                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="Jane Doe"
                             />
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="leadEmail" className="text-sm">
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadEmail" className="text-sm font-medium text-foreground">
                                 Team Lead Email ID
                             </label>
                             <input
@@ -238,12 +277,12 @@ export default function RegisterPage() {
                                 required
                                 value={lead.email}
                                 onChange={(e) => setLead((p) => ({ ...p, email: e.target.value }))}
-                                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="jane@example.com"
                             />
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="leadPhone" className="text-sm">
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadPhone" className="text-sm font-medium text-foreground">
                                 Team Lead Mobile No
                             </label>
                             <input
@@ -253,12 +292,12 @@ export default function RegisterPage() {
                                 pattern="^[0-9+\\-\\s()]{7,}$"
                                 value={lead.phone}
                                 onChange={(e) => setLead((p) => ({ ...p, phone: e.target.value }))}
-                                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="+1 555 555 1234"
                             />
                         </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="leadPhoto" className="text-sm">
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadPhoto" className="text-sm font-medium text-foreground">
                                 Upload Photo
                             </label>
                             <input
@@ -266,20 +305,19 @@ export default function RegisterPage() {
                                 type="file"
                                 accept="image/*"
                                 onChange={(e) => handleLeadPhotoChange(e.target.files?.[0] || null)}
-                                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-muted file:text-muted-foreground"
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
                             />
                         </div>
                     </div>
                 </fieldset>
 
-                {/* Team Members 1–5 */}
                 <div className="space-y-6">
                     {members.map((m, i) => (
-                        <fieldset key={i} className="border border-border rounded-lg p-4">
-                            <legend className="text-sm font-medium px-2">Team Member {i + 1}</legend>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
-                                <div className="flex flex-col gap-1">
-                                    <label htmlFor={`m${i}-name`} className="text-sm">
+                        <fieldset key={i} className="border border-border/50 rounded-xl p-6 bg-background/30">
+                            <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 1}</legend>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-name`} className="text-sm font-medium text-foreground">
                                         Name
                                     </label>
                                     <input
@@ -287,12 +325,12 @@ export default function RegisterPage() {
                                         type="text"
                                         value={m.name}
                                         onChange={(e) => onMemberChange(i, "name", e.target.value)}
-                                        className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="Full name"
                                     />
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <label htmlFor={`m${i}-email`} className="text-sm">
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-email`} className="text-sm font-medium text-foreground">
                                         Email ID
                                     </label>
                                     <input
@@ -300,12 +338,12 @@ export default function RegisterPage() {
                                         type="email"
                                         value={m.email}
                                         onChange={(e) => onMemberChange(i, "email", e.target.value)}
-                                        className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="user@example.com"
                                     />
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <label htmlFor={`m${i}-phone`} className="text-sm">
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-phone`} className="text-sm font-medium text-foreground">
                                         Mobile No
                                     </label>
                                     <input
@@ -314,12 +352,12 @@ export default function RegisterPage() {
                                         pattern="^[0-9+\\-\\s()]{7,}$"
                                         value={m.phone}
                                         onChange={(e) => onMemberChange(i, "phone", e.target.value)}
-                                        className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="+1 555 123 4567"
                                     />
                                 </div>
-                                <div className="flex flex-col gap-1">
-                                    <label htmlFor={`m${i}-photo`} className="text-sm">
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-photo`} className="text-sm font-medium text-foreground">
                                         Upload Photo
                                     </label>
                                     <input
@@ -327,7 +365,7 @@ export default function RegisterPage() {
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => onMemberChange(i, "photo", e.target.files?.[0] || null)}
-                                        className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:bg-muted file:text-muted-foreground"
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
                                     />
                                 </div>
                             </div>
@@ -340,23 +378,29 @@ export default function RegisterPage() {
 
     function renderStep3() {
         return (
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm max-w-3xl mx-auto">
-                <header className="mb-6">
-                    <h2 className="text-2xl font-semibold text-pretty">Problem Statement</h2>
-                    <p className="text-sm text-muted-foreground mt-1">
-                        Define the problem you want to solve during the hackathon.
-                    </p>
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
+                <header className="mb-8">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-primary/10 rounded-xl">
+                            <FileText className="h-6 w-6 text-primary" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-foreground">Problem Statement</h2>
+                    </div>
+                    <p className="text-muted-foreground">Define the problem you want to solve during the hackathon.</p>
                 </header>
 
                 {error && (
-                    <div role="alert" className="mb-4 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-red-800 text-sm">
+                    <div
+                        role="alert"
+                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                    >
                         {error}
                     </div>
                 )}
 
                 <div className="space-y-6">
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="problemTitle" className="text-sm font-medium">
+                    <div className="flex flex-col gap-3">
+                        <label htmlFor="problemTitle" className="text-sm font-medium text-foreground">
                             Problem Statement Title
                         </label>
                         <input
@@ -365,22 +409,22 @@ export default function RegisterPage() {
                             required
                             value={problemStatement.title}
                             onChange={(e) => setProblemStatement((prev) => ({ ...prev, title: e.target.value }))}
-                            className="h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                            className="h-12 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                             placeholder="e.g., Smart Traffic Management System"
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="problemDescription" className="text-sm font-medium">
+                    <div className="flex flex-col gap-3">
+                        <label htmlFor="problemDescription" className="text-sm font-medium text-foreground">
                             Problem Description
                         </label>
                         <textarea
                             id="problemDescription"
                             required
-                            rows={6}
+                            rows={8}
                             value={problemStatement.description}
                             onChange={(e) => setProblemStatement((prev) => ({ ...prev, description: e.target.value }))}
-                            className="rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-vertical"
+                            className="rounded-xl border border-border bg-input px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 resize-vertical"
                             placeholder="Describe the problem you want to solve, your approach, and the expected impact..."
                         />
                     </div>
@@ -391,33 +435,41 @@ export default function RegisterPage() {
 
     function renderStep4() {
         return (
-            <div className="bg-card border border-border rounded-xl p-8 shadow-sm max-w-2xl mx-auto text-center">
-                <header className="mb-6">
-                    <h2 className="text-2xl font-semibold text-pretty">Payment</h2>
-                    <p className="text-sm text-muted-foreground mt-1">Complete your registration by making the payment of ₹500</p>
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-3xl mx-auto text-center">
+                <header className="mb-8">
+                    <div className="inline-flex p-3 bg-primary/10 rounded-2xl mb-4">
+                        <CreditCard className="h-8 w-8 text-primary" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-foreground mb-2">Complete Payment</h2>
+                    <p className="text-muted-foreground">Finalize your registration with a secure payment of ₹500</p>
                 </header>
 
-                <div className="mb-6">
-                    <div className="bg-muted/50 rounded-lg p-8 mb-4">
-                        <img src="/qr-code-payment.png" alt="Payment QR Code" className="mx-auto mb-4" />
-                        <p className="text-sm text-muted-foreground">Scan this QR code to pay ₹500 registration fee</p>
+                <div className="mb-8">
+                    <div className="bg-background/50 rounded-2xl p-8 mb-6 border border-border/50">
+                        <div className="w-48 h-48 bg-muted rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                            <span className="text-muted-foreground">QR Code Placeholder</span>
+                        </div>
+                        <p className="text-muted-foreground">Scan this QR code to pay ₹500 registration fee</p>
                     </div>
 
-                    <div className="text-sm text-muted-foreground space-y-1">
-                        <p>
-                            <strong>Amount:</strong> ₹500
-                        </p>
-                        <p>
-                            <strong>UPI ID:</strong> hackoverflow@upi
-                        </p>
-                        <p>
-                            <strong>Account:</strong> HackOverflow Registration
-                        </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
+                            <strong className="text-foreground block mb-1">Amount</strong>
+                            <span className="text-lg font-bold text-primary">₹500</span>
+                        </div>
+                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
+                            <strong className="text-foreground block mb-1">UPI ID</strong>
+                            <span>hackoverflow@upi</span>
+                        </div>
+                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
+                            <strong className="text-foreground block mb-1">Account</strong>
+                            <span>HackOverflow Registration</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-amber-800">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
+                    <p className="text-amber-800">
                         <strong>Important:</strong> After payment, take a screenshot and keep it for verification. Your registration
                         will be confirmed once payment is verified.
                     </p>
@@ -426,45 +478,71 @@ export default function RegisterPage() {
                 <Button
                     onClick={handleSubmit}
                     disabled={submitting}
-                    className="px-8 py-2 bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-60"
+                    className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2 mx-auto"
                 >
-                    {submitting ? "Completing Registration..." : "Complete Registration"}
+                    {submitting ? (
+                        <>
+                            <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                            Completing Registration...
+                        </>
+                    ) : (
+                        <>
+                            <CheckCircle className="h-5 w-5" />
+                            Complete Registration
+                        </>
+                    )}
                 </Button>
             </div>
         )
     }
 
     return (
-        <main className="min-h-screen pt-16 bg-background text-foreground">
-            <section className="max-w-5xl mx-auto px-4 py-10">
-                <div className="mb-8">
-                    <div className="flex items-center justify-center space-x-4 mb-4">
-                        {[1, 2, 3, 4].map((step) => (
+        <main className="min-h-screen pt-16 bg-background text-foreground relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 animate-gradient" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(190,18,60,0.08),transparent_50%)] opacity-60" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(236,72,153,0.06),transparent_50%)] opacity-40" />
+
+            <section className="relative z-10 max-w-6xl mx-auto px-4 py-12">
+                <div className="mb-12">
+                    <div className="flex items-center justify-center space-x-4 mb-6">
+                        {[
+                            { step: 1, icon: Sparkles, label: "Welcome" },
+                            { step: 2, icon: Users, label: "Team Details" },
+                            { step: 3, icon: FileText, label: "Problem Statement" },
+                            { step: 4, icon: CreditCard, label: "Payment" },
+                        ].map(({ step, icon: Icon }) => (
                             <div key={step} className="flex items-center">
                                 <div
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step === currentStep
-                                        ? "bg-primary text-primary-foreground"
+                                    className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-medium transition-all duration-300 ${step === currentStep
+                                        ? "bg-primary text-primary-foreground shadow-lg scale-110"
                                         : step < currentStep
                                             ? "bg-primary/20 text-primary"
                                             : "bg-muted text-muted-foreground"
                                         }`}
                                 >
-                                    {step}
+                                    <Icon className="h-5 w-5" />
                                 </div>
-                                {step < 4 && <div className={`w-12 h-0.5 mx-2 ${step < currentStep ? "bg-primary" : "bg-muted"}`} />}
+                                {step < 4 && (
+                                    <div
+                                        className={`w-16 h-1 mx-3 rounded-full transition-all duration-300 ${step < currentStep ? "bg-primary" : "bg-muted"
+                                            }`}
+                                    />
+                                )}
                             </div>
                         ))}
                     </div>
                     <div className="text-center">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground">
                             Step {currentStep} of 4:{" "}
-                            {currentStep === 1
-                                ? "Welcome"
-                                : currentStep === 2
-                                    ? "Team Details"
-                                    : currentStep === 3
-                                        ? "Problem Statement"
-                                        : "Payment"}
+                            <span className="font-medium text-foreground">
+                                {currentStep === 1
+                                    ? "Welcome"
+                                    : currentStep === 2
+                                        ? "Team Details"
+                                        : currentStep === 3
+                                            ? "Problem Statement"
+                                            : "Payment"}
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -475,24 +553,33 @@ export default function RegisterPage() {
                 {currentStep === 4 && renderStep4()}
 
                 {currentStep > 1 && currentStep < 4 && (
-                    <div className="mt-8 flex items-center justify-between gap-4">
-                        <Button onClick={handlePrevStep} variant="outline" className="px-6 bg-transparent">
+                    <div className="mt-10 flex items-center justify-between gap-4">
+                        <Button
+                            onClick={handlePrevStep}
+                            variant="outline"
+                            className="px-6 py-3 bg-transparent border-border hover:bg-card rounded-xl flex items-center gap-2"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
                             Previous
                         </Button>
                         <div className="flex items-center gap-4">
-                            <Link to="/" className="text-sm text-primary hover:underline">
+                            <Link to="/" className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
                                 Back to Home
                             </Link>
-                            <Button onClick={handleNextStep} className="px-6 bg-primary text-primary-foreground hover:opacity-90">
+                            <Button
+                                onClick={handleNextStep}
+                                className="px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2"
+                            >
                                 Next
+                                <ArrowRight className="h-4 w-4" />
                             </Button>
                         </div>
                     </div>
                 )}
 
                 {currentStep === 1 && (
-                    <div className="mt-6 text-center">
-                        <Link to="/" className="text-sm text-primary hover:underline">
+                    <div className="mt-8 text-center">
+                        <Link to="/" className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
                             Back to Home
                         </Link>
                     </div>

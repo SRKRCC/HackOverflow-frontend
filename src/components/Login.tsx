@@ -2,9 +2,9 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"                               
-import { Button } from "@/components/ui/button"
-import { Lock, ShieldCheck, Zap, Loader2, Eye, EyeOff } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import Button from "./ui/button"
+import { Lock, ShieldCheck, Zap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
 
 export default function LoginPage() {
     const navigate = useNavigate()
@@ -45,71 +45,101 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="min-h-screen relative overflow-hidden bg-background text-foreground montserrat-family">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 animate-gradient" />
+        <main className="min-h-screen relative overflow-hidden bg-background text-foreground font-sans">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-secondary/6 animate-gradient" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(190,18,60,0.1),transparent_50%)] opacity-60" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.08),transparent_50%)] opacity-40" />
+
             <div className="pointer-events-none">
-                <div className="absolute top-16 left-10 w-20 h-20 bg-primary/10 rounded-full animate-float" />
+                <div className="absolute top-20 left-16 w-24 h-24 bg-primary/12 rounded-full blur-sm animate-float" />
                 <div
-                    className="absolute bottom-24 right-12 w-16 h-16 bg-accent/10 rounded-lg rotate-12 animate-float"
-                    style={{ animationDelay: "0.8s" }}
+                    className="absolute bottom-32 right-20 w-20 h-20 bg-secondary/10 rounded-2xl rotate-12 blur-sm animate-float"
+                    style={{ animationDelay: "1.2s" }}
                 />
                 <div
-                    className="absolute top-1/3 right-1/4 w-12 h-12 bg-secondary/10 rounded-full animate-float"
-                    style={{ animationDelay: "1.6s" }}
+                    className="absolute top-1/3 right-1/4 w-16 h-16 bg-accent/8 rounded-full blur-sm animate-float"
+                    style={{ animationDelay: "2.4s" }}
+                />
+                <div
+                    className="absolute top-1/4 left-1/3 w-12 h-12 bg-primary/6 rounded-lg rotate-45 blur-sm animate-float"
+                    style={{ animationDelay: "0.8s" }}
                 />
             </div>
 
-            <section className="relative z-10 mx-auto grid md:grid-cols-2 items-center min-h-screen">
-                <div className="flex items-center justify-center">
-                    <div className="hidden md:flex flex-col justify-center animate-slide-up">
-                        <div className="flex items-center gap-2 mb-4">
-                            <h1 className="text-3xl lg:text-4xl font-bold">
+            <section className="relative z-10 mx-auto grid lg:grid-cols-2 items-center min-h-screen max-w-7xl px-6">
+                <div className="flex items-center justify-center py-12">
+                    <div className="hidden lg:flex flex-col justify-center animate-slide-up max-w-lg">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-primary/10 rounded-xl">
+                                <Sparkles className="h-6 w-6 text-primary" />
+                            </div>
+                            <h1 className="text-4xl xl:text-5xl font-bold text-balance leading-tight">
                                 <span className="text-foreground">Welcome to </span>
-                                <span className="text-primary">HackOverflow</span>
+                                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                    HackOverflow
+                                </span>
                                 <span className="text-secondary"> 2K25</span>
                             </h1>
                         </div>
-                        <p className="text-muted-foreground leading-relaxed mb-6 max-w-prose">
-                            Sign in to manage your registration, join teams, and track the event schedule. Your credentials are securely
-                            handled.
+                        <p className="text-muted-foreground leading-relaxed mb-8 text-lg">
+                            Sign in to manage your registration, join teams, and track the event schedule. Your credentials are
+                            securely handled with enterprise-grade protection.
                         </p>
-                        <ul className="space-y-3">
-                            <li className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
-                                Secure access with session persistence
-                            </li>
-                            <li className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Lock className="h-5 w-5 text-primary" aria-hidden="true" />
-                                Protected routes and private dashboards
-                            </li>
-                            <li className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Zap className="h-5 w-5 text-primary" aria-hidden="true" />
-                                Fast onboarding with a clean UI
-                            </li>
-                        </ul>
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 p-4 bg-card/50 rounded-xl border border-border/50 backdrop-blur-sm">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                    <ShieldCheck className="h-5 w-5 text-primary" aria-hidden="true" />
+                                </div>
+                                <div>
+                                    <h3 className="font-medium text-foreground">Secure Authentication</h3>
+                                    <p className="text-sm text-muted-foreground">Session persistence with advanced security</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-card/50 rounded-xl border border-border/50 backdrop-blur-sm">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                    <Lock className="h-5 w-5 text-primary" aria-hidden="true" />
+                                </div>
+                                <div>
+                                    <h3 className="font-medium text-foreground">Protected Access</h3>
+                                    <p className="text-sm text-muted-foreground">Private dashboards and team management</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4 p-4 bg-card/50 rounded-xl border border-border/50 backdrop-blur-sm">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                    <Zap className="h-5 w-5 text-primary" aria-hidden="true" />
+                                </div>
+                                <div>
+                                    <h3 className="font-medium text-foreground">Lightning Fast</h3>
+                                    <p className="text-sm text-muted-foreground">Optimized performance and clean interface</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div
-                    className="w-full h-full bg-card border border-border p-6 shadow-xl backdrop-blur-sm animate-scale-in flex items-center justify-center"
-                    aria-labelledby="login-title"
-                >
-                    <div className="w-md">
-                        <div className="mb-6">
-                            <h2 id="login-title" className="text-2xl font-semibold mb-1 text-balance">
-                                Sign in to your account
+                <div className="w-full h-full flex items-center justify-center py-12">
+                    <div
+                        className="w-full max-w-md bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm animate-scale-in"
+                        aria-labelledby="login-title"
+                    >
+                        <div className="mb-8 text-center">
+                            <div className="inline-flex p-3 bg-primary/10 rounded-2xl mb-4">
+                                <Lock className="h-8 w-8 text-primary" />
+                            </div>
+                            <h2 id="login-title" className="text-3xl font-bold mb-2 text-balance text-foreground">
+                                Welcome Back
                             </h2>
-                            <p className="text-sm text-muted-foreground">Access your dashboard, teams, and event updates.</p>
+                            <p className="text-muted-foreground">Access your dashboard and manage your hackathon journey</p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
-                            <div className="grid gap-2">
-                                <label htmlFor="email" className="text-sm font-medium">
+                        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                            <div className="space-y-2">
+                                <label htmlFor="sccId" className="text-sm font-medium text-foreground">
                                     SCC ID
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-3 flex items-center text-muted-foreground pointer-events-none">
-                                        <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                                        <ShieldCheck className="h-5 w-5" aria-hidden="true" />
                                     </span>
                                     <input
                                         id="sccId"
@@ -122,14 +152,14 @@ export default function LoginPage() {
                                         required
                                         aria-invalid={!!error && !sccId}
                                         placeholder="1234567"
-                                        className="w-full bg-input border border-border rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                        className="w-full bg-input border border-border rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         data-testid="email-input"
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid gap-2">
-                                <label htmlFor="password" className="text-sm font-medium">
+                            <div className="space-y-2">
+                                <label htmlFor="password" className="text-sm font-medium text-foreground">
                                     Password
                                 </label>
                                 <div className="relative">
@@ -141,32 +171,35 @@ export default function LoginPage() {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         placeholder="••••••••"
-                                        className="w-full bg-input border border-border rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                        className="w-full bg-input border border-border rounded-xl px-4 py-3 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         aria-invalid={!!error && !password}
                                         aria-describedby={error ? "login-error" : undefined}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword((s) => !s)}
-                                        className="absolute inset-y-0 right-2 flex items-center text-muted-foreground hover:text-foreground"
+                                        className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                                         aria-label={showPassword ? "Hide password" : "Show password"}
                                     >
-                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                     </button>
                                 </div>
                             </div>
 
                             <div className="flex items-center justify-between">
-                                <label className="inline-flex items-center gap-2 text-sm">
+                                <label className="inline-flex items-center gap-3 text-sm cursor-pointer">
                                     <input
                                         type="checkbox"
-                                        className="h-4 w-4 rounded border-border"
+                                        className="h-4 w-4 rounded border-border text-primary focus:ring-primary/50"
                                         checked={rememberMe}
                                         onChange={(e) => setRememberMe(e.target.checked)}
                                     />
                                     <span className="text-muted-foreground">Remember me</span>
                                 </label>
-                                <a href="#forgot-password" className="text-sm text-primary hover:underline">
+                                <a
+                                    href="#forgot-password"
+                                    className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                                >
                                     Forgot password?
                                 </a>
                             </div>
@@ -176,7 +209,7 @@ export default function LoginPage() {
                                     id="login-error"
                                     role="alert"
                                     aria-live="polite"
-                                    className="rounded-md border border-destructive/40 bg-destructive/10 text-destructive px-3 py-2 text-sm"
+                                    className="rounded-xl border border-destructive/40 bg-destructive/10 text-destructive px-4 py-3 text-sm"
                                 >
                                     {error}
                                 </div>
@@ -186,11 +219,11 @@ export default function LoginPage() {
                                 type="submit"
                                 disabled={loading}
                                 aria-busy={loading}
-                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all duration-300 hover:scale-[1.01] shadow-sm"
+                                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] shadow-lg hover:shadow-xl"
                             >
                                 {loading ? (
                                     <span className="inline-flex items-center gap-2">
-                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                        <Loader2 className="h-5 w-5 animate-spin" />
                                         Signing in…
                                     </span>
                                 ) : (
@@ -198,6 +231,15 @@ export default function LoginPage() {
                                 )}
                             </Button>
                         </form>
+
+                        <div className="mt-6 text-center">
+                            <p className="text-sm text-muted-foreground">
+                                Don't have an account?{" "}
+                                <a href="/register" className="text-primary hover:text-primary/80 transition-colors font-medium">
+                                    Register here
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </section>

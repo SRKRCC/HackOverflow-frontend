@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Button from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import ThemeToggle from "./ThemeToggle"
 
@@ -40,7 +40,7 @@ const Navbar = () => {
                             HackOverflow 2k25
                         </h1>
                         <div className="md:hidden">
-                            <ThemeToggle/>
+                            <ThemeToggle />
 
                         </div>
 
@@ -63,10 +63,10 @@ const Navbar = () => {
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
                             </Link>
                         ))}
-                        <ThemeToggle/>
+                        <ThemeToggle />
 
                     </div>
-                            
+
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
