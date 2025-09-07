@@ -30,7 +30,7 @@ const Gallery: React.FC = () => {
 
   return (
     <div className="bg-white min-h-screen font-inter relative">
-      <Navbar />
+      {/*<Navbar />*/}
       <main className="pt-16 px-8 pb-8">
         {loading && (
           <div className="page-loader">
