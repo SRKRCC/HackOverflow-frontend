@@ -21,7 +21,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setDarkMode(!darkMode)}
-      className="flex items-center gap-2 m-2 mt-auto p-2 rounded-lg hover:bg-sidebar-accent transition-colors text-primary"
+      className="flex items-center p-1 rounded-lg hover:bg-sidebar-accent transition-colors text-primary"
     >
       {darkMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
     </button>

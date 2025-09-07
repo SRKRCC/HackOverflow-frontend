@@ -10,14 +10,14 @@ import About from './components/About'
 
 function AppContent() {
   const location = useLocation()
-  const hideNavbar = ['/login', '/register'].includes(location.pathname)
+  const hideNavbarFooter = ['/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team/')
   const marginLeft = location.pathname.startsWith("/team/") ? "ml-[60px]" : ""
 
   return (
     <>
-      {!hideNavbar && <Navbar className={marginLeft} />}
+      {!hideNavbarFooter && <Navbar className={marginLeft} />}
 
-      <main className={!hideNavbar ? "pt-16" : ""}>
+      <main className={!hideNavbarFooter ? "pt-16" : ""}>
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/login" element={<Login />} />
@@ -29,7 +29,7 @@ function AppContent() {
         <Route path='/*' element={<Structure />} />
       </Routes>
       </main>
-      <Footer className={marginLeft} />
+      {!hideNavbarFooter && <Footer className={marginLeft} />}
     </>
   )
 }
