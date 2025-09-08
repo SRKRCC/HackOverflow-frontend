@@ -8,7 +8,7 @@ import Tasks from "./components/team/Tasks";
 import Gallery from "./components/team/Gallery";
 import HeroSection from "./components/HeroSection";
 
-const Structure = () => {
+const TeamStructure = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -28,15 +28,15 @@ const Structure = () => {
       }`}>
         <Routes>
           <Route path="/" element={<HeroSection />} />
-          <Route path="/team/problem-statement" element={<ProblemStatement />} />
-          <Route path="/team/team-details" element={<TeamDetails />} />
-          <Route path="/team/tasks" element={<Tasks />} />
-          <Route path="/team/gallery" element={<Gallery />} />
-          <Route path="/team/attendance" element={<Attendance />} />
+          <Route path="/problem-statement" element={<ProblemStatement />} />
+          <Route path="/team-details" element={<TeamDetails />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/attendance" element={<Attendance />} />
         </Routes>
       </div>
     </div>
   );
 };
 
-export default Structure;
+export default TeamStructure;
