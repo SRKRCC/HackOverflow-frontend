@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
+import Button from "@/components/ui/button"
 
 const problemStatements = [
   {
@@ -46,7 +46,7 @@ while (problemStatements.length < 50) {
 
 const ITEMS_PER_PAGE = 10
 
-const Dashboard: React.FC = () => {
+const ProblemStatements: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryFilter, setCategoryFilter] = useState("")
@@ -198,4 +198,4 @@ const Dashboard: React.FC = () => {
   )
 }
 
-export default Dashboard
+export default ProblemStatements
