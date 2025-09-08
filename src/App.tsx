@@ -1,12 +1,14 @@
-import Navbar from './components/Navbar'
+// import Navbar from './components/Navbar'
 import './App.css'
-import HeroSection from './components/HeroSection'
-
+import Dashboard from './components/ProblemStatement'
+// import HeroSection from './components/HeroSection'
 function App() {
   return (
     <>
-      <Navbar />
-      <HeroSection />
+      {/* <Navbar /> */}
+      {/* <HeroSection /> */}
+      <Dashboard />
+      {/* <ProblemTable/> */}
     </>
   )
 }
