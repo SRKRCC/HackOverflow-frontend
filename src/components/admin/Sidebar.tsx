@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarCheck, FileText, Users, Home, LogOut, Settings } from "lucide-react";
+import { Home, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
