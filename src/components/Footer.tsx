@@ -15,7 +15,11 @@ import {
   Heart
 } from "lucide-react";
 
-const Footer: FC = () => {
+interface FooterProps {
+  className?: string;
+}
+
+const Footer: FC<FooterProps> = ({ className = "" }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -27,7 +31,7 @@ const Footer: FC = () => {
   }, []);
 
   return (
-    <footer className="overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+    <footer className={`overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white ${className}`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500 rounded-full animate-float" />
