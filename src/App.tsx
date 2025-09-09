@@ -8,6 +8,8 @@ import Register from './components/Register'
 import Footer from './components/Footer'
 import About from './components/About'
 import ProblemStatements from './components/ProblemStatement'
+// import Teams from './components/admin/teamdetails'
+import TeamsTable from './components/admin/teamdetails'
 
 function AppContent() {
   const location = useLocation()
@@ -29,6 +31,7 @@ function AppContent() {
         <Route path="/teams" element={<div>Teams Page</div>} />
         <Route path="/prizes" element={<div>Prizes Page</div>} />
         <Route path='/*' element={<Structure />} />
+        <Route path='/teamdetails' element={<TeamsTable />} />
       </Routes>
       </main>
       {!hideNavbarFooter && <Footer className={marginLeft} />}
