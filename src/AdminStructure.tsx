@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "@/components/admin/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import Dashboard from "@/components/admin/Dashboard";
+import LeaderBoard from "./components/admin/LeaderBoard";
 
 const AdminStructure = () => {
     const [openSidebar, setOpenSidebar] = useState(false);
@@ -21,7 +22,7 @@ const AdminStructure = () => {
                 }`}>
                 <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
-                    {/* Add more admin routes here */}
+                    <Route path="/leaderboard" element={<LeaderBoard />}/>
                 </Routes>
             </div>
         </div>
