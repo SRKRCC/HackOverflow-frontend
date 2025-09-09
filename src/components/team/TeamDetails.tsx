@@ -87,16 +87,6 @@ export default function TeamCompass() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>({});
 
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    return localStorage.getItem("theme") === "dark" ? "Dark" : "Light";
-  });
-
-  
-  useEffect(() => {
-      const theme = localStorage.getItem("theme") === "dark" ? "Dark" : "Light";
-      setCurrentTheme(theme)
-  }, [currentTheme]);
-
 
   // Calculate the center position (position 2 in a 5-card layout)
   const centerPosition = 2;
