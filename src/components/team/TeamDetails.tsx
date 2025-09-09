@@ -84,19 +84,6 @@ const teamDetails = {
       role: "Member",
       color: "from-pink-400 to-pink-600",
       bgColor: "bg-pink-50"
-    },
-    {
-      id: 106,
-      name: "Test Member",
-      email: "test@gmail.com",
-      phone_number: "1234567890",
-      profile_image: "https://images.unsplash.com/photo-1494790108755-2616b612b376?w=150&h=150&fit=crop&crop=face",
-      department: "Computer Science",
-      college_name: "S R K R ENGINEERING COLLEGE",
-      year_of_study: 1,
-      role: "Member",
-      color: "from-indigo-400 to-indigo-600",
-      bgColor: "bg-indigo-50"
     }
   ].filter((member, index, arr) => 
     // Remove duplicate entries (same id)
@@ -110,7 +97,7 @@ export default function TeamCompass() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>({});
 
-  const selectedMember = teamDetails.team_members[currentIndex];
+  const selectedMember = teamDetails.team_members[(currentIndex + 2) % teamDetails.team_members.length];
   const teamSize = teamDetails.team_members.length;
 
   // Auto-scroll functionality
@@ -126,7 +113,7 @@ export default function TeamCompass() {
   const handleMemberClick = (index: number) => {
     setCurrentIndex(index);
     setAutoScroll(false);
-    setTimeout(() => setAutoScroll(true), 5000);
+    setTimeout(() => setAutoScroll(true), 50000);
   };
 
   const handleImageError = (memberId: number) => {
@@ -137,8 +124,24 @@ export default function TeamCompass() {
   const getCardPosition = (index: number) => {
     const relativeIndex = (index - currentIndex + teamSize) % teamSize;
     
-    // Calculate positions dynamically based on team size
-    const visibleCards = Math.min(teamSize, 5); // Maximum 5 visible cards
+    // For mobile view, use a simplified horizontal layout
+    if (window.innerWidth < 768) {
+      const positions = [
+        { left: '5%', scale: 0.7, opacity: 0.6, zIndex: 1 },
+        { left: '20%', scale: 0.85, opacity: 0.8, zIndex: 2 },
+        { left: '50%', scale: 1, opacity: 1, zIndex: 3 },
+        { left: '80%', scale: 0.85, opacity: 0.8, zIndex: 2 },
+        { left: '95%', scale: 0.7, opacity: 0.6, zIndex: 1 }
+      ];
+      
+      if (relativeIndex < 5) {
+        return { ...positions[relativeIndex], top: '50%' };
+      }
+      return { top: '50%', left: '120%', scale: 0.5, opacity: 0, zIndex: 0 };
+    }
+    
+    // Calculate positions dynamically based on team size for desktop
+    const visibleCards = Math.min(teamSize, 5);
     // const centerIndex = Math.floor(visibleCards / 2);
     
     if (teamSize <= 3) {
@@ -165,8 +168,7 @@ export default function TeamCompass() {
     }
     // Return a default position object for cards not in the visible range
     return { top: '50%', right: '20%', scale: 0.5, opacity: 0, zIndex: 0 };
-  }
-  // Removed duplicate ProfileImage declaration
+  };
 
   const getCardShape = (index: number) => {
     const relativeIndex = (index - currentIndex + teamSize) % teamSize;
@@ -225,46 +227,41 @@ export default function TeamCompass() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden py-10">
       {/* Header */}
-      <div className="pt-8 pb-4 text-center">
+      <div className="pt-8 pb-4 px-4 text-center">
         <div className="flex flex-col items-center mb-2 text-center">
           <div className="relative">
-            <h1 className="text-5xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3 animate-fade-in">
-                   OUR TEAM
+            <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3 animate-fade-in">
+              OUR TEAM
             </h1>
-            </div></div>
-        <p className="text-gray-600 font-medium">{teamDetails.title}</p>
-        <div className="flex items-center justify-center space-x-4 mt-2">
-          <p className="text-sm text-gray-500"><b>SCC ID:</b> {teamDetails.scc_id}</p>
-          <span className="text-gray-300 text-2xl">•</span>
-          <p className="text-sm text-gray-500"><b>Team Size:</b> {teamSize} members</p>
+          </div>
+        </div>
+        <p className="text-lg text-muted-foreground font-medium text-xl">{teamDetails.title}</p>
+        <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 mt-2">
+          <p className="text-sm text-muted-foreground"><b>SCC ID:</b> {teamDetails.scc_id}</p>
+          <span className="hidden md:inline text-muted-foreground text-2xl">•</span>
+          <p className="text-sm text-muted-foreground"><b>Team Size:</b> {teamSize} members</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-5 min-h-[calc(100vh-200px)]">
+      <div className="flex flex-col md:grid md:grid-cols-5 min-h-[calc(100vh-200px)]">
         {/* Left Side - Detailed Profile */}
-        <div className="col-span-3 flex flex-col justify-center p-8">
-          <div className={`${selectedMember.bgColor} rounded-3xl p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto`}>
+        <div className="md:col-span-3 flex flex-col justify-center p-4 md:p-8 order-2 md:order-1">
+          <div className={`${selectedMember.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
             {/* Profile Header */}
-            <div className="flex items-center space-x-6 mb-6">
-              <div className="relative">
-                <div className={`w-32 h-32 rounded-full bg-gradient-to-r ${selectedMember.color} p-1 shadow-xl`}>
+            <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-6 mb-6">
+              <div className="relative mb-4 md:mb-0">
+                <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r ${selectedMember.color} p-1 shadow-xl`}>
                   <ProfileImage member={selectedMember} size="normal" />
                 </div>
-                {selectedMember.role === "Lead" && (
-                  <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg animate-pulse">
-                    TEAM LEAD
-                  </div>
-                )}
               </div>
-              
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">{selectedMember.name}</h2>
-                <p className={`text-xl font-semibold bg-gradient-to-r ${selectedMember.color} bg-clip-text text-transparent mb-1`}>
-                  {selectedMember.role}
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{selectedMember.name}</h2>
+                <p className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${selectedMember.color} bg-clip-text text-transparent mb-1`}>
+                  Team {selectedMember.role}
                 </p>
-                <p className="text-lg text-gray-600">{selectedMember.department}</p>
+                <p className="text-base md:text-lg text-muted-foreground">{selectedMember.department}</p>
               </div>
             </div>
 
@@ -278,8 +275,8 @@ export default function TeamCompass() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">College</p>
-                    <p className="text-gray-700 font-medium">{selectedMember.college_name}</p>
+                    <p className="text-sm text-muted-foreground">College</p>
+                    <p className="text-foreground font-medium text-sm">{selectedMember.college_name}</p>
                   </div>
                 </div>
 
@@ -290,8 +287,8 @@ export default function TeamCompass() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Year of Study</p>
-                    <p className="text-gray-700 font-medium">Year {selectedMember.year_of_study}</p>
+                    <p className="text-sm text-muted-foreground">Year of Study</p>
+                    <p className="text-foreground font-medium">Year {selectedMember.year_of_study}</p>
                   </div>
                 </div>
               </div>
@@ -305,8 +302,8 @@ export default function TeamCompass() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-gray-700 font-medium text-sm">{selectedMember.email}</p>
+                    <p className="text-sm text-muted-foreground">Email</p>
+                    <p className="text-foreground font-medium text-sm break-all">{selectedMember.email}</p>
                   </div>
                 </div>
 
@@ -317,8 +314,8 @@ export default function TeamCompass() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Phone</p>
-                    <p className="text-gray-700 font-medium">{selectedMember.phone_number}</p>
+                    <p className="text-sm text-muted-foreground">Phone</p>
+                    <p className="text-foreground font-medium">{selectedMember.phone_number}</p>
                   </div>
                 </div>
               </div>
@@ -327,101 +324,94 @@ export default function TeamCompass() {
         </div>
 
         {/* Right Side - Dynamic Carousel */}
-        <div className="col-span-2 relative">
-          {/* Path Indicator */}
-          <div className="absolute top-1/2 right-16 w-1 h-96 bg-gradient-to-b from-transparent via-gray-300 to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
+        <div className="md:col-span-2 relative h-80 md:h-auto order-1 md:order-2">
+          {/* Path Indicator - Hidden on mobile */}
+          <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
           
-          {teamDetails.team_members.map((member, index) => {
-            const position = getCardPosition(index);
-            const shape = getCardShape(index);
-            const isCenter = shape === 'center';
+          {/* Cards Container - This creates a positioned context for the cards */}
+          <div className="relative w-full h-full">
+            {teamDetails.team_members.map((member, index) => {
+              const position = getCardPosition(index);
+              const shape = getCardShape(index);
+              const isCenter = shape === 'center';
 
-            if (!position) return null;
-            
-            return (
-              <div
-                key={member.id}
-                className="fixed transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
-                style={{
-                  top: position.top,
-                  right: position.right,
-                  transform: `translateY(-50%) scale(${position.scale})`,
-                  opacity: position.opacity,
-                  zIndex: position.zIndex,
-                }}
-                onClick={() => handleMemberClick(index)}
-              >
-                {isCenter ? (
-                  // Center Card - Always detailed
-                  <div className={`${member.bgColor} rounded-2xl p-4 shadow-xl w-72 border-4 border-white hover:shadow-2xl transition-all duration-300`}>
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
-                        <ProfileImage member={member} size="large" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-800 text-lg">{member.name}</h3>
-                        <p className={`text-sm font-medium bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>{member.role}</p>
-                        <p className="text-sm text-gray-600">{member.department}</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  // Non-center Cards - Uniform card style
-                  <div className={`${member.bgColor} rounded-xl p-3 shadow-lg w-48 hover:shadow-xl transition-all duration-300`}>
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
-                        <ProfileImage member={member} size="small" className="w-full h-full" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-800 text-sm truncate">{member.name}</h4>
-                        <p className="text-xs text-gray-600 truncate">{member.role}</p>
+              if (!position) return null;
+              
+              return (
+                <div
+                  key={member.id}
+                  className="absolute transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
+                  style={{
+                    top: position.top,
+                    right: window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
+                    left: window.innerWidth < 768 && 'left' in position ? position.left : undefined,
+                    transform: `translate(-50%, -50%) scale(${position.scale})`,
+                    opacity: position.opacity,
+                    zIndex: position.zIndex,
+                  }}
+                  onClick={() => handleMemberClick(index)}
+                >
+                  {isCenter ? (
+                    // Center Card - Always detailed
+                    <div className={`${member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
+                          <ProfileImage member={member} size="large" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground text-base md:text-lg">{member.name}</h3>
+                          <p className={`text-xs md:text-sm font-medium bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>Team {member.role}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{member.department}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  ) : (
+                    // Non-center Cards - Uniform card style
+                    <div className={`${member.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
+                          <ProfileImage member={member} size="small" className="w-full h-full" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground text-xs md:text-sm truncate">{member.name}</h4>
+                          <p className="text-xs text-muted-foreground truncate">Team {member.role}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Control Buttons */}
-      <div className="fixed bottom-8 right-8 flex space-x-2">
+      <div className="fixed bottom-8 right-4 md:right-8 flex space-x-2">
         {teamSize > 1 && (
           <button
             onClick={() => setAutoScroll(!autoScroll)}
-            className={`px-4 py-2 rounded-full shadow-lg transition-all duration-300 ${
+            className={`px-3 py-1 rounded-full shadow-lg transition-all duration-300 ${
               autoScroll 
-                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                : 'bg-green-500 hover:bg-green-600 text-white'
+                ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
+                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
             }`}
           >
             {autoScroll ? 'Pause' : 'Play'}
           </button>
         )}
-        
-        {/* Manual navigation buttons */}
         <button
           onClick={() => handleMemberClick((currentIndex - 1 + teamSize) % teamSize)}
-          className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all duration-300"
+          className="p-2 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-all duration-300"
         >
           ←
         </button>
         <button
           onClick={() => handleMemberClick((currentIndex + 1) % teamSize)}
-          className="p-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all duration-300"
+          className="p-2 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-all duration-300"
         >
           →
         </button>
-      </div>
-
-      {/* Team size indicator */}
-      <div className="fixed bottom-8 left-8">
-        <div className="bg-white rounded-full px-4 py-2 shadow-lg">
-          <span className="text-sm text-gray-600">
-            {currentIndex + 1} / {teamSize}
-          </span>
-        </div>
       </div>
     </div>
   );
