@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, LogOut } from "lucide-react";
+import { Home, LogOut, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
@@ -51,6 +51,8 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
 
     const links = [
         { path: "/admin/dashboard", label: "Dashboard", icon: <Home size={20} /> },
+        { path: "/admin/team-details", label: "Team Details", icon: <Users size={20} /> },
+        { path: "/admin/leaderboard", label: "Leaderboard", icon: <Users size={20} /> },
     ];
 
     const letterAnimation = {
