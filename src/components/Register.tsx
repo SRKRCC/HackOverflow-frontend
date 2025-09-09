@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import Button from "./ui/button"
-import { Users, FileText, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles } from "lucide-react"
+import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText } from "lucide-react"
 
 type Member = {
     name: string
@@ -12,8 +12,10 @@ type Member = {
 }
 
 type ProblemStatement = {
+    id: string
     title: string
     description: string
+    category: string
 }
 
 export default function RegisterPage() {
@@ -23,12 +25,12 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null)
 
     const [lead, setLead] = useState({ name: "", email: "", phone: "", photo: null as File | null })
-    const [members, setMembers] = useState<Member[]>(
-        Array.from({ length: 5 }, () => ({ name: "", email: "", phone: "", photo: null })),
-    )
+    const [members, setMembers] = useState<Member[]>([])
     const [problemStatement, setProblemStatement] = useState<ProblemStatement>({
+        id: "",
         title: "",
         description: "",
+        category: ""
     })
 
     function onMemberChange(index: number, key: keyof Member, value: string | File | null) {
@@ -37,6 +39,16 @@ export default function RegisterPage() {
             next[index] = { ...next[index], [key]: value }
             return next
         })
+    }
+
+    function addMember() {
+        if (members.length < 5) {
+            setMembers(prev => [...prev, { name: "", email: "", phone: "", photo: null }])
+        }
+    }
+
+    function removeMember(index: number) {
+        setMembers(prev => prev.filter((_, i) => i !== index))
     }
 
     function handleLeadPhotoChange(file: File | null) {
@@ -51,16 +63,24 @@ export default function RegisterPage() {
                 setError("Please complete all Team Lead fields.")
                 return
             }
-            const hasAnyMember = members.some((m) => m.name || m.email || m.phone)
-            if (!hasAnyMember) {
-                setError("Please fill details for at least one Team Member.")
+            if (members.length < 3) {
+                setError("Please add at least 3 team members (minimum 4 members total including team lead).")
                 return
             }
-        }
+            if (members.length > 5) {
+                setError("Maximum 6 members total allowed (including team lead).")
+                return
+            }
+            // Check if all team members have required fields filled
+            const incompleteMembers = members.some(member => !member.name || !member.email || !member.phone)
+            if (incompleteMembers) {
+                setError("Please complete all fields for all team members.")
+                return
+            }
 
-        if (currentStep === 3) {
-            if (!problemStatement.title || !problemStatement.description) {
-                setError("Please complete both problem statement title and description.")
+            // Validate problem statement
+            if (!problemStatement.id || !problemStatement.title || !problemStatement.description || !problemStatement.category) {
+                setError("Please complete all problem statement fields (ID, title, description, and category).")
                 return
             }
         }
@@ -155,7 +175,7 @@ export default function RegisterPage() {
 
                         <div className="bg-card/50 rounded-2xl p-6 border border-border/50">
                             <h3 className="text-xl font-semibold mb-4 text-primary flex items-center gap-2">
-                                <FileText className="h-5 w-5" />
+                                <Sparkles className="h-5 w-5" />
                                 Themes
                             </h3>
                             <ul className="space-y-3 text-muted-foreground">
@@ -234,7 +254,7 @@ export default function RegisterPage() {
                         <h2 className="text-3xl font-bold text-foreground">Team Registration</h2>
                     </div>
                     <p className="text-muted-foreground">
-                        Enter the Team Lead details and up to five team members with their photos.
+                        Enter the Team Lead details and add team members. Minimum 4 members total (including team lead), maximum 6 members total.
                     </p>
                 </header>
 
@@ -314,8 +334,18 @@ export default function RegisterPage() {
                 <div className="space-y-6">
                     {members.map((m, i) => (
                         <fieldset key={i} className="border border-border/50 rounded-xl p-6 bg-background/30">
-                            <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 1}</legend>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                            <div className="flex justify-between items-center mb-4">
+                                <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 1}</legend>
+                                <Button
+                                    type="button"
+                                    onClick={() => removeMember(i)}
+                                    variant="outline"
+                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-name`} className="text-sm font-medium text-foreground">
                                         Name
@@ -371,64 +401,113 @@ export default function RegisterPage() {
                             </div>
                         </fieldset>
                     ))}
-                </div>
-            </div>
-        )
-    }
 
-    function renderStep3() {
-        return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
-                <header className="mb-8">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary/10 rounded-xl">
-                            <FileText className="h-6 w-6 text-primary" />
+                    {members.length < 5 && (
+                        <div className="flex justify-center">
+                            <Button
+                                type="button"
+                                onClick={addMember}
+                                variant="outline"
+                                className="h-11 px-6 border-dashed border-2 border-primary/30 hover:border-primary/50 hover:bg-primary/5 text-primary flex items-center gap-2"
+                            >
+                                <Plus className="h-4 w-4" />
+                                Add Team Member
+                            </Button>
                         </div>
-                        <h2 className="text-3xl font-bold text-foreground">Problem Statement</h2>
-                    </div>
-                    <p className="text-muted-foreground">Define the problem you want to solve during the hackathon.</p>
-                </header>
+                    )}
 
-                {error && (
-                    <div
-                        role="alert"
-                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
-                    >
-                        {error}
-                    </div>
-                )}
-
-                <div className="space-y-6">
-                    <div className="flex flex-col gap-3">
-                        <label htmlFor="problemTitle" className="text-sm font-medium text-foreground">
-                            Problem Statement Title
-                        </label>
-                        <input
-                            id="problemTitle"
-                            type="text"
-                            required
-                            value={problemStatement.title}
-                            onChange={(e) => setProblemStatement((prev) => ({ ...prev, title: e.target.value }))}
-                            className="h-12 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                            placeholder="e.g., Smart Traffic Management System"
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                        <label htmlFor="problemDescription" className="text-sm font-medium text-foreground">
-                            Problem Description
-                        </label>
-                        <textarea
-                            id="problemDescription"
-                            required
-                            rows={8}
-                            value={problemStatement.description}
-                            onChange={(e) => setProblemStatement((prev) => ({ ...prev, description: e.target.value }))}
-                            className="rounded-xl border border-border bg-input px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 resize-vertical"
-                            placeholder="Describe the problem you want to solve, your approach, and the expected impact..."
-                        />
-                    </div>
+                    {members.length >= 3 && (
+                        <div className="text-center">
+                            <p className="text-sm text-green-600 font-medium">
+                                ✅ {members.length + 1} members total.
+                                {members.length >= 3 && members.length < 5 && " You can add more members or proceed to the next step."}
+                                {members.length === 5 && " Maximum team size reached."}
+                            </p>
+                        </div>
+                    )}
                 </div>
+
+                {/* Problem Statement Section */}
+                <fieldset className="mt-10">
+                    <legend className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Problem Statement
+                    </legend>
+                    <div className="space-y-6 p-6 bg-background/50 rounded-xl border border-border/50">
+                        {/* Problem Statement ID */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="problemId" className="text-sm font-medium text-foreground">
+                                Problem Statement ID *
+                            </label>
+                            <input
+                                id="problemId"
+                                type="text"
+                                required
+                                value={problemStatement.id}
+                                onChange={(e) => setProblemStatement(prev => ({ ...prev, id: e.target.value }))}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="e.g., PS001, HACK2024-01"
+                            />
+                        </div>
+
+                        {/* Title */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="problemTitle" className="text-sm font-medium text-foreground">
+                                Problem Title *
+                            </label>
+                            <input
+                                id="problemTitle"
+                                type="text"
+                                required
+                                value={problemStatement.title}
+                                onChange={(e) => setProblemStatement(prev => ({ ...prev, title: e.target.value }))}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="e.g., Smart Traffic Management System"
+                            />
+                        </div>
+
+                        {/* Category */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="problemCategory" className="text-sm font-medium text-foreground">
+                                Category *
+                            </label>
+                            <select
+                                id="problemCategory"
+                                required
+                                value={problemStatement.category}
+                                onChange={(e) => setProblemStatement(prev => ({ ...prev, category: e.target.value }))}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                            >
+                                <option value="">Select a category</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="education">Education</option>
+                                <option value="environment">Environment</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="agriculture">Agriculture</option>
+                                <option value="finance">Finance</option>
+                                <option value="social">Social Impact</option>
+                                <option value="technology">Technology</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        {/* Description */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="problemDescription" className="text-sm font-medium text-foreground">
+                                Problem Description *
+                            </label>
+                            <textarea
+                                id="problemDescription"
+                                required
+                                rows={6}
+                                value={problemStatement.description}
+                                onChange={(e) => setProblemStatement(prev => ({ ...prev, description: e.target.value }))}
+                                className="rounded-xl border border-border bg-input px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 resize-vertical"
+                                placeholder="Describe the problem you want to solve, your approach, and the expected impact..."
+                            />
+                        </div>
+                    </div>
+                </fieldset>
             </div>
         )
     }
@@ -508,8 +587,7 @@ export default function RegisterPage() {
                         {[
                             { step: 1, icon: Sparkles, label: "Welcome" },
                             { step: 2, icon: Users, label: "Team Details" },
-                            { step: 3, icon: FileText, label: "Problem Statement" },
-                            { step: 4, icon: CreditCard, label: "Payment" },
+                            { step: 3, icon: CreditCard, label: "Payment" },
                         ].map(({ step, icon: Icon }) => (
                             <div key={step} className="flex items-center">
                                 <div
@@ -522,7 +600,7 @@ export default function RegisterPage() {
                                 >
                                     <Icon className="h-5 w-5" />
                                 </div>
-                                {step < 4 && (
+                                {step < 3 && (
                                     <div
                                         className={`w-16 h-1 mx-3 rounded-full transition-all duration-300 ${step < currentStep ? "bg-primary" : "bg-muted"
                                             }`}
@@ -533,15 +611,13 @@ export default function RegisterPage() {
                     </div>
                     <div className="text-center">
                         <p className="text-muted-foreground">
-                            Step {currentStep} of 4:{" "}
+                            Step {currentStep} of 3:{" "}
                             <span className="font-medium text-foreground">
                                 {currentStep === 1
                                     ? "Welcome"
                                     : currentStep === 2
                                         ? "Team Details"
-                                        : currentStep === 3
-                                            ? "Problem Statement"
-                                            : "Payment"}
+                                        : "Payment"}
                             </span>
                         </p>
                     </div>
@@ -549,10 +625,9 @@ export default function RegisterPage() {
 
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
-                {currentStep === 3 && renderStep3()}
-                {currentStep === 4 && renderStep4()}
+                {currentStep === 3 && renderStep4()}
 
-                {currentStep > 1 && currentStep < 4 && (
+                {currentStep > 1 && currentStep < 3 && (
                     <div className="mt-10 flex items-center justify-between gap-4">
                         <Button
                             onClick={handlePrevStep}
@@ -574,6 +649,19 @@ export default function RegisterPage() {
                                 <ArrowRight className="h-4 w-4" />
                             </Button>
                         </div>
+                    </div>
+                )}
+
+                {currentStep === 3 && (
+                    <div className="mt-10 flex items-center justify-center gap-4">
+                        <Button
+                            onClick={handlePrevStep}
+                            variant="outline"
+                            className="px-6 py-3 bg-transparent border-border hover:bg-card rounded-xl flex items-center gap-2"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                            Previous
+                        </Button>
                     </div>
                 )}
 
