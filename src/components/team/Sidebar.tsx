@@ -49,6 +49,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     navigate("/");
   };
 
+  const handleTheme = () => {
+    if (currentTheme !== "Dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }
+
   const links = [
     { path: "/", label: "Home", icon: <Home size={20} /> },
     { path: "/team/problem-statement", label: "Problem Statement", icon: <FileText size={20} /> },
@@ -121,7 +131,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
 
       {/* Bottom Section - Theme Toggle & Logout */}
       <div className="mt-auto mb-4 flex flex-col gap-2">
-        <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent">
+        <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer" onClick={handleTheme}>
           <ThemeToggle />
           <AnimatePresence>
             {openSidebar && !isMobile && (

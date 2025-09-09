@@ -31,7 +31,7 @@ const teamDetails = {
       year_of_study: 3,
       role: "Lead",
       color: "from-purple-400 to-purple-600",
-      bgColor: "bg-purple-50"
+      bgColor: "bg-purple-50" ,
     },
     {
       id: 102,
@@ -44,7 +44,8 @@ const teamDetails = {
       year_of_study: 3,
       role: "Member",
       color: "from-teal-400 to-teal-600",
-      bgColor: "bg-teal-50"
+      bgColor: "bg-teal-50" ,
+
     },
     {
       id: 103,
@@ -57,7 +58,8 @@ const teamDetails = {
       year_of_study: 2,
       role: "Member",
       color: "from-orange-400 to-orange-600",
-      bgColor: "bg-orange-50"
+      bgColor: "bg-orange-50" ,
+
     },
     {
       id: 104,
@@ -70,7 +72,8 @@ const teamDetails = {
       year_of_study: 4,
       role: "Member",
       color: "from-blue-400 to-blue-600",
-      bgColor: "bg-blue-50"
+      bgColor: "bg-blue-50" ,
+
     }
   ].filter((member, index, arr) => 
     // Remove duplicate entries (same id)
@@ -84,7 +87,21 @@ export default function TeamCompass() {
   const [autoScroll, setAutoScroll] = useState(true);
   const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>({});
 
-  const selectedMember = teamDetails.team_members[(currentIndex + 2) % teamDetails.team_members.length];
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return localStorage.getItem("theme") === "dark" ? "Dark" : "Light";
+  });
+
+  
+  useEffect(() => {
+      const theme = localStorage.getItem("theme") === "dark" ? "Dark" : "Light";
+      setCurrentTheme(theme)
+  }, [currentTheme]);
+
+
+  // Calculate the center position (position 2 in a 5-card layout)
+  const centerPosition = 2;
+  const selectedMemberIndex = (currentIndex + centerPosition) % teamDetails.team_members.length;
+  const selectedMember = teamDetails.team_members[selectedMemberIndex];
   const teamSize = teamDetails.team_members.length;
 
   // Auto-scroll functionality
@@ -97,10 +114,12 @@ export default function TeamCompass() {
     }
   }, [autoScroll, teamSize]);
 
-  const handleMemberClick = (index: number) => {
-    setCurrentIndex(index);
+  const handleMemberClick = (clickedIndex: number) => {
+    // Calculate the offset needed to bring the clicked member to center position
+    const targetCurrentIndex = (clickedIndex - centerPosition + teamSize) % teamSize;
+    setCurrentIndex(targetCurrentIndex);
     setAutoScroll(false);
-    setTimeout(() => setAutoScroll(true), 50000);
+    setTimeout(() => setAutoScroll(true), 5000);
   };
 
   const handleImageError = (memberId: number) => {
@@ -129,7 +148,6 @@ export default function TeamCompass() {
     
     // Calculate positions dynamically based on team size for desktop
     const visibleCards = Math.min(teamSize, 5);
-    const centerIndex = Math.floor(visibleCards / 2);
     
     if (teamSize <= 3) {
       // For small teams (3 or less), use simpler positioning
@@ -153,7 +171,6 @@ export default function TeamCompass() {
     if (relativeIndex < visibleCards) {
       return positions[relativeIndex];
     }
-    // Return a default position object for cards not in the visible range
     return { top: '50%', right: '20%', scale: 0.5, opacity: 0, zIndex: 0 };
   };
 
@@ -163,7 +180,7 @@ export default function TeamCompass() {
     const centerIndex = Math.floor(visibleCards / 2);
     
     if (relativeIndex === centerIndex) return 'center';
-    return relativeIndex < centerIndex ? 'card' : 'card';
+    return 'card';
   };
 
   const ProfileImage = ({
@@ -182,7 +199,6 @@ export default function TeamCompass() {
     };
 
     if (imageErrors[member.id] || !member.profile_image || member.profile_image.includes('C:')) {
-      // Fallback to default avatar
       return (
         <div className={`${sizeClasses[size]} rounded-full bg-white flex items-center justify-center ${className}`}>
           <svg
@@ -214,28 +230,88 @@ export default function TeamCompass() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden py-10">
-      {/* Header */}
-      <div className="pt-8 pb-4 px-4 text-center">
-        <div className="flex flex-col items-center mb-2 text-center">
-          <div className="relative">
-            <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3 animate-fade-in">
-              OUR TEAM
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      {/* Enhanced Header */}
+      <header className="relative py-8 px-4 bg-gradient-to-br from-background via-muted/30 to-background">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/20 to-accent/20 rounded-full blur-3xl animate-float" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-20 left-1/2 w-60 h-60 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full blur-2xl animate-pulse-glow"></div>
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto text-center">
+          {/* Main Title */}
+          <div className="mb-8">
+            <div className="inline-flex items-center justify-center mb-4">
+              <div className="w-12 h-1 bg-gradient-to-r from-transparent to-primary rounded-full animate-slide-in"></div>
+              <div className="mx-4">
+                <svg className="w-8 h-8 text-primary animate-scale-in" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                </svg>
+              </div>
+              <div className="w-12 h-1 bg-gradient-to-l from-transparent to-secondary rounded-full animate-slide-in" style={{animationDelay: '0.2s'}}></div>
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-black mb-4 animate-fade-in">
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent animate-gradient">
+                OUR TEAM
+              </span>
             </h1>
+            
+            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full animate-scale-in" style={{animationDelay: '0.4s'}}></div>
+          </div>
+          {/* Team Stats */}
+          <div className="flex flex-wrap items-center justify-center gap-8 animate-slide-up" style={{animationDelay: '0.8s'}}>
+            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl px-6 py-3 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:shadow-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm text-muted-foreground font-medium">SCC ID</p>
+                  <p className="text-foreground font-bold">{teamDetails.scc_id}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl px-6 py-3 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:shadow-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-secondary to-accent rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm text-muted-foreground font-medium">Team Size</p>
+                  <p className="text-foreground font-bold">{teamSize} Members</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl px-6 py-3 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:shadow-lg">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-accent to-primary rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <p className="text-sm text-muted-foreground font-medium">College</p>
+                  <p className="text-foreground font-bold">SRKR</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <p className="text-lg text-muted-foreground font-medium text-xl">{teamDetails.title}</p>
-        <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-4 mt-2">
-          <p className="text-sm text-muted-foreground"><b>SCC ID:</b> {teamDetails.scc_id}</p>
-          <span className="hidden md:inline text-muted-foreground text-2xl">•</span>
-          <p className="text-sm text-muted-foreground"><b>Team Size:</b> {teamSize} members</p>
-        </div>
-      </div>
+      </header>
 
       <div className="flex flex-col md:grid md:grid-cols-5 min-h-[calc(100vh-200px)]">
         {/* Left Side - Detailed Profile */}
         <div className="md:col-span-3 flex flex-col justify-center p-4 md:p-8 order-2 md:order-1">
-          <div className={`${selectedMember.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
+          <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :selectedMember.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
             {/* Profile Header */}
             <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-6 mb-6">
               <div className="relative mb-4 md:mb-0">
@@ -315,7 +391,7 @@ export default function TeamCompass() {
           {/* Path Indicator - Hidden on mobile */}
           <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
           
-          {/* Cards Container - This creates a positioned context for the cards */}
+          {/* Cards Container */}
           <div className="relative w-full h-full">
             {teamDetails.team_members.map((member, index) => {
               const position = getCardPosition(index);
@@ -340,7 +416,7 @@ export default function TeamCompass() {
                 >
                   {isCenter ? (
                     // Center Card - Always detailed
-                    <div className={`${member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
+                    <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
                       <div className="flex items-center space-x-4">
                         <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
                           <ProfileImage member={member} size="large" />
@@ -354,14 +430,14 @@ export default function TeamCompass() {
                     </div>
                   ) : (
                     // Non-center Cards - Uniform card style
-                    <div className={`${member.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
+                    <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :member.bgColor } rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
                       <div className="flex items-center space-x-3">
                         <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
                           <ProfileImage member={member} size="small" className="w-full h-full" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-foreground text-xs md:text-sm truncate">{member.name}</h4>
-                          <p className="text-xs text-muted-foreground truncate">Team {member.role}</p>
+                          <h4 className="font-semibold text-foreground dark:text-sidebar-foreground text-xs md:text-sm truncate">{member.name}</h4>
+                          <p className="text-xs text-muted-foreground dark:text-sidebar-foreground/70 truncate">Team {member.role}</p>
                         </div>
                       </div>
                     </div>
@@ -371,36 +447,6 @@ export default function TeamCompass() {
             })}
           </div>
         </div>
-      </div>
-
-      {/* Control Buttons */}
-      <div className="fixed bottom-8 right-4 md:right-8 flex space-x-2">
-        {teamSize > 1 && (
-          <button
-            onClick={() => setAutoScroll(!autoScroll)}
-            className={`px-4 py-2 rounded-full shadow-lg transition-all duration-300 ${
-              autoScroll 
-                ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
-                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
-            }`}
-          >
-            {autoScroll ? 'Pause' : 'Play'}
-          </button>
-        )}
-        
-        {/* Manual navigation buttons */}
-        <button
-          onClick={() => handleMemberClick((currentIndex - 1 + teamSize) % teamSize)}
-          className="p-2 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-all duration-300"
-        >
-          ←
-        </button>
-        <button
-          onClick={() => handleMemberClick((currentIndex + 1) % teamSize)}
-          className="p-2 rounded-full bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg transition-all duration-300"
-        >
-          →
-        </button>
       </div>
     </div>
   );
