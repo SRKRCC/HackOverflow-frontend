@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "@/components/admin/Dashboard";
 import TeamsTable from "./components/admin/teamdetails";
 
+import LeaderBoard from "./components/admin/LeaderBoard";
 
 const AdminStructure = () => {
     const [openSidebar, setOpenSidebar] = useState(false);
@@ -24,7 +25,7 @@ const AdminStructure = () => {
                 <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/team-details" element={<TeamsTable />} />
-                    {/* Add more admin routes here */}
+                    <Route path="/leaderboard" element={<LeaderBoard />}/>
                 </Routes>
             </div>
         </div>
