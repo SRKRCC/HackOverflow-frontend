@@ -7,6 +7,7 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Footer from './components/Footer'
 import About from './components/About'
+import LeaderBoard from './components/admin/LeaderBoard'
 
 function AppContent() {
   const location = useLocation()
@@ -26,6 +27,7 @@ function AppContent() {
         <Route path="/schedule" element={<div>Schedule Page</div>} />
         <Route path="/teams" element={<div>Teams Page</div>} />
         <Route path="/prizes" element={<div>Prizes Page</div>} />
+        <Route path="/leaderboard" element={<LeaderBoard />} />
         <Route path='/*' element={<Structure />} />
       </Routes>
       </main>
