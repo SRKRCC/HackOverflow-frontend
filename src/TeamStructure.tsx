@@ -7,6 +7,7 @@ import TeamDetails from "./components/team/TeamDetails";
 import Tasks from "./components/team/Tasks";
 import Gallery from "./components/team/Gallery";
 import HeroSection from "./components/HeroSection";
+import AnnouncementsTeam from "./components/team/Announcements"
 
 const TeamStructure = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -33,6 +34,7 @@ const TeamStructure = () => {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/attendance" element={<Attendance />} />
+          <Route path="/announcements" element={<AnnouncementsTeam />} />
         </Routes>
       </div>
     </div>

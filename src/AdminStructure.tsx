@@ -5,6 +5,7 @@ import Dashboard from "@/components/admin/Dashboard";
 import TeamsTable from "./components/admin/teamdetails";
 import TeamPhotos from "./components/admin/TeamPhotos";
 import LeaderBoard from "./components/admin/LeaderBoard";
+import Announcements from "./components/admin/announcements"
 
 const AdminStructure = () => {
     const [openSidebar, setOpenSidebar] = useState(false);
@@ -27,6 +28,7 @@ const AdminStructure = () => {
                     <Route path="/team-details" element={<TeamsTable />} />
                     <Route path="/team-photos" element={<TeamPhotos />} />
                     <Route path="/leaderboard" element={<LeaderBoard />}/>
+                    <Route path="/announcements" element={<Announcements/>}/>
                 </Routes>
             </div>
         </div>

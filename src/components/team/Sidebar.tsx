@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarCheck, CheckSquare, FileText, Images, Users, Home, LogOut } from "lucide-react";
+import { CalendarCheck, CheckSquare, FileText, Images, Users, Home, LogOut,Megaphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
@@ -66,6 +66,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },
     { path: "/team/gallery", label: "Gallery", icon: <Images size={20} /> },
     { path: "/team/attendance", label: "Attendance", icon: <CalendarCheck size={20} /> },
+    { path: "/team/announcements", label: "Announcements", icon: <Megaphone size={20} /> }
   ];
 
   const letterAnimation = {
