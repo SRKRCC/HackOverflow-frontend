@@ -19,7 +19,7 @@ const Navbar = ({ className = "" }) => {
     const navItems = [
         { name: "Home", icon: Home, href: "/" },
         { name: "Schedule", icon: Calendar, href: "/schedule" },
-        { name: "Teams", icon: Users, href: "/teams" },
+        { name: "Teams", icon: Users, href: "/team" },
         { name: "Prizes", icon: Trophy, href: "/prizes" },
     ]
 
@@ -63,13 +63,13 @@ const Navbar = ({ className = "" }) => {
                                 <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300" />
                             </Link>
                         ))}
-                        <ThemeToggle />
 
                     </div>
 
 
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
+                        <ThemeToggle />
                         <Link to="/login">
                             <Button variant="outline" className="hover:scale-105 transition-transform duration-300 bg-transparent">
                                 Login

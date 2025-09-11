@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { CalendarCheck, CheckSquare, FileText, Images, Users, Home, LogOut } from "lucide-react";
+import { CalendarCheck, CheckSquare, FileText, Images, Users, Home, LogOut,Megaphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
@@ -49,6 +49,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     navigate("/");
   };
 
+  const handleTheme = () => {
+    if (currentTheme !== "Dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }
+
   const links = [
     { path: "/", label: "Home", icon: <Home size={20} /> },
     { path: "/team/problem-statement", label: "Problem Statement", icon: <FileText size={20} /> },
@@ -56,6 +66,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },
     { path: "/team/gallery", label: "Gallery", icon: <Images size={20} /> },
     { path: "/team/attendance", label: "Attendance", icon: <CalendarCheck size={20} /> },
+    { path: "/team/announcements", label: "Announcements", icon: <Megaphone size={20} /> }
   ];
 
   const letterAnimation = {
@@ -121,7 +132,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
 
       {/* Bottom Section - Theme Toggle & Logout */}
       <div className="mt-auto mb-4 flex flex-col gap-2">
-        <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent">
+        <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer" onClick={handleTheme}>
           <ThemeToggle />
           <AnimatePresence>
             {openSidebar && !isMobile && (

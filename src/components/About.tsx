@@ -20,7 +20,7 @@ const About: FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden px-24">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#7715e8]/5 via-background to-[#b35605]/5" />
 
@@ -141,8 +141,6 @@ const About: FC = () => {
           </div>
         </div>
       </div>
-
-      {/* CSS animations are defined in index.css */}
     </div>
   );
 };

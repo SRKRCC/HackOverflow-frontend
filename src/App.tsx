@@ -1,14 +1,13 @@
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import './App.css'
-import HeroSection from './components/HeroSection'
 import TeamStructure from './TeamStructure'
 import AdminStructure from './AdminStructure'
 import Login from './components/Login'
 import Register from './components/Register'
 import Footer from './components/Footer'
-import About from './components/About'
 import ProblemStatements from './components/ProblemStatement'
+import Home from './components/Home'
 
 function AppContent() {
   const location = useLocation()
@@ -21,9 +20,8 @@ function AppContent() {
 
       <main className={!hideNavbarFooter ? "pt-16" : ""}>
         <Routes>
-          <Route path="/" element={<HeroSection />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/about" element={<About />} />
           <Route path="/register" element={<Register />} />
           <Route path="/problem-statements" element={<ProblemStatements />} />
           <Route path="/schedule" element={<div>Schedule Page</div>} />
