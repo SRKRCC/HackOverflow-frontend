@@ -30,7 +30,7 @@ const AdminStructure = () => {
                     <Route path="/team-photos" element={<TeamPhotos />} />
                     <Route path="/leaderboard" element={<LeaderBoard />}/>
                     <Route path="/announcements" element={<Announcements/>}/>
-                    <Route path="/taskspage" element={<TasksPage/>}/>
+                    <Route path="/tasks" element={<TasksPage/>}/>
                 </Routes>
             </div>
         </div>
