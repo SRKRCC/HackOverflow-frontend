@@ -68,6 +68,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
         exit: { opacity: 0, x: -5, transition: { duration: 0.1 } },
     };
 
+    const handleTheme = () => {
+        if (currentTheme !== "Dark") {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+        } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+        }
+  }
+
     return (
         <motion.div
             animate={{
@@ -119,7 +129,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
 
             {/* Bottom Section - Theme Toggle & Logout */}
             <div className="mt-auto mb-4 flex flex-col gap-2">
-                <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent">
+                <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent" onClick={handleTheme}>
                     <ThemeToggle />
                     <AnimatePresence>
                         {openSidebar && !isMobile && (
