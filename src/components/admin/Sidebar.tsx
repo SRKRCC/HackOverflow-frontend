@@ -55,7 +55,8 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
         { path: "/admin/team-photos", label: "Photos", icon: <Images size={20} /> },
         { path: "/admin/leaderboard", label: "Leaderboard", icon: <Users size={20} /> },
         { path: "/admin/announcements", label: "Announcements", icon: <Megaphone size={20} /> },
-        { path: "/admin/tasks", label: "Tasks", icon: <CheckCircle2 size={20} /> }
+        { path: "/admin/tasks", label: "Tasks", icon: <CheckCircle2 size={20} /> },
+        { path: "/admin/teamtaskmanagment", label: "Team Task Management", icon: <Users size={20} /> }
     ];
 
     const letterAnimation = {
