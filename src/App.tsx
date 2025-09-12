@@ -8,7 +8,6 @@ import Register from './components/Register'
 import Footer from './components/Footer'
 import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
-import TeamTaskManagement from './components/admin/teamtaskManagement'
 
 function AppContent() {
   const location = useLocation()
@@ -32,7 +31,7 @@ function AppContent() {
           <Route path='/admin/*' element={<AdminStructure />} />
         </Routes>
       </main>
-      <TeamTaskManagement/>
+      
       {!hideNavbarFooter && <Footer className={marginLeft} />}
     </>
   )
