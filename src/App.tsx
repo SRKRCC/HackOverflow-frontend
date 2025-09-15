@@ -31,6 +31,7 @@ function AppContent() {
           <Route path='/admin/*' element={<AdminStructure />} />
         </Routes>
       </main>
+      
       {!hideNavbarFooter && <Footer className={marginLeft} />}
     </>
   )

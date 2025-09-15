@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Home, Images, LogOut, Users,Megaphone } from "lucide-react";
+import { Home, Images, LogOut, Users,Megaphone, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
@@ -54,7 +54,9 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
         { path: "/admin/team-details", label: "Team Details", icon: <Users size={20} /> },
         { path: "/admin/team-photos", label: "Photos", icon: <Images size={20} /> },
         { path: "/admin/leaderboard", label: "Leaderboard", icon: <Users size={20} /> },
-        { path: "/admin/announcements", label: "Announcements", icon: <Megaphone size={20} /> }
+        { path: "/admin/announcements", label: "Announcements", icon: <Megaphone size={20} /> },
+        { path: "/admin/tasks", label: "Tasks", icon: <CheckCircle2 size={20} /> },
+        { path: "/admin/teamtaskmanagment", label: "Team Task Management", icon: <Users size={20} /> }
     ];
 
     const letterAnimation = {
@@ -66,6 +68,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
         }),
         exit: { opacity: 0, x: -5, transition: { duration: 0.1 } },
     };
+
+    const handleTheme = () => {
+        if (currentTheme !== "Dark") {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+        } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+        }
+  }
 
     return (
         <motion.div
@@ -118,7 +130,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
 
             {/* Bottom Section - Theme Toggle & Logout */}
             <div className="mt-auto mb-4 flex flex-col gap-2">
-                <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent">
+                <div className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent" onClick={handleTheme}>
                     <ThemeToggle />
                     <AnimatePresence>
                         {openSidebar && !isMobile && (
