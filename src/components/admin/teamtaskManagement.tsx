@@ -78,7 +78,7 @@ export default function TeamTaskManagement() {
   const [filterStatus, setFilterStatus] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [activeSidebarTeam, setActiveSidebarTeam] = useState<string>("")
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit")
   const [sidebarTeams, setSidebarTeams] = useState<string[]>([
     "Alpha",
