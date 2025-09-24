@@ -8,6 +8,7 @@ import Register from './components/Register'
 import Footer from './components/Footer'
 import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
+import Schedule from './components/Schedule'
 
 function AppContent() {
   const location = useLocation()
@@ -24,7 +25,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/problem-statements" element={<ProblemStatements />} />
-          <Route path="/schedule" element={<div>Schedule Page</div>} />
+          <Route path="/schedule" element={<Schedule />} />
           <Route path="/teams" element={<div>Teams Page</div>} />
           <Route path="/prizes" element={<div>Prizes Page</div>} />
           <Route path='/team/*' element={<TeamStructure />} />
