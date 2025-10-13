@@ -1,7 +1,17 @@
 "use client"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Users, CheckCircle, Clock, Edit, Save, X, AlertCircle, Filter } from "lucide-react"
+import {
+  Users,
+  CheckCircle,
+  Clock,
+  Edit,
+  Save,
+  X,
+  Filter,
+  Search,
+  AlertCircle,
+} from "lucide-react"
 
 type Team = {
   id: number
@@ -9,439 +19,544 @@ type Team = {
   task: string
   description: string
   round: number
-  progress: number
+  points: number
   lastUpdated: string
-  status: "pending" | "in-progress" | "completed" | "review"
+  status: "pending" | "in-review" | "completed"
 }
 
 export default function TeamTaskManagement() {
   const [teams, setTeams] = useState<Team[]>([
     {
       id: 1,
-      name: "Alpha Team",
+      name: "Alpha",
       task: "User Authentication",
-      description: "Implement secure login and registration system with JWT tokens and password hashing.",
+      description:
+        "Implement secure login and registration system with JWT tokens and password hashing.",
       round: 2,
-      progress: 65,
+      points: 65,
       lastUpdated: "2023-07-15T14:30:00",
-      status: "in-progress"
+      status: "pending",
     },
     {
       id: 2,
-      name: "Beta Team",
+      name: "Beta",
       task: "Dashboard UI",
-      description: "Create responsive admin dashboard with analytics and reporting components.",
+      description:
+        "Create responsive admin dashboard with analytics and reporting components.",
       round: 1,
-      progress: 100,
+      points: 100,
       lastUpdated: "2023-07-16T09:45:00",
-      status: "completed"
+      status: "completed",
     },
     {
       id: 3,
-      name: "Gamma Team",
+      name: "Gamma",
       task: "Database Optimization",
-      description: "Optimize database queries and add proper indexing for performance improvement.",
+      description:
+        "Optimize database queries and add proper indexing for performance improvement.",
       round: 3,
-      progress: 30,
+      points: 30,
       lastUpdated: "2023-07-14T16:20:00",
-      status: "pending"
+      status: "pending",
     },
     {
       id: 4,
-      name: "Delta Team",
+      name: "Delta",
       task: "API Integration",
-      description: "Integrate third-party payment gateway and social media APIs with proper error handling.",
+      description:
+        "Integrate third-party payment gateway and social media APIs with proper error handling.",
       round: 2,
-      progress: 80,
+      points: 80,
       lastUpdated: "2023-07-16T11:15:00",
-      status: "review"
+      status: "completed",
     },
-    {
-      id: 5,
-      name: "Epsilon Team",
-      task: "Mobile Responsiveness",
-      description: "Ensure all pages are fully responsive and provide optimal experience on mobile devices.",
-      round: 1,
-      progress: 50,
-      lastUpdated: "2023-07-13T13:50:00",
-      status: "in-progress"
-    },
-    {
-      id: 6,
-      name: "Zeta Team",
-      task: "Testing Suite",
-      description: "Write unit and integration tests for core functionality with over 80% coverage.",
-      round: 4,
-      progress: 20,
-      lastUpdated: "2023-07-15T17:40:00",
-      status: "pending"
-    }
   ])
 
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState(false)
   const [filterStatus, setFilterStatus] = useState<string>("all")
+  const [searchTerm, setSearchTerm] = useState<string>("")
+  const [activeSidebarTeam, setActiveSidebarTeam] = useState<string>("")
+  const [darkMode] = useState(false)
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit")
+  const [sidebarTeams, setSidebarTeams] = useState<string[]>([
+    "Alpha",
+    "Beta",
+    "Gamma",
+    "Delta",
+  ])
 
-  // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 
-  // Get status color and icon
   const getStatusInfo = (status: Team["status"]) => {
     switch (status) {
       case "pending":
-        return { color: "text-amber-600", bg: "bg-amber-100", icon: <Clock size={16} />, label: "Pending" }
-      case "in-progress":
-        return { color: "text-blue-600", bg: "bg-blue-100", icon: <Edit size={16} />, label: "In Progress" }
+        return {
+          color: "text-amber-600 dark:text-amber-400",
+          bg: "bg-amber-100 dark:bg-amber-900",
+          icon: <Clock size={16} />,
+          label: "Pending",
+        }
+      case "in-review":
+        return {
+          color: "text-purple-600 dark:text-purple-300",
+          bg: "bg-purple-100 dark:bg-purple-900",
+          icon: <AlertCircle size={16} />,
+          label: "In Review",
+        }
       case "completed":
-        return { color: "text-green-600", bg: "bg-green-100", icon: <CheckCircle size={16} />, label: "Completed" }
-      case "review":
-        return { color: "text-purple-600", bg: "bg-purple-100", icon: <AlertCircle size={16} />, label: "Under Review" }
+        return {
+          color: "text-green-600 dark:text-green-400",
+          bg: "bg-green-100 dark:bg-green-900",
+          icon: <CheckCircle size={16} />,
+          label: "Completed",
+        }
       default:
-        return { color: "text-gray-600", bg: "bg-gray-100", icon: <Clock size={16} />, label: "Pending" }
+        return {
+          color: "text-gray-600 dark:text-gray-400",
+          bg: "bg-gray-100 dark:bg-gray-800",
+          icon: <Clock size={16} />,
+          label: "Pending",
+        }
     }
   }
 
   // Open edit modal with team data
   const openEditModal = (team: Team) => {
-    setSelectedTeam(team)
+    setModalMode("edit")
+    setSelectedTeam({ ...team })
     setIsModalOpen(true)
     setSuccessMessage(false)
   }
 
-  // Close modal
+  // Open create modal
+  const openCreateModal = () => {
+    const nextId = teams.length ? Math.max(...teams.map((t) => t.id)) + 1 : 1
+    setModalMode("create")
+    setSelectedTeam({
+      id: nextId,
+      name: "",
+      task: "",
+      description: "",
+      round: 1,
+      points: 0,
+      lastUpdated: new Date().toISOString(),
+      status: "pending",
+    })
+    setIsModalOpen(true)
+    setSuccessMessage(false)
+  }
+
   const closeModal = () => {
     setIsModalOpen(false)
     setSelectedTeam(null)
   }
 
-  // Handle form submission
+  // Handle form submission for both create & update
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!selectedTeam) return
-    
-    // Update the team in the state
-    setTeams(prevTeams => 
-      prevTeams.map(team => 
-        team.id === selectedTeam.id ? {
-          ...selectedTeam,
-          lastUpdated: new Date().toISOString()
-        } : team
+
+    if (modalMode === "create") {
+      const newTeam: Team = {
+        ...selectedTeam,
+        lastUpdated: new Date().toISOString(),
+      }
+      setTeams((prev) => [...prev, newTeam])
+      setSidebarTeams((prev) =>
+        prev.includes(newTeam.name) ? prev : [...prev, newTeam.name]
+      )
+      setSuccessMessage(true)
+      setTimeout(() => {
+        closeModal()
+      }, 1200)
+      return
+    }
+
+    // edit mode
+    setTeams((prevTeams) =>
+      prevTeams.map((team) =>
+        team.id === selectedTeam.id
+          ? { ...selectedTeam, lastUpdated: new Date().toISOString() }
+          : team
       )
     )
-    
-    // Show success message
     setSuccessMessage(true)
-    
-    // Close modal after 2 seconds
     setTimeout(() => {
       closeModal()
-    }, 2000)
+    }, 1200)
   }
 
-  // Handle input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
     if (!selectedTeam) return
-    
     const { name, value } = e.target
     setSelectedTeam({
       ...selectedTeam,
-      [name]: name === 'round' || name === 'progress' ? parseInt(value) : value
-    })
+      [name]:
+        name === "round" || name === "points" ? parseInt(value as string) : value,
+    } as Team)
   }
 
-  // Filter teams by status
-  const filteredTeams = filterStatus === "all" 
-    ? teams 
-    : teams.filter(team => team.status === filterStatus)
+  // Filtering Logic (fixed for exact sidebar match)
+  const filteredTeams = teams.filter((team) => {
+    const matchesStatus = filterStatus === "all" || team.status === filterStatus
+    const matchesSearch = team.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+    const matchesSidebar = activeSidebarTeam
+      ? team.name.toLowerCase() === activeSidebarTeam.toLowerCase()
+      : true
+    return matchesStatus && matchesSearch && matchesSidebar
+  })
+
+  // Status transition helpers
+  const approveTask = (id: number) => {
+    setTeams((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, status: "completed" } : t))
+    )
+  }
 
   return (
-    <div id="home" className="min-h-screen flex items-center justify-between px-4 md:px-20 gap-8 md:gap-16 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 animate-gradient" />
-
-      <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full animate-float" />
-      <div
-        className="absolute bottom-32 right-16 w-16 h-16 bg-accent/10 rounded-lg rotate-45 animate-float"
-        style={{ animationDelay: "1s" }}
-      />
-      <div
-        className="absolute top-1/2 left-1/4 w-12 h-12 bg-secondary/10 rounded-full animate-float"
-        style={{ animationDelay: "2s" }}
-      />
-      <div
-        className="absolute top-1/3 right-1/4 w-14 h-14 bg-accent/10 rounded-lg rotate-12 animate-float"
-        style={{ animationDelay: "1.5s" }}
-      />
-      <div
-        className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-primary/10 rounded-full animate-float"
-        style={{ animationDelay: "0.5s" }}
-      />
-      
-      <div className="relative z-10 max-w-7xl mx-auto py-8 w-full">
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-primary/10 rounded-xl">
-              <Users className="h-6 w-6 text-primary" />
-            </div>
-            <h1 className="text-3xl font-bold text-foreground">Team Task Management</h1>
-          </div>
-          <p className="text-muted-foreground">
-            Manage tasks, descriptions, rounds, and status for all teams
-          </p>
-        </header>
-
-        {/* Filter Section */}
-        <div className="bg-card/80 border border-border/50 rounded-2xl p-6 shadow-2xl backdrop-blur-sm mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h2 className="text-xl font-semibold flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filter Teams
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilterStatus("all")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filterStatus === "all" ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80"}`}
-              >
-                All Teams
-              </button>
-              <button
-                onClick={() => setFilterStatus("pending")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${filterStatus === "pending" ? "bg-amber-100 text-amber-800" : "bg-muted hover:bg-muted/80"}`}
-              >
-                <Clock className="h-4 w-4" />
-                Pending
-              </button>
-              <button
-                onClick={() => setFilterStatus("in-progress")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${filterStatus === "in-progress" ? "bg-blue-100 text-blue-800" : "bg-muted hover:bg-muted/80"}`}
-              >
-                <Edit className="h-4 w-4" />
-                In Progress
-              </button>
-              <button
-                onClick={() => setFilterStatus("completed")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${filterStatus === "completed" ? "bg-green-100 text-green-800" : "bg-muted hover:bg-muted/80"}`}
-              >
-                <CheckCircle className="h-4 w-4" />
-                Completed
-              </button>
-              <button
-                onClick={() => setFilterStatus("review")}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${filterStatus === "review" ? "bg-purple-100 text-purple-800" : "bg-muted hover:bg-muted/80"}`}
-              >
-                <AlertCircle className="h-4 w-4" />
-                Review
-              </button>
+    <div className={darkMode ? "dark" : ""}>
+      <div className="flex min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white dark:bg-[#111111] shadow-lg border-r border-gray-200 dark:border-gray-800">
+          <div className="p-4 flex justify-between items-center">
+            <div className="flex items-center gap-2 border rounded-lg px-3 py-2 w-full">
+              <Search className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search teams..."
+                className="w-full outline-none text-sm bg-transparent dark:text-gray-100"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
           </div>
-        </div>
-
-        {/* Teams Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredTeams.map(team => {
-            const statusInfo = getStatusInfo(team.status)
-            return (
-              <motion.div 
-                key={team.id}
-                className="bg-card/80 border border-border/50 rounded-2xl p-6 shadow-2xl backdrop-blur-sm team-card"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
+          <nav>
+            {sidebarTeams.map((team) => (
+              <button
+                key={team}
+                onClick={() => setActiveSidebarTeam(team)}
+                className={`w-full text-left px-6 py-3 hover:bg-amber-100 dark:hover:bg-amber-900 ${
+                  activeSidebarTeam === team
+                    ? "bg-amber-600 text-white"
+                    : "text-gray-700 dark:text-gray-300"
+                }`}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-muted-foreground text-sm">ID: {team.id}</span>
-                  <span className={`${statusInfo.bg} ${statusInfo.color} text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1`}>
-                    {statusInfo.icon}
-                    {statusInfo.label}
-                  </span>
+                {team}
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 p-8">
+          <header className="mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-xl">
+                  <Users className="h-6 w-6 text-orange-600 dark:text-orange-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{team.name}</h3>
-                <div className="mb-4">
-                  <h4 className="font-medium text-foreground">{team.task}</h4>
-                  <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{team.description}</p>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="mb-4">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                    <span>Progress</span>
-                    <span>{team.progress}%</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-primary h-2 rounded-full transition-all duration-500" 
-                      style={{ width: `${team.progress}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <div className="flex justify-between items-center mb-4">
-                  <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">
-                    Round {team.round}
-                  </span>
-                  <div className="text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3 inline mr-1" />
-                    {formatDate(team.lastUpdated)}
-                  </div>
-                </div>
-                <button 
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 rounded-xl transition duration-200 flex items-center justify-center gap-2"
-                  onClick={() => openEditModal(team)}
+                <h1 className="text-3xl font-bold">Team Task Management</h1>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400">
+                Manage tasks, descriptions, rounds, and status for all teams
+              </p>
+            </div>
+          </header>
+
+          {/* Create Task button */}
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={openCreateModal}
+              className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Create Task
+            </button>
+          </div>
+
+          {/* Filter Section */}
+          <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filter Teams
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFilterStatus("all")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    filterStatus === "all"
+                      ? "bg-orange-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
                 >
-                  <Edit className="h-4 w-4" />
-                  Edit Task
+                  All Teams
                 </button>
-              </motion.div>
-            )
-          })}
-        </div>
+                <button
+                  onClick={() => setFilterStatus("pending")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${
+                    filterStatus === "pending"
+                      ? "bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                >
+                  <Clock className="h-4 w-4" />
+                  Pending
+                </button>
+                <button
+                  onClick={() => setFilterStatus("in-review")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${
+                    filterStatus === "in-review"
+                      ? "bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-200"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                >
+                  <AlertCircle className="h-4 w-4" />
+                  In Review
+                </button>
+                <button
+                  onClick={() => setFilterStatus("completed")}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-1 ${
+                    filterStatus === "completed"
+                      ? "bg-green-200 dark:bg-green-900 text-green-900 dark:text-green-200"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  Completed
+                </button>
+              </div>
+            </div>
+          </div>
 
-        {/* Edit Modal */}
-        <AnimatePresence>
-          {isModalOpen && selectedTeam && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-              <motion.div 
-                className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-foreground">Edit Team Task</h3>
-                    <button 
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={closeModal}
+          {/* Teams Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredTeams.map((team) => {
+              const statusInfo = getStatusInfo(team.status)
+              return (
+                <motion.div
+                  key={team.id}
+                  className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">
+                      ID: {team.id}
+                    </span>
+                    <span
+                      className={`${statusInfo.bg} ${statusInfo.color} text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1`}
                     >
-                      <X className="h-5 w-5" />
-                    </button>
+                      {statusInfo.icon}
+                      {statusInfo.label}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{team.name}</h3>
+                  <div className="mb-4">
+                    <h4 className="font-medium">{team.task}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                      {team.description}
+                    </p>
                   </div>
 
-                  {/* Success Message */}
-                  {successMessage && (
-                    <motion.div 
-                      className="bg-green-100 text-green-800 p-4 rounded-xl mb-4 flex items-center gap-2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <CheckCircle className="h-5 w-5" />
-                      Task updated successfully!
-                    </motion.div>
-                  )}
-
-                  <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                      <label className="block text-foreground font-medium mb-2">Team Name</label>
-                      <input 
-                        type="text" 
-                        className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                        value={selectedTeam.name}
-                        readOnly
-                      />
+                  {/* Points */}
+                  <div className="mb-4">
+                    <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+                      <span>Points</span>
+                      <span className="font-semibold">{team.points}</span>
                     </div>
+                  </div>
 
-                    <div className="mb-4">
-                      <label className="block text-foreground font-medium mb-2">Task Title</label>
-                      <input 
-                        type="text" 
-                        name="task"
-                        className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                        value={selectedTeam.task}
-                        onChange={handleInputChange}
-                        required
-                      />
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">
+                      Round {team.round}
+                    </span>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <Clock className="h-3 w-3 inline mr-1" />
+                      {formatDate(team.lastUpdated)}
                     </div>
+                  </div>
 
-                    <div className="mb-4">
-                      <label className="block text-foreground font-medium mb-2">Task Description</label>
-                      <textarea 
-                        name="description"
-                        rows={3}
-                        className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                        value={selectedTeam.description}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-foreground font-medium mb-2">Round</label>
-                        <input 
-                          type="number" 
-                          name="round"
-                          min="1"
-                          className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                          value={selectedTeam.round}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-foreground font-medium mb-2">Previous Task Progress (%)</label>
-                        <input 
-                          type="number" 
-                          name="progress"
-                          min="0"
-                          max="100"
-                          className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                          value={selectedTeam.progress}
-                          onChange={handleInputChange}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mb-4">
-                      <label className="block text-foreground font-medium mb-2">Status</label>
-                      <select
-                        name="status"
-                        className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                        value={selectedTeam.status}
-                        onChange={handleInputChange}
-                        required
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    {team.status === "in-review" && (
+                      <button
+                        onClick={() => approveTask(team.id)}
+                        className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl"
                       >
-                        <option value="pending">Pending</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="completed">Completed</option>
-                        <option value="review">Under Review</option>
-                      </select>
+                        Approve
+                      </button>
+                    )}
+                    <button
+                      className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl flex items-center justify-center gap-2"
+                      onClick={() => openEditModal(team)}
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit Task
+                    </button>
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Edit/Create Modal */}
+          <AnimatePresence>
+            {isModalOpen && selectedTeam && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                <motion.div
+                  className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-xl font-bold">
+                        {modalMode === "create" ? "Create Task" : "Edit Team Task"}
+                      </h3>
+                      <button
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                        onClick={closeModal}
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
                     </div>
 
-                    {/* <div className="mb-6">
-                      <label className="block text-foreground font-medium mb-2">Comments</label>
-                      <textarea 
-                        name="comments"
-                        rows={2}
-                        className="w-full rounded-xl border border-border bg-input px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" 
-                        placeholder="Add comments about this update..."
-                      />
-                    </div> */}
+                    {successMessage && (
+                      <motion.div
+                        className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 p-4 rounded-xl mb-4 flex items-center gap-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <CheckCircle className="h-5 w-5" />
+                        Task saved successfully!
+                      </motion.div>
+                    )}
 
-                    <button 
-                      type="submit" 
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium transition duration-200 flex items-center justify-center gap-2"
-                    >
-                      <Save className="h-4 w-4" />
-                      Update Task
-                    </button>
-                  </form>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-4">
+                        <label className="block font-medium mb-2">Team Name</label>
+                        <input
+                          name="name"
+                          type="text"
+                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                          value={selectedTeam.name}
+                          onChange={handleInputChange}
+                          readOnly={modalMode === "edit"}
+                          placeholder={modalMode === "create" ? "Enter team name" : ""}
+                          required
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block font-medium mb-2">Task Title</label>
+                        <input
+                          name="task"
+                          type="text"
+                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                          value={selectedTeam.task}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block font-medium mb-2">Task Description</label>
+                        <textarea
+                          name="description"
+                          rows={3}
+                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                          value={selectedTeam.description}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block font-medium mb-2">Round</label>
+                          <input
+                            name="round"
+                            type="number"
+                            min="1"
+                            className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                            value={selectedTeam.round}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-medium mb-2">Points</label>
+                          <input
+                            name="points"
+                            type="number"
+                            min="0"
+                            className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                            value={selectedTeam.points}
+                            onChange={handleInputChange}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mb-4">
+                        <label className="block font-medium mb-2">Status</label>
+                        <select
+                          name="status"
+                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                          value={selectedTeam.status}
+                          onChange={handleInputChange}
+                          required
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="in-review">In Review</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          className="px-4 py-2 bg-gray-400 text-white rounded"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded"
+                        >
+                          <Save className="h-4 w-4 inline mr-2" />
+                          {modalMode === "create" ? "Create" : "Update"}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   )
