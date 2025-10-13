@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Users,
@@ -12,67 +12,18 @@ import {
   Search,
   AlertCircle,
 } from "lucide-react"
-
-type Team = {
-  id: number
-  name: string
-  task: string
-  description: string
-  round: number
-  points: number
-  lastUpdated: string
-  status: "pending" | "in-review" | "completed"
-}
+import { ApiService } from '../../lib/api/service'
+import { useAuth } from '../../lib/hooks'
+import type { Task, Team, CreateTaskRequest } from '../../lib/types'
 
 export default function TeamTaskManagement() {
-  const [teams, setTeams] = useState<Team[]>([
-    {
-      id: 1,
-      name: "Alpha",
-      task: "User Authentication",
-      description:
-        "Implement secure login and registration system with JWT tokens and password hashing.",
-      round: 2,
-      points: 65,
-      lastUpdated: "2023-07-15T14:30:00",
-      status: "pending",
-    },
-    {
-      id: 2,
-      name: "Beta",
-      task: "Dashboard UI",
-      description:
-        "Create responsive admin dashboard with analytics and reporting components.",
-      round: 1,
-      points: 100,
-      lastUpdated: "2023-07-16T09:45:00",
-      status: "completed",
-    },
-    {
-      id: 3,
-      name: "Gamma",
-      task: "Database Optimization",
-      description:
-        "Optimize database queries and add proper indexing for performance improvement.",
-      round: 3,
-      points: 30,
-      lastUpdated: "2023-07-14T16:20:00",
-      status: "pending",
-    },
-    {
-      id: 4,
-      name: "Delta",
-      task: "API Integration",
-      description:
-        "Integrate third-party payment gateway and social media APIs with proper error handling.",
-      round: 2,
-      points: 80,
-      lastUpdated: "2023-07-16T11:15:00",
-      status: "completed",
-    },
-  ])
+  const { isAuthenticated, user } = useAuth()
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [teams, setTeams] = useState<Team[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [successMessage, setSuccessMessage] = useState(false)
   const [filterStatus, setFilterStatus] = useState<string>("all")
@@ -80,12 +31,45 @@ export default function TeamTaskManagement() {
   const [activeSidebarTeam, setActiveSidebarTeam] = useState<string>("")
   const [darkMode] = useState(false)
   const [modalMode, setModalMode] = useState<"create" | "edit">("edit")
-  const [sidebarTeams, setSidebarTeams] = useState<string[]>([
-    "Alpha",
-    "Beta",
-    "Gamma",
-    "Delta",
-  ])
+  const [newTask, setNewTask] = useState<CreateTaskRequest>({
+    title: '',
+    description: '',
+    difficulty: 'medium',
+    round_num: 1,
+    points: 0,
+    teamId: ''
+  })
+
+  // Load data on component mount
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'admin') {
+      loadTasks()
+      loadTeams()
+    }
+  }, [isAuthenticated, user])
+
+  const loadTasks = async () => {
+    try {
+      setLoading(true)
+      const tasksData = await ApiService.admin.getAllTasks()
+      setTasks(tasksData)
+    } catch (err) {
+      setError('Failed to load tasks')
+      console.error('Error loading tasks:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadTeams = async () => {
+    try {
+      const teamsData = await ApiService.admin.getAllTeams()
+      setTeams(teamsData)
+    } catch (err) {
+      setError('Failed to load teams')
+      console.error('Error loading teams:', err)
+    }
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -98,23 +82,23 @@ export default function TeamTaskManagement() {
     })
   }
 
-  const getStatusInfo = (status: Team["status"]) => {
+  const getStatusInfo = (status: Task["status"]) => {
     switch (status) {
-      case "pending":
+      case "Pending":
         return {
           color: "text-amber-600 dark:text-amber-400",
           bg: "bg-amber-100 dark:bg-amber-900",
           icon: <Clock size={16} />,
           label: "Pending",
         }
-      case "in-review":
+      case "InReview":
         return {
           color: "text-purple-600 dark:text-purple-300",
           bg: "bg-purple-100 dark:bg-purple-900",
           icon: <AlertCircle size={16} />,
           label: "In Review",
         }
-      case "completed":
+      case "Completed":
         return {
           color: "text-green-600 dark:text-green-400",
           bg: "bg-green-100 dark:bg-green-900",
@@ -131,104 +115,117 @@ export default function TeamTaskManagement() {
     }
   }
 
-  // Open edit modal with team data
-  const openEditModal = (team: Team) => {
+  // Open edit modal with task data
+  const openEditModal = (task: Task) => {
     setModalMode("edit")
-    setSelectedTeam({ ...team })
+    setSelectedTask({ ...task })
     setIsModalOpen(true)
     setSuccessMessage(false)
   }
 
   // Open create modal
   const openCreateModal = () => {
-    const nextId = teams.length ? Math.max(...teams.map((t) => t.id)) + 1 : 1
     setModalMode("create")
-    setSelectedTeam({
-      id: nextId,
-      name: "",
-      task: "",
-      description: "",
-      round: 1,
+    setNewTask({
+      title: '',
+      description: '',
+      difficulty: 'medium',
+      round_num: 1,
       points: 0,
-      lastUpdated: new Date().toISOString(),
-      status: "pending",
+      teamId: ''
     })
+    setSelectedTask(null)
     setIsModalOpen(true)
     setSuccessMessage(false)
   }
 
   const closeModal = () => {
     setIsModalOpen(false)
-    setSelectedTeam(null)
+    setSelectedTask(null)
   }
 
   // Handle form submission for both create & update
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedTeam) return
-
-    if (modalMode === "create") {
-      const newTeam: Team = {
-        ...selectedTeam,
-        lastUpdated: new Date().toISOString(),
+    
+    try {
+      if (modalMode === "create") {
+        await ApiService.admin.createTask(newTask)
+        setSuccessMessage(true)
+        setTimeout(() => {
+          closeModal()
+          loadTasks()
+        }, 1200)
+      } else if (selectedTask && modalMode === "edit") {
+        await ApiService.admin.updateTask(selectedTask.id, {
+          title: selectedTask.title,
+          description: selectedTask.description,
+          difficulty: selectedTask.difficulty,
+          round_num: selectedTask.round_num,
+          points: selectedTask.points
+        })
+        setSuccessMessage(true)
+        setTimeout(() => {
+          closeModal()
+          loadTasks()
+        }, 1200)
       }
-      setTeams((prev) => [...prev, newTeam])
-      setSidebarTeams((prev) =>
-        prev.includes(newTeam.name) ? prev : [...prev, newTeam.name]
-      )
-      setSuccessMessage(true)
-      setTimeout(() => {
-        closeModal()
-      }, 1200)
-      return
+    } catch (err) {
+      setError('Failed to save task')
+      console.error('Error saving task:', err)
     }
-
-    // edit mode
-    setTeams((prevTeams) =>
-      prevTeams.map((team) =>
-        team.id === selectedTeam.id
-          ? { ...selectedTeam, lastUpdated: new Date().toISOString() }
-          : team
-      )
-    )
-    setSuccessMessage(true)
-    setTimeout(() => {
-      closeModal()
-    }, 1200)
   }
 
-  const handleInputChange = (
+  const handleTaskInputChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<HTMLTextAreaElement>
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
-    if (!selectedTeam) return
     const { name, value } = e.target
-    setSelectedTeam({
-      ...selectedTeam,
-      [name]:
-        name === "round" || name === "points" ? parseInt(value as string) : value,
-    } as Team)
+    
+    if (modalMode === "create") {
+      setNewTask({
+        ...newTask,
+        [name]: name === "round_num" || name === "points" ? parseInt(value) || 0 : value,
+      })
+    } else if (selectedTask) {
+      setSelectedTask({
+        ...selectedTask,
+        [name]: name === "round_num" || name === "points" ? parseInt(value) || 0 : value,
+      } as Task)
+    }
   }
 
-  // Filtering Logic (fixed for exact sidebar match)
-  const filteredTeams = teams.filter((team) => {
-    const matchesStatus = filterStatus === "all" || team.status === filterStatus
-    const matchesSearch = team.name
+  // Filtering Logic for tasks
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatus = filterStatus === "all" || 
+      (filterStatus === "pending" && task.status === "Pending") ||
+      (filterStatus === "in-review" && task.status === "InReview") ||
+      (filterStatus === "completed" && task.status === "Completed")
+    
+    const matchesSearch = task.title
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
+      .includes(searchTerm.toLowerCase()) ||
+      (task.team?.title?.toLowerCase().includes(searchTerm.toLowerCase()) || false)
+    
     const matchesSidebar = activeSidebarTeam
-      ? team.name.toLowerCase() === activeSidebarTeam.toLowerCase()
+      ? task.team?.title?.toLowerCase() === activeSidebarTeam.toLowerCase()
       : true
+    
     return matchesStatus && matchesSearch && matchesSidebar
   })
 
-  // Status transition helpers
-  const approveTask = (id: number) => {
-    setTeams((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, status: "completed" } : t))
-    )
+  const approveTask = async (id: number) => {
+    try {
+      await ApiService.admin.completeTask(id, 'Task approved by admin')
+      await loadTasks()
+      setSuccessMessage(true)
+      setTimeout(() => setSuccessMessage(false), 2000)
+    } catch (err) {
+      setError('Failed to approve task')
+      console.error('Error approving task:', err)
+    }
   }
 
   return (
@@ -249,17 +246,27 @@ export default function TeamTaskManagement() {
             </div>
           </div>
           <nav>
-            {sidebarTeams.map((team) => (
+            <button
+              onClick={() => setActiveSidebarTeam("")}
+              className={`w-full text-left px-6 py-3 hover:bg-amber-100 dark:hover:bg-amber-900 ${
+                activeSidebarTeam === ""
+                  ? "bg-amber-600 text-white"
+                  : "text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              All Teams
+            </button>
+            {teams.map((team) => (
               <button
-                key={team}
-                onClick={() => setActiveSidebarTeam(team)}
+                key={team.id}
+                onClick={() => setActiveSidebarTeam(team.title)}
                 className={`w-full text-left px-6 py-3 hover:bg-amber-100 dark:hover:bg-amber-900 ${
-                  activeSidebarTeam === team
+                  activeSidebarTeam === team.title
                     ? "bg-amber-600 text-white"
                     : "text-gray-700 dark:text-gray-300"
                 }`}
               >
-                {team}
+                {team.scc_id} - {team.title}
               </button>
             ))}
           </nav>
@@ -346,80 +353,121 @@ export default function TeamTaskManagement() {
             </div>
           </div>
 
-          {/* Teams Grid */}
+          {/* Tasks Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {filteredTeams.map((team) => {
-              const statusInfo = getStatusInfo(team.status)
-              return (
-                <motion.div
-                  key={team.id}
-                  className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg"
-                  whileHover={{ y: -5 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="text-gray-500 dark:text-gray-400 text-sm">
-                      ID: {team.id}
-                    </span>
-                    <span
-                      className={`${statusInfo.bg} ${statusInfo.color} text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1`}
-                    >
-                      {statusInfo.icon}
-                      {statusInfo.label}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">{team.name}</h3>
-                  <div className="mb-4">
-                    <h4 className="font-medium">{team.task}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                      {team.description}
-                    </p>
-                  </div>
-
-                  {/* Points */}
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
-                      <span>Points</span>
-                      <span className="font-semibold">{team.points}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">
-                      Round {team.round}
-                    </span>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      <Clock className="h-3 w-3 inline mr-1" />
-                      {formatDate(team.lastUpdated)}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    {team.status === "in-review" && (
-                      <button
-                        onClick={() => approveTask(team.id)}
-                        className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+            {loading ? (
+              <div className="col-span-full text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">Loading tasks...</p>
+              </div>
+            ) : error ? (
+              <div className="col-span-full text-center py-8">
+                <p className="text-red-600 dark:text-red-400">{error}</p>
+              </div>
+            ) : filteredTasks.length === 0 ? (
+              <div className="col-span-full text-center py-8">
+                <p className="text-gray-600 dark:text-gray-400">No tasks found</p>
+              </div>
+            ) : (
+              filteredTasks.map((task) => {
+                const statusInfo = getStatusInfo(task.status)
+                return (
+                  <motion.div
+                    key={task.id}
+                    className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-lg"
+                    whileHover={{ y: -5 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="flex justify-between items-start mb-4">
+                      <span className="text-gray-500 dark:text-gray-400 text-sm">
+                        Task ID: {task.id}
+                      </span>
+                      <span
+                        className={`${statusInfo.bg} ${statusInfo.color} text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1`}
                       >
-                        Approve
-                      </button>
+                        {statusInfo.icon}
+                        {statusInfo.label}
+                      </span>
+                    </div>
+                    
+                    {task.team && (
+                      <div className="mb-2">
+                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                          {task.team.title}
+                        </span>
+                      </div>
                     )}
-                    <button
-                      className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl flex items-center justify-center gap-2"
-                      onClick={() => openEditModal(team)}
-                    >
-                      <Edit className="h-4 w-4" />
-                      Edit Task
-                    </button>
-                  </div>
-                </motion.div>
-              )
-            })}
+                    
+                    <h3 className="text-lg font-semibold mb-2">{task.title}</h3>
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                        {task.description}
+                      </p>
+                    </div>
+
+                    {/* Points and Difficulty */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+                        <span>Points</span>
+                        <span className="font-semibold">{task.points}</span>
+                      </div>
+                      {task.difficulty && (
+                        <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-300 mt-1">
+                          <span>Difficulty</span>
+                          <span className="font-semibold capitalize">{task.difficulty}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">
+                        Round {task.round_num}
+                      </span>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <Clock className="h-3 w-3 inline mr-1" />
+                        {formatDate(task.timestamp)}
+                      </div>
+                    </div>
+
+                    {task.teamNotes && (
+                      <div className="mb-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-sm">
+                        <strong>Team Notes:</strong> {task.teamNotes}
+                      </div>
+                    )}
+
+                    {task.reviewNotes && (
+                      <div className="mb-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-sm">
+                        <strong>Admin Review:</strong> {task.reviewNotes}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-2">
+                      {task.status === "InReview" && (
+                        <button
+                          onClick={() => approveTask(task.id)}
+                          className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+                        >
+                          Approve
+                        </button>
+                      )}
+                      <button
+                        className="flex-1 px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl flex items-center justify-center gap-2"
+                        onClick={() => openEditModal(task)}
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Task
+                      </button>
+                    </div>
+                  </motion.div>
+                )
+              })
+            )}
           </div>
 
           {/* Edit/Create Modal */}
           <AnimatePresence>
-            {isModalOpen && selectedTeam && (
+            {isModalOpen && (modalMode === "create" || selectedTask) && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
                 <motion.div
                   className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
@@ -453,28 +501,34 @@ export default function TeamTaskManagement() {
                     )}
 
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-4">
-                        <label className="block font-medium mb-2">Team Name</label>
-                        <input
-                          name="name"
-                          type="text"
-                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                          value={selectedTeam.name}
-                          onChange={handleInputChange}
-                          readOnly={modalMode === "edit"}
-                          placeholder={modalMode === "create" ? "Enter team name" : ""}
-                          required
-                        />
-                      </div>
+                      {modalMode === "create" && (
+                        <div className="mb-4">
+                          <label className="block font-medium mb-2">Assign to Team</label>
+                          <select
+                            name="teamId"
+                            className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                            value={newTask.teamId}
+                            onChange={handleTaskInputChange}
+                            required
+                          >
+                            <option value="">Select a team...</option>
+                            {teams.map((team) => (
+                              <option key={team.id} value={team.scc_id}>
+                                {team.scc_id} - {team.title}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
 
                       <div className="mb-4">
                         <label className="block font-medium mb-2">Task Title</label>
                         <input
-                          name="task"
+                          name="title"
                           type="text"
                           className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                          value={selectedTeam.task}
-                          onChange={handleInputChange}
+                          value={modalMode === "create" ? newTask.title : selectedTask?.title || ""}
+                          onChange={handleTaskInputChange}
                           required
                         />
                       </div>
@@ -485,22 +539,22 @@ export default function TeamTaskManagement() {
                           name="description"
                           rows={3}
                           className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                          value={selectedTeam.description}
-                          onChange={handleInputChange}
+                          value={modalMode === "create" ? newTask.description : selectedTask?.description || ""}
+                          onChange={handleTaskInputChange}
                           required
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="grid grid-cols-3 gap-4 mb-4">
                         <div>
                           <label className="block font-medium mb-2">Round</label>
                           <input
-                            name="round"
+                            name="round_num"
                             type="number"
                             min="1"
                             className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                            value={selectedTeam.round}
-                            onChange={handleInputChange}
+                            value={modalMode === "create" ? newTask.round_num : selectedTask?.round_num || 1}
+                            onChange={handleTaskInputChange}
                             required
                           />
                         </div>
@@ -512,26 +566,25 @@ export default function TeamTaskManagement() {
                             type="number"
                             min="0"
                             className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                            value={selectedTeam.points}
-                            onChange={handleInputChange}
+                            value={modalMode === "create" ? newTask.points : selectedTask?.points || 0}
+                            onChange={handleTaskInputChange}
                             required
                           />
                         </div>
-                      </div>
 
-                      <div className="mb-4">
-                        <label className="block font-medium mb-2">Status</label>
-                        <select
-                          name="status"
-                          className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
-                          value={selectedTeam.status}
-                          onChange={handleInputChange}
-                          required
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="in-review">In Review</option>
-                          <option value="completed">Completed</option>
-                        </select>
+                        <div>
+                          <label className="block font-medium mb-2">Difficulty</label>
+                          <select
+                            name="difficulty"
+                            className="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-sm"
+                            value={modalMode === "create" ? newTask.difficulty : selectedTask?.difficulty || "medium"}
+                            onChange={handleTaskInputChange}
+                          >
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div className="flex justify-end gap-2">

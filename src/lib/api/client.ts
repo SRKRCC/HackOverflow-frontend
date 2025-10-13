@@ -12,18 +12,14 @@ import type {
   TaskSubmissionRequest
 } from '../types';
 
-// Helper function to extract data from axios response
 const extractData = <T>(response: AxiosResponse<T>): T => response.data;
 
-// Auth API
 export const authAPI = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> =>
     extractData(await apiClient.post('/auth/login', credentials)),
 };
 
-// Admin API  
 export const adminAPI = {
-  // Tasks
   getAllTasks: async (): Promise<Task[]> =>
     extractData(await apiClient.get('/tasks')),
   
@@ -39,11 +35,9 @@ export const adminAPI = {
   completeTask: async (id: number, reviewNotes?: string): Promise<Task> =>
     extractData(await apiClient.post(`/tasks/${id}/complete`, { reviewNotes })),
   
-  // Leaderboard
   getLeaderboard: async (): Promise<LeaderboardEntry[]> =>
     extractData(await apiClient.get('/leaderboards')),
   
-  // Problem Statements  
   getAllProblemStatements: async (): Promise<ProblemStatement[]> =>
     extractData(await apiClient.get('/problem-statements')),
   
@@ -58,13 +52,10 @@ export const adminAPI = {
   },
 };
 
-// Team API
 export const teamAPI = {
-  // Team details
   getTeamDetails: async (teamId: number): Promise<Team> =>
     extractData(await apiClient.get(`/teams/${teamId}`)),
   
-  // Tasks
   getTeamTasks: async (teamId: number): Promise<Task[]> =>
     extractData(await apiClient.get(`/teams/${teamId}/tasks`)),
   
@@ -74,7 +65,6 @@ export const teamAPI = {
   submitTask: async (teamId: number, taskId: number, submission: TaskSubmissionRequest): Promise<{ message: string; task: Task }> =>
     extractData(await apiClient.post(`/teams/${teamId}/tasks/${taskId}/submit`, submission)),
   
-  // Problem Statements
   getProblemStatements: async (): Promise<ProblemStatement[]> =>
     extractData(await apiClient.get('/problem-statements')),
   

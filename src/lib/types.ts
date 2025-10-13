@@ -90,8 +90,8 @@ export interface CreateTaskRequest {
   description?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
   round_num: number;
-  points: number;
-  teamId?: number; // Optional for admin creating general tasks
+  points?: number;
+  teamId: string | number;
 }
 
 export interface TaskSubmissionRequest {

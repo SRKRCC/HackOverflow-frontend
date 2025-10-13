@@ -1,4 +1,3 @@
-// Simple auth utilities
 import type { User } from '../types';
 
 const STORAGE_KEYS = {
@@ -7,7 +6,6 @@ const STORAGE_KEYS = {
   TEAM_ID: 'hackoverflow_team_id',
 };
 
-// Storage utilities
 export const storage = {
   setUser: (user: User) => {
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
@@ -38,36 +36,29 @@ export const storage = {
   },
 };
 
-// Auth state
 let currentUser: User | null = storage.getUser();
 let authListeners: ((user: User | null) => void)[] = [];
 
 export const auth = {
-  // Get current user
   getUser: () => currentUser,
   
-  // Check if authenticated
   isAuthenticated: () => !!currentUser,
   
-  // Check role
   isAdmin: () => currentUser?.role === 'admin',
   isTeam: () => currentUser?.role === 'team',
   
-  // Set user (after login)
   setUser: (user: User) => {
     currentUser = user;
     storage.setUser(user);
     authListeners.forEach(listener => listener(user));
   },
   
-  // Logout
   logout: () => {
     currentUser = null;
     storage.clear();
     authListeners.forEach(listener => listener(null));
   },
   
-  // Subscribe to auth changes
   subscribe: (listener: (user: User | null) => void) => {
     authListeners.push(listener);
     return () => {
@@ -75,7 +66,6 @@ export const auth = {
     };
   },
   
-  // Initialize from storage
   init: () => {
     currentUser = storage.getUser();
   },

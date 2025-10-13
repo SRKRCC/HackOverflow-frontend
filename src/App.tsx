@@ -9,10 +9,8 @@ import Footer from './components/Footer'
 import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
 import Schedule from './components/Schedule'
-// import SimpleTest from './components/SimpleTest'
 import { AdminRoute, TeamRoute } from './components/ProtectedRoute'
 import { useAuth } from './lib/hooks'
-import { useEffect } from 'react'
 
 function AppContent() {
   const location = useLocation()
@@ -28,7 +26,6 @@ function AppContent() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/test" element={<div className="p-8"><h1 className="text-2xl font-bold">Test Route - React is Working! 🎉</h1></div>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/problem-statements" element={<ProblemStatements />} />

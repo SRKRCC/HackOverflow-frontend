@@ -1,17 +1,14 @@
-// Simple admin store
 import { create } from 'zustand';
 import { ApiService } from '../api/service';
 import type { Task, LeaderboardEntry, ProblemStatement, CreateTaskRequest } from '../types';
 
 interface AdminStore {
-  // State
   tasks: Task[];
   leaderboard: LeaderboardEntry[];
   problemStatements: ProblemStatement[];
   loading: boolean;
   error: string | null;
 
-  // Actions
   fetchTasks: () => Promise<void>;
   createTask: (task: CreateTaskRequest) => Promise<Task>;
   updateTask: (id: number, updates: Partial<CreateTaskRequest>) => Promise<Task>;
@@ -23,14 +20,12 @@ interface AdminStore {
   
   clearError: () => void;
 }export const useAdminStore = create<AdminStore>((set) => ({
-  // Initial state
   tasks: [],
   leaderboard: [],
   problemStatements: [],
   loading: false,
   error: null,
   
-  // Actions
   fetchTasks: async () => {
     try {
       set({ loading: true, error: null });

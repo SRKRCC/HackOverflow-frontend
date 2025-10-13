@@ -1,4 +1,3 @@
-// Simple auth hooks
 import { useState, useEffect } from 'react';
 import { auth } from './auth';
 import { ApiService } from './api/service';
@@ -11,11 +10,9 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    // Initialize auth from storage
     auth.init();
     setUser(auth.getUser());
     
-    // Subscribe to auth changes
     const unsubscribe = auth.subscribe((newUser: User | null) => {
       setUser(newUser);
     });

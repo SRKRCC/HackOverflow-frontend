@@ -1,18 +1,15 @@
-// Simple team store
 import { create } from 'zustand';
 import { ApiService } from '../api/service';
 import { auth } from '../auth';
 import type { Team, Task, ProblemStatement, TaskSubmissionRequest } from '../types';
 
 interface TeamStore {
-  // State
   team: Team | null;
   tasks: Task[];
   problemStatements: ProblemStatement[];
   loading: boolean;
   error: string | null;
   
-  // Actions
   fetchTeam: () => Promise<void>;
   fetchTasks: () => Promise<void>;
   submitTask: (taskId: number, submission: TaskSubmissionRequest) => Promise<void>;
@@ -22,14 +19,12 @@ interface TeamStore {
 }
 
 export const useTeamStore = create<TeamStore>((set) => ({
-  // Initial state
   team: null,
   tasks: [],
   problemStatements: [],
   loading: false,
   error: null,
   
-  // Actions
   fetchTeam: async () => {
     const user = auth.getUser();
     if (!user || user.role !== 'team') return;

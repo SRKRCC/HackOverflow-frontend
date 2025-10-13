@@ -9,7 +9,7 @@ import { useAuth } from "../lib/hooks"
 
 export default function LoginPage() {
     const navigate = useNavigate()
-    const { login, error: authError, loading: authLoading } = useAuth()
+    const { login, loading: authLoading } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [role, setRole] = useState<'team' | 'admin'>('team')

@@ -71,13 +71,8 @@ const Navbar = ({ className = "" }) => {
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
                         <ThemeToggle />
                         <Link to="/login">
-                            <Button variant="outline" className="hover:scale-105 transition-transform duration-300 bg-transparent">
+                            <Button variant="outline" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
                                 Login
-                            </Button>
-                        </Link>
-                        <Link to="/register">
-                            <Button className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                                Register Now
                             </Button>
                         </Link>
                     </div>

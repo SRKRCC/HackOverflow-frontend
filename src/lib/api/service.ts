@@ -1,4 +1,3 @@
-// Main API service class with all endpoints organized
 import { apiClient } from './config';
 import type { 
   LoginRequest, 
@@ -12,7 +11,6 @@ import type {
 } from '../types';
 
 export class ApiService {
-  // Auth endpoints
   static auth = {
     login: async (credentials: LoginRequest): Promise<LoginResponse> => {
       const response = await apiClient.post('/auth/login', credentials);
@@ -30,15 +28,12 @@ export class ApiService {
     }
   };
 
-  // Admin endpoints
   static admin = {
-    // Dashboard
     getDashboard: async (): Promise<any> => {
       const response = await apiClient.get('/admin/dashboard');
       return response.data;
     },
 
-    // Tasks management
     getAllTasks: async (): Promise<Task[]> => {
       const response = await apiClient.get('/tasks');
       return response.data;
@@ -64,7 +59,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Teams management
     getAllTeams: async (): Promise<Team[]> => {
       const response = await apiClient.get('/admin/teams');
       return response.data;
@@ -75,7 +69,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Leaderboard
     getLeaderboard: async (): Promise<LeaderboardEntry[]> => {
       const response = await apiClient.get('/leaderboards');
       return response.data;
@@ -86,7 +79,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Problem Statements
     getAllProblemStatements: async (): Promise<ProblemStatement[]> => {
       const response = await apiClient.get('/problem-statements');
       return response.data;
@@ -118,7 +110,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Announcements
     getAnnouncements: async (): Promise<any[]> => {
       const response = await apiClient.get('/admin/announcements');
       return response.data;
@@ -140,9 +131,7 @@ export class ApiService {
     }
   };
 
-  // Team endpoints
   static team = {
-    // Team details
     getDetails: async (teamId: number): Promise<Team> => {
       const response = await apiClient.get(`/teams/${teamId}`);
       return response.data;
@@ -153,7 +142,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Team tasks
     getTasks: async (teamId: number): Promise<Task[]> => {
       const response = await apiClient.get(`/teams/${teamId}/tasks`);
       return response.data;
@@ -169,7 +157,6 @@ export class ApiService {
       return response.data;
     },
 
-    // Problem statements for teams
     getProblemStatements: async (): Promise<ProblemStatement[]> => {
       const response = await apiClient.get('/problem-statements');
       return response.data;
@@ -180,13 +167,11 @@ export class ApiService {
       return response.data;
     },
 
-    // Team announcements
     getAnnouncements: async (): Promise<any[]> => {
       const response = await apiClient.get('/announcements');
       return response.data;
     },
 
-    // Gallery/Images
     uploadGalleryImage: async (teamId: number, image: File): Promise<{ message: string; imageUrl: string }> => {
       const formData = new FormData();
       formData.append('image', image);
@@ -207,10 +192,8 @@ export class ApiService {
   };
 }
 
-// Export individual API modules for backwards compatibility
 export const authAPI = ApiService.auth;
 export const adminAPI = ApiService.admin;
 export const teamAPI = ApiService.team;
 
-// Default export
 export default ApiService;
