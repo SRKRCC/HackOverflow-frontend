@@ -5,42 +5,46 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Button from "./ui/button"
 import { Lock, ShieldCheck, Zap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
+import { useAuth } from "../lib/hooks"
 
 export default function LoginPage() {
     const navigate = useNavigate()
-    const [sccId, setSccId] = useState("")
+    const { login, error: authError, loading: authLoading } = useAuth()
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [role, setRole] = useState<'team' | 'admin'>('team')
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(true)
-    const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+
+    const loading = authLoading
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         setError(null)
 
-        if (!sccId || !password) {
-            setError("Please enter your SCC ID and password.")
+        if (!username || !password) {
+            setError("Please enter your credentials.")
             return
         }
 
-        if (!/^\d{7}$/.test(sccId)) {
-            setError("Please enter a valid 7-digit SCC ID.")
+        // Validation based on role
+        if (role === 'team' && !/^SCC\d{3}$/.test(username.toUpperCase())) {
+            setError("Please enter a valid SCC ID (format: SCC001).")
             return
         }
 
         try {
-            setLoading(true)
-            await new Promise((res) => setTimeout(res, 600))
-
-            localStorage.setItem("isAuthenticated", "true")
-            localStorage.setItem("rememberMe", rememberMe ? "true" : "false")
-
-            navigate("/home", { replace: true })
-        } catch {
-            setError("Login failed. Please try again.")
-        } finally {
-            setLoading(false)
+            await login({ role, username, password })
+            
+            // Navigate based on role
+            if (role === 'admin') {
+                navigate("/admin", { replace: true })
+            } else {
+                navigate("/team", { replace: true })
+            }
+        } catch (err: any) {
+            setError(err.message || "Login failed. Please try again.")
         }
     }
 
@@ -133,27 +137,56 @@ export default function LoginPage() {
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                            {/* Role Selection */}
                             <div className="space-y-2">
-                                <label htmlFor="sccId" className="text-sm font-medium text-foreground">
-                                    SCC ID
+                                <label className="text-sm font-medium text-foreground">Login As</label>
+                                <div className="flex gap-2 p-1 bg-muted rounded-lg">
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole('team')}
+                                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                                            role === 'team'
+                                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        Team Member
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole('admin')}
+                                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                                            role === 'admin'
+                                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                                : 'text-muted-foreground hover:text-foreground'
+                                        }`}
+                                    >
+                                        Admin
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label htmlFor="username" className="text-sm font-medium text-foreground">
+                                    {role === 'team' ? 'SCC ID' : 'Email Address'}
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-3 flex items-center text-muted-foreground pointer-events-none">
                                         <ShieldCheck className="h-5 w-5" aria-hidden="true" />
                                     </span>
                                     <input
-                                        id="sccId"
-                                        type="text"
-                                        pattern="\d{7}"
-                                        maxLength={7}
+                                        id="username"
+                                        type={role === 'team' ? 'text' : 'email'}
+                                        pattern={role === 'team' ? "SCC\\d{3}" : undefined}
+                                        maxLength={role === 'team' ? 6 : undefined}
                                         autoComplete="username"
-                                        value={sccId}
-                                        onChange={(e) => setSccId(e.target.value)}
+                                        value={username}
+                                        onChange={(e) => setUsername(role === 'team' ? e.target.value.toUpperCase() : e.target.value)}
                                         required
-                                        aria-invalid={!!error && !sccId}
-                                        placeholder="1234567"
+                                        aria-invalid={!!error && !username}
+                                        placeholder={role === 'team' ? 'SCC001' : 'admin@example.com'}
                                         className="w-full bg-input border border-border rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                        data-testid="email-input"
+                                        data-testid="username-input"
                                     />
                                 </div>
                             </div>

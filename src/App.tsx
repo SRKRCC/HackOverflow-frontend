@@ -9,9 +9,14 @@ import Footer from './components/Footer'
 import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
 import Schedule from './components/Schedule'
+// import SimpleTest from './components/SimpleTest'
+import { AdminRoute, TeamRoute } from './components/ProtectedRoute'
+import { useAuth } from './lib/hooks'
+import { useEffect } from 'react'
 
 function AppContent() {
   const location = useLocation()
+  const { user } = useAuth()
   const hideNavbarFooter = ['/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team/') || location.pathname.startsWith('/admin/')
   const marginLeft = (location.pathname.startsWith("/team/") || location.pathname.startsWith("/admin/")) ? "ml-[60px]" : ""
 
@@ -21,15 +26,41 @@ function AppContent() {
 
       <main className={!hideNavbarFooter ? "pt-16" : ""}>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/test" element={<div className="p-8"><h1 className="text-2xl font-bold">Test Route - React is Working! 🎉</h1></div>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/problem-statements" element={<ProblemStatements />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/teams" element={<div>Teams Page</div>} />
           <Route path="/prizes" element={<div>Prizes Page</div>} />
-          <Route path='/team/*' element={<TeamStructure />} />
-          <Route path='/admin/*' element={<AdminStructure />} />
+          
+          {/* Protected Routes */}
+          <Route path='/team/*' element={
+            <TeamRoute>
+              <TeamStructure />
+            </TeamRoute>
+          } />
+          <Route path='/admin/*' element={
+            <AdminRoute>
+              <AdminStructure />
+            </AdminRoute>
+          } />
+          
+          {/* Unauthorized page */}
+          <Route path="/unauthorized" element={
+            <div className="flex items-center justify-center min-h-screen">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold mb-4">Unauthorized Access</h1>
+                <p className="text-gray-600 mb-4">You don't have permission to access this page.</p>
+                <p className="text-sm text-gray-500">
+                  Current user: {user ? `${user.role} (ID: ${user.id})` : 'Not logged in'}
+                </p>
+                <a href="/login" className="text-blue-600 hover:underline">Go to Login</a>
+              </div>
+            </div>
+          } />
         </Routes>
       </main>
       
@@ -39,9 +70,8 @@ function AppContent() {
 }
 
 function App() {
-  return (
-    <AppContent />
-  )
+
+  return <AppContent />
 }
 
 export default App
