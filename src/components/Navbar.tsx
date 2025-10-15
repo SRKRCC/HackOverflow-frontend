@@ -20,7 +20,7 @@ const Navbar = ({ className = "" }) => {
         { name: "Home", icon: Home, href: "/" },
         { name: "Schedule", icon: Calendar, href: "/schedule" },
         { name: "Teams", icon: Users, href: "/team" },
-        { name: "Prizes", icon: Trophy, href: "/prizes" },
+        // { name: "Prizes", icon: Trophy, href: "/prizes" },
     ]
 
     return (
