@@ -10,6 +10,10 @@ import type {
   TaskSubmissionRequest
 } from '../types';
 
+/**
+ * Unified API Service with organized namespaces for different roles
+ * Usage: ApiService.auth.login(), ApiService.admin.getAllTasks(), ApiService.team.getDetails()
+ */
 export class ApiService {
   static auth = {
     login: async (credentials: LoginRequest): Promise<LoginResponse> => {

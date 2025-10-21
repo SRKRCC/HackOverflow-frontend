@@ -12,7 +12,7 @@ import {
   Search,
   AlertCircle,
 } from "lucide-react"
-import { ApiService } from '../../lib/api/service'
+import { ApiService } from '../../lib/api'
 import { useAuth } from '../../lib/hooks'
 import type { Task, Team, CreateTaskRequest } from '../../lib/types'
 

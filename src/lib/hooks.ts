@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { auth } from './auth';
-import { ApiService } from './api/service';
+import { ApiService } from './api';
 import type { User, LoginRequest } from './types';
 
 // Auth hook

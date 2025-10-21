@@ -1,7 +1,7 @@
 // import { useState, useEffect } from 'react';
 // import { useAdminStore } from '../../lib/stores/admin';
 // import { useAuth } from '../../lib/hooks';
-// import { ApiService } from '../../lib/api/service';
+// import { ApiService } from '../../lib/api';
 
 // const TasksPage = () => {
 //   const { isAuthenticated, user } = useAuth();

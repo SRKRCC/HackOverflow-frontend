@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ApiService } from '../api/service';
+import { ApiService } from '../api';
 import type { Task, LeaderboardEntry, ProblemStatement, CreateTaskRequest } from '../types';
 
 interface AdminStore {

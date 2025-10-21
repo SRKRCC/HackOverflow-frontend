@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ApiService } from '../api/service';
+import { ApiService } from '../api';
 import { auth } from '../auth';
 import type { Team, Task, ProblemStatement, TaskSubmissionRequest } from '../types';
 
