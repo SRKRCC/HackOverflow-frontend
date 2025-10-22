@@ -1,100 +1,71 @@
+import { ApiService } from "@/lib/api";
+import type { Member } from "@/lib/types";
 import { useState, useEffect } from "react";
 
-interface TeamMember {
-  id: number;
-  name: string;
-  email: string;
-  phone_number: string;
-  profile_image: string;
-  department: string;
-  college_name: string;
-  year_of_study: number;
-  role: string;
-  color: string;
-  bgColor: string;
+interface TeamDetails {
+  teamId: number;
+  scc_id: string;
+  title: string;
+  team_members: Member[];
 }
 
-const teamDetails = {
-  id: 1,
-  scc_id: "SCC12345",
-  scc_password: "securePass@123",
-  title: "Innovative AI Solutions",
-  team_members: [
-    {
-      id: 101,
-      name: "Bongu Ashok",
-      email: "bonguashok86@gmail.com",
-      phone_number: "9392954525",
-      profile_image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      department: "Computer Science",
-      college_name: "S R K R ENGINEERING COLLEGE",
-      year_of_study: 3,
-      role: "Lead",
-      color: "from-purple-400 to-purple-600",
-      bgColor: "bg-purple-50" ,
-    },
-    {
-      id: 102,
-      name: "Ambati Satish",
-      email: "satish.ambati0804@gmail.com",
-      phone_number: "8106204119",
-      profile_image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      department: "Information Technology",
-      college_name: "S R K R ENGINEERING COLLEGE",
-      year_of_study: 3,
-      role: "Member",
-      color: "from-teal-400 to-teal-600",
-      bgColor: "bg-teal-50" ,
-
-    },
-    {
-      id: 103,
-      name: "Kotni Uma Mahesh",
-      email: "umamaheshkotni2005@gmail.com",
-      phone_number: "7337063596",
-      profile_image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?w=150&h=150&fit=crop&crop=face",
-      department: "Electronics",
-      college_name: "S R K R ENGINEERING COLLEGE",
-      year_of_study: 2,
-      role: "Member",
-      color: "from-orange-400 to-orange-600",
-      bgColor: "bg-orange-50" ,
-
-    },
-    {
-      id: 104,
-      name: "Kotni Pavan",
-      email: "kotnipavan8@gmail.com",
-      phone_number: "9985794617",
-      profile_image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
-      department: "Mechanical",
-      college_name: "S R K R ENGINEERING COLLEGE",
-      year_of_study: 4,
-      role: "Member",
-      color: "from-blue-400 to-blue-600",
-      bgColor: "bg-blue-50" ,
-
-    }
-  ].filter((member, index, arr) => 
-    // Remove duplicate entries (same id)
-    arr.findIndex(m => m.id === member.id) === index
-  ),
-};
+// Define 6 distinct color schemes for team members
+const colorSchemes = [
+  {
+    color: "from-purple-400 to-purple-600",
+    bgColor: "bg-purple-50"
+  },
+  {
+    color: "from-teal-400 to-teal-600",
+    bgColor: "bg-teal-50"
+  },
+  {
+    color: "from-orange-400 to-orange-600",
+    bgColor: "bg-orange-50"
+  },
+  {
+    color: "from-blue-400 to-blue-600",
+    bgColor: "bg-blue-50"
+  },
+  {
+    color: "from-pink-400 to-pink-600",
+    bgColor: "bg-pink-50"
+  },
+  {
+    color: "from-green-400 to-green-600",
+    bgColor: "bg-green-50"
+  }
+];
 
 export default function TeamCompass() {
-  const leaderIndex = teamDetails.team_members.findIndex(member => member.role === "Lead");
-  const [currentIndex, setCurrentIndex] = useState(leaderIndex >= 0 ? leaderIndex : 0);
+  const [teamDetails, setTeamDetails] = useState<TeamDetails | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [autoScroll, setAutoScroll] = useState(true);
-  const [imageErrors, setImageErrors] = useState<{ [key: number]: boolean }>({});
-
+  const [loading, setLoading] = useState(true);
 
   // Calculate the center position (position 2 in a 5-card layout)
   const centerPosition = 2;
-  const selectedMemberIndex = (currentIndex + centerPosition) % teamDetails.team_members.length;
-  const selectedMember = teamDetails.team_members[selectedMemberIndex];
-  const teamSize = teamDetails.team_members.length;
+  
+  const getTeamMembers = async () => {
+    try {
+      setLoading(true);
+      const response = await ApiService.team.getDetails();
+      console.log(response);
+      setTeamDetails(response);
+    } catch (error) {
+      console.error("Failed to fetch team details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Auto-scroll functionality
+  useEffect(() => {
+    getTeamMembers();
+  }, []);
+
+  // Auto-scroll functionality - must be before early returns
+  const teamSize = teamDetails?.team_members?.length || 0;
+  
   useEffect(() => {
     if (autoScroll && teamSize > 1) {
       const interval = setInterval(() => {
@@ -104,16 +75,37 @@ export default function TeamCompass() {
     }
   }, [autoScroll, teamSize]);
 
+  // Early return if no team data
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading team details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!teamDetails || !teamDetails.team_members || teamDetails.team_members.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-2xl text-muted-foreground">No team members found</p>
+        </div>
+      </div>
+    );
+  }
+
+  const selectedMemberIndex = (currentIndex + centerPosition) % teamSize;
+  const selectedMember = teamDetails.team_members[selectedMemberIndex];
+  const selectedColorScheme = colorSchemes[selectedMemberIndex % colorSchemes.length];
+
   const handleMemberClick = (clickedIndex: number) => {
-    // Calculate the offset needed to bring the clicked member to center position
     const targetCurrentIndex = (clickedIndex - centerPosition + teamSize) % teamSize;
     setCurrentIndex(targetCurrentIndex);
     setAutoScroll(false);
     setTimeout(() => setAutoScroll(true), 5000);
-  };
-
-  const handleImageError = (memberId: number) => {
-    setImageErrors(prev => ({ ...prev, [memberId]: true }));
   };
 
   // Dynamic position calculation based on team size
@@ -121,7 +113,7 @@ export default function TeamCompass() {
     const relativeIndex = (index - currentIndex + teamSize) % teamSize;
     
     // For mobile view, use a simplified horizontal layout
-    if (window.innerWidth < 768) {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
       const positions = [
         { left: '5%', scale: 0.7, opacity: 0.6, zIndex: 1 },
         { left: '20%', scale: 0.85, opacity: 0.8, zIndex: 2 },
@@ -140,7 +132,6 @@ export default function TeamCompass() {
     const visibleCards = Math.min(teamSize, 5);
     
     if (teamSize <= 3) {
-      // For small teams (3 or less), use simpler positioning
       const positions = [
         { top: '35%', right: '8%', scale: 0.85, opacity: 0.8, zIndex: 2 },
         { top: '50%', right: '5%', scale: 1, opacity: 1, zIndex: 3 },
@@ -149,7 +140,6 @@ export default function TeamCompass() {
       return positions[relativeIndex] || { top: '50%', right: '20%', scale: 0.5, opacity: 0, zIndex: 0 };
     }
     
-    // For larger teams, use full 5-card layout
     const positions = [
       { top: '10%', right: '15%', scale: 0.7, opacity: 0.6, zIndex: 1 },
       { top: '30%', right: '8%', scale: 0.85, opacity: 0.8, zIndex: 2 },
@@ -174,11 +164,10 @@ export default function TeamCompass() {
   };
 
   const ProfileImage = ({
-    member,
     className,
     size = "normal"
   }: {
-    member: TeamMember;
+    member?: Member;
     className?: string;
     size?: "small" | "normal" | "large";
   }) => {
@@ -188,34 +177,23 @@ export default function TeamCompass() {
       large: "w-16 w-16"
     };
 
-    if (imageErrors[member.id] || !member.profile_image || member.profile_image.includes('C:')) {
-      return (
-        <div className={`${sizeClasses[size]} rounded-full bg-white flex items-center justify-center ${className}`}>
-          <svg
-            className={size === "small" ? "h-4 w-4" : size === "large" ? "h-8 w-8" : "h-8 w-8 md:h-16 md:w-16"} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-            color="#9CA3AF"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-            />
-          </svg>
-        </div>
-      );
-    }
-
     return (
-      <img
-        src={member.profile_image}
-        alt={member.name}
-        className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
-        onError={() => handleImageError(member.id)}
-      />
+      <div className={`${sizeClasses[size]} rounded-full bg-white flex items-center justify-center ${className}`}>
+        <svg
+          className={size === "small" ? "h-4 w-4" : size === "large" ? "h-8 w-8" : "h-8 w-8 md:h-16 md:w-16"} 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+          color="#9CA3AF"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
+      </div>
     );
   };
 
@@ -251,6 +229,7 @@ export default function TeamCompass() {
             
             <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full animate-scale-in" style={{animationDelay: '0.4s'}}></div>
           </div>
+
           {/* Team Stats */}
           <div className="flex flex-wrap items-center justify-center gap-8 animate-slide-up" style={{animationDelay: '0.8s'}}>
             <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl px-6 py-3 transition-all duration-300 hover:bg-card/70 hover:scale-105 hover:shadow-lg">
@@ -289,8 +268,8 @@ export default function TeamCompass() {
                   </svg>
                 </div>
                 <div className="text-left">
-                  <p className="text-sm text-muted-foreground font-medium">College</p>
-                  <p className="text-foreground font-bold">SRKR</p>
+                  <p className="text-sm text-muted-foreground font-medium">Team Name</p>
+                  <p className="text-foreground font-bold">{teamDetails.title || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -301,18 +280,18 @@ export default function TeamCompass() {
       <div className="flex flex-col md:grid md:grid-cols-5 min-h-[calc(100vh-200px)]">
         {/* Left Side - Detailed Profile */}
         <div className="md:col-span-3 flex flex-col justify-center p-4 md:p-8 order-2 md:order-1">
-          <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :selectedMember.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
+          <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : selectedColorScheme.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
             {/* Profile Header */}
             <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-6 mb-6">
               <div className="relative mb-4 md:mb-0">
-                <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r ${selectedMember.color} p-1 shadow-xl`}>
-                  <ProfileImage member={selectedMember} size="normal" />
+                <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r ${selectedColorScheme.color} p-1 shadow-xl`}>
+                  <ProfileImage size="normal" />
                 </div>
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{selectedMember.name}</h2>
-                <p className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${selectedMember.color} bg-clip-text text-transparent mb-1`}>
-                  Team {selectedMember.role}
+                <p className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${selectedColorScheme.color} bg-clip-text text-transparent mb-1`}>
+                  Team Member
                 </p>
                 <p className="text-base md:text-lg text-muted-foreground">{selectedMember.department}</p>
               </div>
@@ -322,7 +301,7 @@ export default function TeamCompass() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedMember.color} flex items-center justify-center`}>
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedColorScheme.color} flex items-center justify-center`}>
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
                     </svg>
@@ -334,7 +313,7 @@ export default function TeamCompass() {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedMember.color} flex items-center justify-center`}>
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedColorScheme.color} flex items-center justify-center`}>
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z" />
                     </svg>
@@ -348,7 +327,7 @@ export default function TeamCompass() {
 
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedMember.color} flex items-center justify-center`}>
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedColorScheme.color} flex items-center justify-center`}>
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                       <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
@@ -361,7 +340,7 @@ export default function TeamCompass() {
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedMember.color} flex items-center justify-center`}>
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedColorScheme.color} flex items-center justify-center`}>
                     <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                     </svg>
@@ -387,6 +366,7 @@ export default function TeamCompass() {
               const position = getCardPosition(index);
               const shape = getCardShape(index);
               const isCenter = shape === 'center';
+              const memberColorScheme = colorSchemes[index % colorSchemes.length];
 
               if (!position) return null;
               
@@ -396,8 +376,8 @@ export default function TeamCompass() {
                   className="absolute transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
                   style={{
                     top: position.top,
-                    right: window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
-                    left: window.innerWidth < 768 && 'left' in position ? position.left : undefined,
+                    right: typeof window !== 'undefined' && window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
+                    left: typeof window !== 'undefined' && window.innerWidth < 768 && 'left' in position ? position.left : undefined,
                     transform: `translate(-50%, -50%) scale(${position.scale})`,
                     opacity: position.opacity,
                     zIndex: position.zIndex,
@@ -405,29 +385,52 @@ export default function TeamCompass() {
                   onClick={() => handleMemberClick(index)}
                 >
                   {isCenter ? (
-                    // Center Card - Always detailed
-                    <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :member.bgColor} rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300 border`}>
+                    <div
+                      className={`${
+                        typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
+                          ? "bg-zinc-900"
+                          : memberColorScheme.bgColor
+                      } rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300`}
+                    >
                       <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-lg`}>
-                          <ProfileImage member={member} size="large" />
+                        <div
+                          className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${memberColorScheme.color} p-[2px] shadow-lg overflow-hidden`}
+                        >
+                          <div className="w-full h-full rounded-full overflow-hidden bg-background">
+                            <ProfileImage
+                              size="large"
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          </div>
                         </div>
+
                         <div className="flex-1">
-                          <h3 className="font-bold text-foreground text-base md:text-lg">{member.name}</h3>
-                          <p className={`text-xs md:text-sm font-medium bg-gradient-to-r ${member.color} bg-clip-text text-transparent`}>Team {member.role}</p>
-                          <p className="text-xs md:text-sm text-muted-foreground">{member.department}</p>
+                          <h3 className="font-bold text-foreground text-base md:text-lg">
+                            {member.name}
+                          </h3>
+                          <p
+                            className={`text-xs md:text-sm font-medium bg-gradient-to-r ${memberColorScheme.color} bg-clip-text text-transparent`}
+                          >
+                            Team Member
+                          </p>
+                          <p className="text-xs md:text-sm text-muted-foreground">
+                            {member.department}
+                          </p>
                         </div>
                       </div>
                     </div>
+
+
                   ) : (
                     // Non-center Cards - Uniform card style
-                    <div className={`${localStorage.getItem("theme") === "dark" ? "bg-zinc-900" :member.bgColor } rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
+                    <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : memberColorScheme.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
                       <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${member.color} p-1 shadow-md`}>
-                          <ProfileImage member={member} size="small" className="w-full h-full" />
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${memberColorScheme.color} p-1 shadow-md`}>
+                          <ProfileImage size="small" className="w-full h-full" />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground dark:text-sidebar-foreground text-xs md:text-sm truncate">{member.name}</h4>
-                          <p className="text-xs text-muted-foreground dark:text-sidebar-foreground/70 truncate">Team {member.role}</p>
+                          <p className="text-xs text-muted-foreground dark:text-sidebar-foreground/70 truncate">Team Member</p>
                         </div>
                       </div>
                     </div>
