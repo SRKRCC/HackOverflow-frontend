@@ -39,7 +39,7 @@ export default function LoginPage() {
             
             // Navigate based on role
             if (role === 'admin') {
-                navigate("/admin", { replace: true })
+                navigate("/admin/dashboard", { replace: true })
             } else {
                 navigate("/team", { replace: true })
             }
