@@ -19,7 +19,8 @@ interface AdminStore {
   fetchProblemStatements: () => Promise<void>;
   
   clearError: () => void;
-}export const useAdminStore = create<AdminStore>((set) => ({
+}
+export const useAdminStore = create<AdminStore>((set) => ({
   tasks: [],
   leaderboard: [],
   problemStatements: [],

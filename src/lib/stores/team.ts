@@ -31,7 +31,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
     
     try {
       set({ loading: true, error: null });
-      const team = await ApiService.team.getDetails(user.id);
+      const team = await ApiService.team.getDetails();
       set({ team, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });

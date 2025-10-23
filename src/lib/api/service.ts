@@ -43,6 +43,8 @@ export class ApiService {
       return response.data;
     },
 
+    
+
     createTask: async (task: CreateTaskRequest): Promise<Task> => {
       const response = await apiClient.post('/tasks', task);
       return response.data;
@@ -116,7 +118,7 @@ export class ApiService {
 
     getAnnouncements: async (): Promise<any[]> => {
       const response = await apiClient.get('/admin/announcements');
-      return response.data;
+      return response.data.data;
     },
 
     createAnnouncement: async (announcement: any): Promise<any> => {
@@ -136,8 +138,8 @@ export class ApiService {
   };
 
   static team = {
-    getDetails: async (teamId: number): Promise<Team> => {
-      const response = await apiClient.get(`/teams/${teamId}`);
+    getDetails: async (): Promise<Team> => {
+      const response = await apiClient.get(`/teams`);
       return response.data;
     },
 
@@ -168,7 +170,8 @@ export class ApiService {
 
     getProblemStatement: async (id: number): Promise<ProblemStatement> => {
       const response = await apiClient.get(`/problem-statements/${id}`);
-      return response.data;
+      console.log(response);
+      return response.data.data;
     },
 
     getAnnouncements: async (): Promise<any[]> => {
