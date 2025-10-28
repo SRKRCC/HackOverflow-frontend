@@ -1,187 +1,112 @@
 import React, { useState, useEffect } from "react";
-import { Search, ImageUp, Trash2, X, Check } from "lucide-react";
+import {
+  Search,
+  ImageUp,
+  Trash2,
+  X,
+  Check,
+  Loader2,
+  Menu,
+  ChevronLeft,
+} from "lucide-react";
+import { ApiService } from "@/lib/api";
+import type { Team } from "@/lib/types";
 
-type Team = {
-  id: number;
-  name: string;
-  photos: string[];
-};
-
-const teams: Team[] = [
-  {
-    id: 1,
-    name: "Alpha",
-    photos: [
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400",
-      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400",
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400",
-      "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=400",
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-    ],
-  },
-  {
-    id: 2,
-    name: "Beta",
-    photos: [
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400",
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
-    ],
-  },
-  {
-    id: 3,
-    name: "Gamma",
-    photos: [
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400",
-      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400",
-    ],
-  },
-  {
-    id: 4,
-    name: "Delta",
-    photos: [
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400",
-      "https://images.unsplash.com/photo-1502767089025-6572583495b4?w=400",
-      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400",
-    ],
-  },
-  {
-    id: 5,
-    name: "Epsilon",
-    photos: [
-      "https://images.unsplash.com/photo-1506089676908-3592f7389d4d?w=400",
-      "https://images.unsplash.com/photo-1524503033411-c9566986fc8f?w=400",
-    ],
-  },
-  {
-    id: 6,
-    name: "Zeta",
-    photos: [
-      "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400",
-      "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=400",
-      "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
-    ],
-  },
-  {
-    id: 7,
-    name: "Eta",
-    photos: [
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400",
-      "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=400",
-    ],
-  },
-  {
-    id: 8,
-    name: "Theta",
-    photos: [
-      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400",
-      "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=400",
-      "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400",
-    ],
-  },
-  {
-    id: 9,
-    name: "Iota",
-    photos: [
-      "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=400",
-      "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400",
-    ],
-  },
-  {
-    id: 10,
-    name: "Kappa",
-    photos: [
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-      "https://images.unsplash.com/photo-1524503033411-c9566986fc8f?w=400",
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400",
-    ],
-  },
-  {
-    id: 11,
-    name: "Lambda",
-    photos: [
-      "https://images.unsplash.com/photo-1546456073-6712f79251bb?w=400",
-      "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?w=400",
-      "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=400",
-    ],
-  },
-  {
-    id: 12,
-    name: "Mu",
-    photos: [
-      "https://images.unsplash.com/photo-1614289371518-722f2615943e?w=400",
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-    ],
-  },
-  {
-    id: 13,
-    name: "Nu",
-    photos: [
-      "https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=400",
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
-    ],
-  },
-  {
-    id: 14,
-    name: "Xi",
-    photos: [
-      "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400",
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
-    ],
-  },
-  {
-    id: 15,
-    name: "Omicron",
-    photos: [
-      "https://images.unsplash.com/photo-1524503033411-c9566986fc8f?w=400",
-      "https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?w=400",
-      "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400",
-    ],
-  },
-];
-
-
-export default function TeamPhotos() {
-  const [selectedTeam, setSelectedTeam] = useState<Team>(teams[0]);
+export default function TeamGalleryManager() {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedPhotos, setSelectedPhotos] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<string>("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return;
-
-    const newPhotos = Array.from(e.target.files).map((file) =>
-      URL.createObjectURL(file)
-    );
-
-    setSelectedTeam((prev) => ({
-      ...prev,
-      photos: [...prev.photos, ...newPhotos],
-    }));
-
-    e.currentTarget.value = "";
+  // Load all teams
+  const loadTeams = async () => {
+    try {
+      setLoading(true);
+      const data = await ApiService.admin.getAllTeams();
+      setTeams(data);
+      if (data.length > 0) setSelectedTeam(data[0]);
+    } catch (err) {
+      console.error("Failed to load teams:", err);
+      setStatus("Failed to load teams");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeletePhoto = () => {
-    if (selectionMode) {
-      setSelectedTeam((prev) => ({
-        ...prev,
-        photos: prev.photos.filter((p) => !selectedPhotos.includes(p)),
-      }));
-      setSelectionMode(false);
-      setSelectedPhotos([]);
-    } else if (selectedImg) {
-      setSelectedTeam((prev) => ({
-        ...prev,
-        photos: prev.photos.filter((photo) => photo !== selectedImg),
-      }));
-      setSelectedImg(null);
+  // Load images for selected team
+  const loadTeamImages = async (teamId: number) => {
+    try {
+      setLoading(true);
+      const data = await ApiService.admin.getTeamImages(teamId);
+      setImages(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Failed to fetch images:", err);
+      setImages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle photo upload
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !selectedTeam) return;
+    setLoading(true);
+    setStatus("Uploading images...");
+    try {
+      const fileArray = Array.from(e.target.files);
+      const response = await ApiService.admin.uploadImagesForTeam(
+        selectedTeam.teamId,
+        fileArray
+      );
+      const uploadedUrls = response.uploaded || response.images || [];
+      setImages((prev) => [...prev, ...uploadedUrls]);
+      setStatus("Upload successful!");
+      setTimeout(() => setStatus(""), 3000);
+    } catch (err) {
+      console.error("Upload failed:", err);
+      setStatus("Upload failed");
+    } finally {
+      setLoading(false);
+      e.currentTarget.value = "";
+    }
+  };
+
+  // Handle delete photo(s)
+  const handleDeletePhoto = async () => {
+    if (!selectedTeam) return;
+    setLoading(true);
+    setConfirmDelete(false);
+    setStatus("Deleting image(s)...");
+
+    try {
+      if (selectionMode) {
+        await Promise.all(
+          selectedPhotos.map((photo) =>
+            ApiService.admin.deleteTeamImage(selectedTeam.teamId, photo)
+          )
+        );
+        setImages((prev) => prev.filter((p) => !selectedPhotos.includes(p)));
+        setSelectedPhotos([]);
+        setSelectionMode(false);
+      } else if (selectedImg) {
+        await ApiService.admin.deleteTeamImage(selectedTeam.teamId, selectedImg);
+        setImages((prev) => prev.filter((photo) => photo !== selectedImg));
+        setSelectedImg(null);
+      }
+      setStatus("Image(s) deleted successfully");
+      setTimeout(() => setStatus(""), 3000);
+    } catch (err) {
+      console.error("Delete failed:", err);
+      setStatus("Failed to delete image(s)");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -191,116 +116,174 @@ export default function TeamPhotos() {
     );
   };
 
-  // Exit selection mode automatically when no photos are selected
-  useEffect(() => {
-    if (selectionMode && selectedPhotos.length === 0) {
-      setSelectionMode(false);
+  const selectAll = () => {
+    if (selectedPhotos.length === images.length) {
+      setSelectedPhotos([]);
+    } else {
+      setSelectedPhotos(images);
+      setSelectionMode(true);
     }
+  };
+
+  useEffect(() => {
+    if (selectionMode && selectedPhotos.length === 0) setSelectionMode(false);
   }, [selectedPhotos, selectionMode]);
 
+  useEffect(() => {
+    loadTeams();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTeam) loadTeamImages(selectedTeam.teamId);
+    else setImages([]);
+  }, [selectedTeam]);
+
   const filteredTeams = teams.filter((team) =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+    team.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-background text-foreground">
-      {/* Sidebar */}
-      <aside className="w-72 min-h-screen border-r border-border bg-sidebar-inner text-sidebar-foreground overflow-y-auto shadow-md scrollbar-hide">
+    <div className="flex h-screen bg-background text-foreground relative">
+      {/* Sidebar (Mobile friendly) */}
+      <aside
+        className={`fixed md:static md:translate-x-0 top-0 left-0 w-72 bg-sidebar-inner border-r border-border text-sidebar-foreground h-full transition-transform duration-300 z-40 shadow-lg ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b border-border">
+          <h2 className="text-lg font-semibold">Teams</h2>
+          <button
+            className="md:hidden text-muted-foreground hover:text-foreground"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </button>
+        </div>
+
         {/* Search Bar */}
-        <div className="m-2 p-[2px] rounded-lg bg-gradient-to-r from-primary to-secondary">
-          <div className="relative rounded-lg bg-sidebar px-3 py-2 flex items-center">
+        <div className="m-3">
+          <div className="relative rounded-lg bg-sidebar flex items-center border px-3">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  // 🔍 trigger search action
-                  console.log("Searching for:", searchTerm);
-                }
-              }}
               placeholder="Search teams..."
-              className="w-full pr-10 pl-3 py-2 rounded-md bg-sidebar text-foreground placeholder-muted-foreground focus:outline-none"
+              className="w-full py-2 pr-10 bg-transparent outline-none"
             />
-            <button
-              onClick={() => {
-                // 🔍 same as pressing Enter
-                console.log("Searching for:", searchTerm);
-              }}
-              className="absolute right-2 p-1 rounded-md hover:bg-muted transition"
-            >
-              <Search className="h-5 w-5 text-primary" />
-            </button>
+            <Search className="absolute right-3 h-5 w-5 text-muted-foreground" />
           </div>
-
-
         </div>
 
-        {/* Filtered Team List */}
-        <ul>
-          {filteredTeams.map((team) => (
-            <li key={team.id}>
-              <button
-                onClick={() => setSelectedTeam(team)}
-                className={`w-full text-left rounded-lg px-4 py-3 transition-colors ${
-                  selectedTeam.id === team.id
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
-              >
-                {team.name}
-              </button>
-            </li>
-          ))}
+        {/* Team List */}
+        <ul className="overflow-y-auto h-[calc(100%-6rem)] pb-20">
+          {loading && teams.length === 0 ? (
+            <li className="px-4 py-3 text-muted-foreground">Loading teams...</li>
+          ) : filteredTeams.length === 0 ? (
+            <li className="px-4 py-3 text-muted-foreground">No teams found</li>
+          ) : (
+            filteredTeams.map((team) => (
+              <li key={team.teamId}>
+                <button
+                  onClick={() => {
+                    setSelectedTeam(team);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-md transition ${
+                    selectedTeam?.teamId === team.teamId
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  {team.title}
+                </button>
+              </li>
+            ))
+          )}
         </ul>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 p-6 overflow-y-auto min-h-screen">
-        <div className="relative flex-1">
-          {selectionMode && (
-            <button
-              onClick={() => {
-                setSelectionMode(false);
-                setSelectedPhotos([]);
-              }}
-              className="absolute -top-2 left-2 mb-4 bg-black/60 text-white rounded-md px-3 py-1 shadow"
-            >
-              Cancel
-            </button>
-          )}
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-md shadow-lg"
+        onClick={() => setSidebarOpen(true)}
+      >
+        <Menu className="h-5 w-5" />
+      </button>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-fade-in">
-            {selectedTeam.photos.map((photo, index) => {
-              const isSelected = selectedPhotos.includes(photo);
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+        {status && (
+          <div className="mb-4 text-sm bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+            {status}
+          </div>
+        )}
 
-              return (
-                <div
-                  key={index}
-                  className="relative overflow-hidden rounded-lg shadow-md group cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() =>
-                    selectionMode
-                      ? togglePhotoSelection(photo)
-                      : setSelectedImg(photo)
-                  }
+        {!selectedTeam ? (
+          <div className="text-center text-muted-foreground mt-20">
+            Select a team to view photos
+          </div>
+        ) : loading && images.length === 0 ? (
+          <div className="flex justify-center items-center mt-20">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <span className="ml-2">Loading images...</span>
+          </div>
+        ) : images.length === 0 ? (
+          <div className="text-center text-muted-foreground mt-20">
+            No images uploaded yet
+          </div>
+        ) : (
+          <>
+            {/* Selection Actions */}
+            {selectionMode && (
+              <div className="flex justify-between items-center mb-4">
+                <button
+                  onClick={() => {
+                    setSelectionMode(false);
+                    setSelectedPhotos([]);
+                  }}
+                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
                 >
-                  <img
-                    src={photo}
-                    alt={`${selectedTeam.name} Photo ${index + 1}`}
-                    className="w-full h-60 object-cover rounded-lg"
-                  />
+                  Cancel
+                </button>
+                <button
+                  onClick={selectAll}
+                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                >
+                  {selectedPhotos.length === images.length
+                    ? "Deselect All"
+                    : "Select All"}
+                </button>
+              </div>
+            )}
 
-                  {/* Checkbox overlay */}
-                  {(selectionMode || !selectionMode) && (
+            {/* Image Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((photo, idx) => {
+                const isSelected = selectedPhotos.includes(photo);
+                return (
+                  <div
+                    key={idx}
+                    className={`relative overflow-hidden rounded-lg shadow-md group cursor-pointer ${
+                      isSelected ? "ring-4 ring-primary" : ""
+                    }`}
+                    onClick={() =>
+                      selectionMode
+                        ? togglePhotoSelection(photo)
+                        : setSelectedImg(photo)
+                    }
+                  >
+                    <img
+                      src={photo}
+                      alt=""
+                      className="w-full h-60 object-cover transition-transform group-hover:scale-105"
+                    />
                     <div
                       className={`absolute top-2 right-2 w-6 h-6 rounded-sm border-2 flex items-center justify-center transition
-                        ${
-                          isSelected
-                            ? "bg-primary border-primary text-white"
-                            : selectionMode
-                            ? "bg-white/70 border-gray-400"
-                            : "opacity-0 group-hover:opacity-100 bg-white/70 border-gray-400"
-                        }`}
+                      ${
+                        isSelected
+                          ? "bg-primary border-primary text-white"
+                          : "bg-white/70 border-gray-400 opacity-0 group-hover:opacity-100"
+                      }`}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (!selectionMode) {
@@ -313,39 +296,85 @@ export default function TeamPhotos() {
                     >
                       {isSelected && <Check size={14} strokeWidth={3} />}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
 
-          {/* Floating Button */}
-          {selectionMode ? (
-            <button
-              onClick={handleDeletePhoto}
-              className="fixed bottom-11 right-11 p-4 rounded-full shadow-lg cursor-pointer bg-red-500 hover:bg-red-600 hover:scale-110 transition-all duration-300 z-50"
-            >
-              <Trash2 className="h-6 w-6 text-white" />
-            </button>
-          ) : (
-            <label className="fixed bottom-11 right-11 p-4 rounded-full shadow-lg cursor-pointer bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-110 transition-all duration-300 z-50">
-              <ImageUp className="h-6 w-6 text-white" />
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-            </label>
-          )}
-        </div>
+        {/* Floating Buttons */}
+        {selectedTeam && (
+          <>
+            {selectionMode ? (
+              <button
+                onClick={() => setConfirmDelete(true)}
+                disabled={loading}
+                className="fixed bottom-10 right-10 p-4 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 hover:scale-110 transition-all z-50 disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                ) : (
+                  <Trash2 className="h-6 w-6" />
+                )}
+              </button>
+            ) : (
+              <label className="fixed bottom-10 right-10 p-4 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg cursor-pointer hover:scale-110 transition-all duration-300 z-50">
+                {loading ? (
+                  <Loader2 className="h-6 w-6 text-white animate-spin" />
+                ) : (
+                  <ImageUp className="h-6 w-6 text-white" />
+                )}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                />
+              </label>
+            )}
+          </>
+        )}
       </main>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-xl max-w-sm w-full text-center">
+            <h3 className="text-lg font-semibold mb-2">
+              Confirm Delete
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Are you sure you want to delete the selected image(s)?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeletePhoto}
+                disabled={loading}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin inline" />
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Enlarged Image Modal */}
       {selectedImg && !selectionMode && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
           onClick={() => setSelectedImg(null)}
         >
           <div
@@ -355,20 +384,18 @@ export default function TeamPhotos() {
             <img
               src={selectedImg}
               alt="Enlarged"
-              className="max-w-[480px] max-h-[70vh] rounded-xl object-cover"
+              className="max-w-[90vw] max-h-[80vh] rounded-xl object-cover"
             />
             <div className="absolute top-3 right-3 flex gap-2">
               <button
-                className="bg-white dark:bg-neutral-800 text-red-500 border border-red-200 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all duration-300"
-                onClick={handleDeletePhoto}
-                title="Delete"
+                className="bg-white text-red-500 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all"
+                onClick={() => setConfirmDelete(true)}
               >
                 <Trash2 size={20} />
               </button>
               <button
-                className="bg-white dark:bg-neutral-800 text-red-500 border border-red-200 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all duration-300"
+                className="bg-white text-gray-600 rounded-full p-2 shadow hover:bg-gray-800 hover:text-white transition-all"
                 onClick={() => setSelectedImg(null)}
-                title="Close"
               >
                 <X size={20} />
               </button>
@@ -379,5 +406,3 @@ export default function TeamPhotos() {
     </div>
   );
 }
-
-

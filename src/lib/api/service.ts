@@ -134,13 +134,48 @@ export class ApiService {
     deleteAnnouncement: async (id: number): Promise<{ message: string }> => {
       const response = await apiClient.delete(`/admin/announcements/${id}`);
       return response.data;
-    }
+    },
+
+    uploadImagesForTeam: async (teamId: number, images: File[]): Promise<any> => {
+      const formData = new FormData();
+      images.forEach((file) => formData.append("images", file));
+
+      const response = await apiClient.put(
+        `/admin/gallery/${teamId}/images`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return response.data;
+    },
+
+    deleteTeamImage: async (teamId: number, imageUrl: string): Promise<any> => {
+      const response = await apiClient.put(`/admin/gallery/${teamId}/remove-image`, {
+        imageUrl ,
+      });
+      return response.data;
+    },
+
+    getTeamImages: async (teamId: number): Promise<string[]> => {
+      const response = await apiClient.get(`/admin/gallery/${teamId}/images`);
+      return response.data.images;
+    },
+
   };
 
   static team = {
     getDetails: async (): Promise<Team> => {
       const response = await apiClient.get(`/teams`);
       return response.data;
+    },
+
+    getTeamImages: async (): Promise<string[]> => {
+      const response = await apiClient.get(`/admin/gallery/images`);
+      return response.data.images;
     },
 
     updateProfile: async (teamId: number, updates: Partial<Team>): Promise<Team> => {
