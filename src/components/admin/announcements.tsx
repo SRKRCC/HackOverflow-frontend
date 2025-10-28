@@ -597,6 +597,17 @@ const Announcements: React.FC = () => {
                             </div>
                             <div className="text-gray-800 dark:text-gray-200 ml-6 text-sm">
                               <div className="font-semibold">{startDate}</div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">{startTime}</div>
+                            </div>
+                          </div>
+
+                          <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded-xl border border-red-200 dark:border-red-800">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Clock className="w-4 h-4 text-red-600 dark:text-red-400" />
+                              <span className="font-bold text-red-700 dark:text-red-300 text-xs uppercase tracking-wide">End</span>
+                            </div>
+                            <div className="text-gray-800 dark:text-gray-200 ml-6 text-sm">
+                              <div className="font-semibold">{endDate}</div>
                               <div className="text-xs text-gray-600 dark:text-gray-400">{endTime}</div>
                             </div>
                           </div>
