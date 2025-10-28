@@ -16,8 +16,7 @@ function ProblemStatement() {
   const getProblemStatement = async () => {
     try {
       setLoading(true);
-      const teamDetails = await ApiService.team.getDetails();
-      const response = await ApiService.team.getProblemStatement(teamDetails.ps_id);
+      const response = await ApiService.team.getProblemStatement();
       setPs(response);
       
     } catch (err: any) {

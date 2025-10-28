@@ -25,11 +25,6 @@ export class ApiService {
       const response = await apiClient.post('/auth/logout');
       return response.data;
     },
-
-    validateToken: async (): Promise<{ valid: boolean; user?: any }> => {
-      const response = await apiClient.get('/auth/validate');
-      return response.data;
-    }
   };
 
   static admin = {
@@ -39,29 +34,27 @@ export class ApiService {
     },
 
     getAllTasks: async (): Promise<Task[]> => {
-      const response = await apiClient.get('/tasks');
+      const response = await apiClient.get('/admin/tasks');
       return response.data;
     },
-
     
-
     createTask: async (task: CreateTaskRequest): Promise<Task> => {
-      const response = await apiClient.post('/tasks', task);
+      const response = await apiClient.post('/admin/tasks', task);
       return response.data;
     },
 
     updateTask: async (id: number, updates: Partial<CreateTaskRequest>): Promise<Task> => {
-      const response = await apiClient.put(`/tasks/${id}`, updates);
+      const response = await apiClient.put(`/admin/tasks/${id}`, updates);
       return response.data;
     },
 
     deleteTask: async (id: number): Promise<{ message: string }> => {
-      const response = await apiClient.delete(`/tasks/${id}`);
+      const response = await apiClient.delete(`/admin/tasks/${id}`);
       return response.data;
     },
 
     completeTask: async (id: number, reviewNotes?: string): Promise<Task> => {
-      const response = await apiClient.post(`/tasks/${id}/complete`, { reviewNotes });
+      const response = await apiClient.post(`/admin/tasks/${id}/complete`, { reviewNotes });
       return response.data;
     },
 
@@ -76,7 +69,7 @@ export class ApiService {
     },
 
     getLeaderboard: async (): Promise<LeaderboardEntry[]> => {
-      const response = await apiClient.get('/leaderboards');
+      const response = await apiClient.get('/admin/leaderboards');
       return response.data;
     },
 
@@ -86,29 +79,29 @@ export class ApiService {
     },
 
     getAllProblemStatements: async (): Promise<ProblemStatement[]> => {
-      const response = await apiClient.get('/problem-statements');
+      const response = await apiClient.get('/admin/problem-statements');
       return response.data;
     },
 
     createProblemStatement: async (ps: Omit<ProblemStatement, 'id'>): Promise<ProblemStatement> => {
-      const response = await apiClient.post('/problem-statements', ps);
+      const response = await apiClient.post('/admin/problem-statements', ps);
       return response.data;
     },
 
     updateProblemStatement: async (id: number, updates: Partial<ProblemStatement>): Promise<ProblemStatement> => {
-      const response = await apiClient.put(`/problem-statements/${id}`, updates);
+      const response = await apiClient.put(`/admin/problem-statements/${id}`, updates);
       return response.data;
     },
 
     deleteProblemStatement: async (id: number): Promise<{ message: string }> => {
-      const response = await apiClient.delete(`/problem-statements/${id}`);
+      const response = await apiClient.delete(`/admin/problem-statements/${id}`);
       return response.data;
     },
 
     uploadProblemStatementsCSV: async (file: File): Promise<{ message: string; count: number }> => {
       const formData = new FormData();
       formData.append('csv-file', file);
-      const response = await apiClient.post('/problem-statements/csv', formData, {
+      const response = await apiClient.post('/admin/problem-statements/csv', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -165,31 +158,30 @@ export class ApiService {
       return response.data.images;
     },
 
+    logout: async (): Promise<{ message: string }> => {
+      const response = await apiClient.post('/admin/logout');
+      return response.data;
+    }
   };
 
   static team = {
     getDetails: async (): Promise<Team> => {
-      const response = await apiClient.get(`/teams`);
+      const response = await apiClient.get(`/teams/team`);
       return response.data;
     },
 
     getTeamImages: async (): Promise<string[]> => {
-      const response = await apiClient.get(`/admin/gallery/images`);
-      return response.data.images;
-    },
-
-    updateProfile: async (teamId: number, updates: Partial<Team>): Promise<Team> => {
-      const response = await apiClient.put(`/teams/${teamId}`, updates);
+      const response = await apiClient.get(`/teams/gallery`);
       return response.data;
     },
 
     getTasks: async (): Promise<Task[]> => {
-      const response = await apiClient.get(`/teams/team-tasks`);
+      const response = await apiClient.get(`/teams/tasks`);
       return response.data;
     },
 
-    getTask: async (teamId: number, taskId: number): Promise<Task> => {
-      const response = await apiClient.get(`/teams/${teamId}/tasks/${taskId}`);
+    getTask: async (taskId: number): Promise<Task> => {
+      const response = await apiClient.get(`/teams/tasks/${taskId}`);
       return response.data;
     },
 
@@ -198,13 +190,8 @@ export class ApiService {
       return response.data;
     },
 
-    getProblemStatements: async (): Promise<ProblemStatement[]> => {
-      const response = await apiClient.get('/problem-statements');
-      return response.data;
-    },
-
-    getProblemStatement: async (id: number): Promise<ProblemStatement> => {
-      const response = await apiClient.get(`/problem-statements/${id}`);
+    getProblemStatement: async (): Promise<ProblemStatement> => {
+      const response = await apiClient.get(`/teams/problem-statement`);
       console.log(response);
       return response.data.data;
     },
@@ -214,23 +201,17 @@ export class ApiService {
       return response.data;
     },
 
-    uploadGalleryImage: async (teamId: number, image: File): Promise<{ message: string; imageUrl: string }> => {
-      const formData = new FormData();
-      formData.append('image', image);
-      const response = await apiClient.post(`/teams/${teamId}/gallery`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
-    },
-
-    removeGalleryImage: async (teamId: number, imageUrl: string): Promise<{ message: string }> => {
-      const response = await apiClient.delete(`/teams/${teamId}/gallery`, {
-        data: { imageUrl }
-      });
+    logout: async (): Promise<{ message: string }> => {
+      const response = await apiClient.post('/teams/logout');
       return response.data;
     }
+  };
+
+  static public = {
+    getProblemStatements: async (): Promise<ProblemStatement[]> => {
+      const response = await apiClient.get('/public/problem-statements');
+      return response.data;
+    },
   };
 }
 

@@ -17,6 +17,7 @@ const Gallery: React.FC = () => {
       const response = await ApiService.team.getTeamImages();
 
       // normalize response
+      // console.log(response);
       if (response) {
         setImages(response);
       } else if (Array.isArray(response)) {

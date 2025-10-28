@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
-import axios from "axios";
+import { ApiService } from "@/lib/api";
 
 interface SidebarProps {
   openSidebar: boolean;
@@ -29,7 +29,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     localStorage.getItem("theme") === "dark" ? "Dark" : "Light"
   );
 
-  // ✅ Check screen size
+  // Check screen size
   useEffect(() => {
     const checkScreen = () => setIsMobile(window.innerWidth <= 768);
     checkScreen();
@@ -37,7 +37,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  // ✅ Sync theme text with actual theme
+  // Sync theme text with actual theme
   useEffect(() => {
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
@@ -52,7 +52,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ Toggle theme
+  // Toggle theme
   const handleTheme = () => {
     if (currentTheme !== "Dark") {
       document.documentElement.classList.add("dark");
@@ -63,11 +63,11 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     }
   };
 
-  // ✅ Logout logic with confirmation
+  // Logout logic with confirmation
   const handleLogout = async () => {
     try {
       // Call backend logout API
-      await axios.post("/api/logout", {}, { withCredentials: true });
+      await ApiService.team.logout();
 
       // Clear all local storage & session data
       localStorage.clear();

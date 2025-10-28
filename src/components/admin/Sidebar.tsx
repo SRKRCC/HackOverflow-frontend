@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
+import { ApiService } from "@/lib/api";
 
 interface SidebarProps {
   openSidebar: boolean;
@@ -59,10 +60,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   const handleLogout = async () => {
     try {
       // Call backend logout API if you have one
-      await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      await ApiService.admin.logout();
     } catch (error) {
       console.error("Logout failed:", error);
     }

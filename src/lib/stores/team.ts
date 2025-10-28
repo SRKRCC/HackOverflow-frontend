@@ -73,7 +73,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
   fetchProblemStatements: async () => {
     try {
       set({ loading: true, error: null });
-      const problemStatements = await ApiService.team.getProblemStatements();
+      const problemStatements = await ApiService.public.getProblemStatements();
       set({ problemStatements, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });

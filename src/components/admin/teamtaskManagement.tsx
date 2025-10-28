@@ -113,12 +113,12 @@ export default function TeamTaskManagement() {
     return configs[status] || configs.Pending
   }
 
-  const openEditModal = (task: Task) => {
-    setModalMode("edit")
-    setSelectedTask({ ...task })
-    setIsModalOpen(true)
-    setSuccessMessage(false)
-  }
+  // const openEditModal = (task: Task) => {
+  //   setModalMode("edit")
+  //   setSelectedTask({ ...task })
+  //   setIsModalOpen(true)
+  //   setSuccessMessage(false)
+  // }
 
   const openCreateModal = () => {
     setModalMode("create")
