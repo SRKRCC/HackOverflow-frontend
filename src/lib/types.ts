@@ -78,8 +78,8 @@ export interface Task {
 
 // Leaderboard
 export interface LeaderboardEntry {
-  teamId: number;
-  teamName: string;
+  id: number; 
+  title: string;
   totalPoints: number;
   completedTasks: number;
   rank: number;

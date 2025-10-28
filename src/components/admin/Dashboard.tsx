@@ -91,13 +91,13 @@ const Dashboard = () => {
           {leaderboard.length > 0 ? (
             <div className="space-y-3">
               {leaderboard.slice(0, 5).map((entry) => (
-                <div key={entry.teamId} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                <div key={entry.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
                   <div className="flex items-center gap-3">
                     <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                       {entry.rank}
                     </span>
                     <div>
-                      <p className="font-medium">{entry.teamName}</p>
+                      <p className="font-medium">{entry.title}</p>
                       <p className="text-sm text-gray-600">{entry.completedTasks} tasks completed</p>
                     </div>
                   </div>
