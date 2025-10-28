@@ -44,7 +44,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
     
     try {
       set({ loading: true, error: null });
-      const tasks = await ApiService.team.getTasks(user.id);
+      const tasks = await ApiService.team.getTasks();
       set({ tasks, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -57,7 +57,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
     
     try {
       set({ loading: true, error: null });
-      const result = await ApiService.team.submitTask(user.id, taskId, submission);
+      const result = await ApiService.team.submitTask( taskId, submission);
       set(state => ({
         tasks: state.tasks.map(task => 
           task.id === taskId ? result.task : task

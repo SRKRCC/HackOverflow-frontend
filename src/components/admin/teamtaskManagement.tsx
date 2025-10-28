@@ -678,13 +678,13 @@ export default function TeamTaskManagement() {
                             Approve
                           </button>
                         )}
-                        <button
+                        {/* <button
                           className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
                           onClick={() => openEditModal(task)}
                         >
                           <Edit className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                           Edit
-                        </button>
+                        </button> */}
                       </div>
                     </motion.div>
                   )

@@ -148,8 +148,8 @@ export class ApiService {
       return response.data;
     },
 
-    getTasks: async (teamId: number): Promise<Task[]> => {
-      const response = await apiClient.get(`/teams/${teamId}/tasks`);
+    getTasks: async (): Promise<Task[]> => {
+      const response = await apiClient.get(`/teams/team-tasks`);
       return response.data;
     },
 
@@ -158,8 +158,8 @@ export class ApiService {
       return response.data;
     },
 
-    submitTask: async (teamId: number, taskId: number, submission: TaskSubmissionRequest): Promise<{ message: string; task: Task }> => {
-      const response = await apiClient.post(`/teams/${teamId}/tasks/${taskId}/submit`, submission);
+    submitTask: async (taskId: number, submission: TaskSubmissionRequest): Promise<{ message: string; task: Task }> => {
+      const response = await apiClient.post(`/teams/tasks/${taskId}/submit`, submission);
       return response.data;
     },
 
