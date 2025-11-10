@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
 import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
 import Button from "@/components/ui/button"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import ThemeToggle from "./ThemeToggle"
+import { auth } from "@/lib/auth"
 
 const Navbar = ({ className = "" }) => {
     const [isOpen, setIsOpen] = useState(false)
     const [isScrolled, setIsScrolled] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -16,12 +18,22 @@ const Navbar = ({ className = "" }) => {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const navItems = [
-        { name: "Home", icon: Home, href: "/" },
-        { name: "Schedule", icon: Calendar, href: "/schedule" },
-        { name: "Teams", icon: Users, href: "/team" },
-        { name: "Prizes", icon: Trophy, href: "/prizes" },
-    ]
+    const getNavItems = () => {
+        const isTeam = auth.isTeam()
+
+        if (isTeam) {
+            return []  // Empty for team users since they use sidebar navigation
+        }
+
+        return [
+            { name: "Home", icon: Home, href: "/" },
+            { name: "Schedule", icon: Calendar, href: "/schedule" },
+            { name: "Teams", icon: Users, href: "/team" },
+            { name: "Prizes", icon: Trophy, href: "/prizes" },
+        ]
+    }
+
+    const navItems = getNavItems()
 
     return (
         <nav
@@ -70,11 +82,25 @@ const Navbar = ({ className = "" }) => {
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center space-x-3 animate-fade-in" style={{ animationDelay: "600ms" }}>
                         <ThemeToggle />
-                        <Link to="/login">
-                            <Button variant="outline" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                                Login
+                        {auth.isAuthenticated() ? (
+                            <Button 
+                                variant="outline" 
+                                className="text-white bg-primary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
+                                onClick={() => {
+                                    auth.logout()
+                                    navigate('/')
+                                    window.location.reload()
+                                }}
+                            >
+                                Logout
                             </Button>
-                        </Link>
+                        ) : (
+                            <Link to="/login">
+                                <Button variant="outline" className="text-white bg-primary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+                                    Login
+                                </Button>
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -109,14 +135,30 @@ const Navbar = ({ className = "" }) => {
                             </Link>
                         ))}
                         <div className="px-4 py-3 space-y-2 border-t border-border">
-                            <Link to="/login">
-                                <Button variant="outline" className="w-full bg-transparent">
-                                    Login
+                            {auth.isAuthenticated() ? (
+                                <Button 
+                                    variant="outline" 
+                                    className="w-full bg-transparent"
+                                    onClick={() => {
+                                        auth.logout()
+                                        navigate('/')
+                                        window.location.reload()
+                                    }}
+                                >
+                                    Logout
                                 </Button>
-                            </Link>
-                            <Link to="/register">
-                                <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
-                            </Link>
+                            ) : (
+                                <>
+                                    <Link to="/login">
+                                        <Button variant="outline" className="w-full bg-transparent">
+                                            Login
+                                        </Button>
+                                    </Link>
+                                    <Link to="/register">
+                                        <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

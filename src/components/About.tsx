@@ -43,7 +43,7 @@ const About: FC = () => {
             </div>
           </div>
           <h1 className={`text-4xl md:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
-            About <span className="text-[#b35605]">HackOverflow</span> <span className="text-[#7715e8]">2K25</span>
+            About <span className="text-[#b35605]">HackOverflow</span> <span className="text-secondary">2K25</span>
           </h1>
           <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
             India's premier nationwide hackathon bringing together innovators to solve real-world challenges
@@ -72,14 +72,14 @@ const About: FC = () => {
 
           {/* Organizer Information - RIGHT side */}
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.4s" }}>
-            <h2 className="text-2xl font-bold mb-6 flex items-center text-[#7715e8]">
+            <h2 className="text-2xl font-bold mb-6 flex items-center text-secondary">
               <Users className="mr-3" size={24} />
               Organized by SRKR Coding Club
             </h2>
             
             <div className="bg-muted p-6 rounded-lg mb-6">
               <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-[#7715e8] rounded-full flex items-center justify-center mr-4">
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mr-4">
                   <Code className="text-white" size={24} />
                 </div>
                 <div>
@@ -98,7 +98,7 @@ const About: FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-[#7715e8] to-[#b35605] p-6 rounded-lg text-white">
+            <div className="bg-secondary p-6 rounded-lg text-white">
               <h3 className="font-bold text-lg mb-2">Our Mission</h3>
               <p>
                 To create a platform where students can learn, collaborate, and innovate through practical coding experiences and competitive programming.
