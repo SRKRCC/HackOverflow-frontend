@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { 
   Code,
   Users,
-  Trophy,
-  Calendar,
   MapPin
 } from "lucide-react";
 

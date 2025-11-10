@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { Calendar, Users, Trophy, ArrowRight, Clock, Code2, Zap } from "lucide-react"
 
 const HeroSection = () => {
@@ -11,6 +12,7 @@ const HeroSection = () => {
     seconds: 0,
   })
   const [isHovering, setIsHovering] = useState<string | null>(null)
+  const navigate = useNavigate();
 
   useEffect(() => {
     const targetDate = new Date("2025-12-19T00:00:00").getTime()
@@ -146,6 +148,7 @@ const HeroSection = () => {
           <button
             onMouseEnter={() => setIsHovering("register")}
             onMouseLeave={() => setIsHovering(null)}
+            onClick={() => navigate('/register')}
             className="group relative overflow-hidden rounded-lg px-8 py-4 bg-primary hover:bg-primary/85 text-primary-foreground font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-primary/50 active:scale-95"
           >
             {/* Animated background gradient overlay */}
