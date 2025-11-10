@@ -99,6 +99,19 @@ export interface TaskSubmissionRequest {
   teamNotes: string;
 }
 
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export interface RegistrationResponse {
+  success: boolean;
+  teamId?: number;
+  sccId?: string;
+  message: string;
+  errors?: ValidationError[];
+}
+
 export type Announcement = {
   id: number;
   title: string;

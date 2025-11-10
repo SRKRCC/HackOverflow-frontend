@@ -7,7 +7,8 @@ import type {
   LeaderboardEntry, 
   ProblemStatement,
   CreateTaskRequest,
-  TaskSubmissionRequest
+  TaskSubmissionRequest,
+  RegistrationResponse
 } from '../types';
 
 /**
@@ -210,6 +211,15 @@ export class ApiService {
   static public = {
     getProblemStatements: async (): Promise<ProblemStatement[]> => {
       const response = await apiClient.get('/public/problem-statements');
+      return response.data.data;
+    },
+
+    registerTeam: async (formData: FormData): Promise<RegistrationResponse> => {
+      const response = await apiClient.post('/teams/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
   };

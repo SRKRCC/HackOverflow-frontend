@@ -1,39 +1,126 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
-import Button from "./ui/button"
-import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText } from "lucide-react"
+import Button from '@/components/ui/button'
+import { Select } from '@/components/ui/select'
+import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock } from "lucide-react"
+import { ApiService } from '@/lib/api/service'
+import type { ProblemStatement as ApiProblemStatement } from '@/lib/types'
 
 type Member = {
     name: string
     email: string
     phone: string
     photo: File | null
+    department: string
+    collegeName: string
+    yearOfStudy: number
+    location: string
+    tShirtSize: string
 }
 
 type ProblemStatement = {
     id: string
+    psId?: string
     title: string
     description: string
     category: string
+    tags: string[]
+    isCustom?: boolean
 }
 
 export default function RegisterPage() {
     const navigate = useNavigate()
+    
+    const registrationDeadline = new Date('2025-12-13T00:00:00')
+    const isRegistrationOpen = new Date() < registrationDeadline
+    
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const [lead, setLead] = useState({ name: "", email: "", phone: "", photo: null as File | null })
+    const [teamName, setTeamName] = useState("")
+    const [lead, setLead] = useState({ 
+        name: "", 
+        email: "", 
+        phone: "", 
+        photo: null as File | null,
+        department: "",
+        collegeName: "",
+        yearOfStudy: 0,
+        location: "",
+        tShirtSize: ""
+    })
     const [members, setMembers] = useState<Member[]>([])
     const [problemStatement, setProblemStatement] = useState<ProblemStatement>({
         id: "",
         title: "",
         description: "",
-        category: ""
+        category: "",
+        tags: []
     })
 
-    function onMemberChange(index: number, key: keyof Member, value: string | File | null) {
+    // Problem statement selection states
+    const [availableProblemStatements, setAvailableProblemStatements] = useState<ApiProblemStatement[]>([])
+    const [selectedProblemStatementId, setSelectedProblemStatementId] = useState<string>("")
+    const [showCustomProblemStatement, setShowCustomProblemStatement] = useState(false)
+    const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null)
+    const [upiReferenceId, setUpiReferenceId] = useState("")
+    const [transactionId, setTransactionId] = useState("")
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [registrationResponse, setRegistrationResponse] = useState<{ message: string; sccId?: string } | null>(null)
+    const [loadingProblemStatements, setLoadingProblemStatements] = useState(false)
+
+    // Fetch available problem statements
+    useEffect(() => {
+        const fetchProblemStatements = async () => {
+            try {
+                setLoadingProblemStatements(true)
+                const data = await ApiService.public.getProblemStatements()
+                setAvailableProblemStatements(data)
+            } catch (err) {
+                console.error("Failed to fetch problem statements:", err)
+                setError("Failed to load problem statements. Please try again later.")
+            } finally {
+                setLoadingProblemStatements(false)
+            }
+        }
+
+        fetchProblemStatements()
+    }, [])
+
+    // Handle problem statement selection
+    const handleProblemStatementSelect = (psId: string) => {
+        setSelectedProblemStatementId(psId)
+        
+        if (psId === "custom") {
+            setShowCustomProblemStatement(true)
+            setProblemStatement({
+                id: "",
+                title: "",
+                description: "",
+                category: "",
+                tags: [],
+                isCustom: true
+            })
+        } else {
+            setShowCustomProblemStatement(false)
+            const selected = availableProblemStatements.find(ps => ps.psId === psId)
+            if (selected) {
+                setProblemStatement({
+                    id: selected.id ? selected.id.toString() : "",
+                    psId: selected.psId,
+                    title: selected.title,
+                    description: selected.description,
+                    category: selected.category,
+                    tags: selected.tags,
+                    isCustom: false
+                })
+            }
+        }
+    }
+
+    function onMemberChange(index: number, key: keyof Member, value: string | File | null | number) {
         setMembers((prev) => {
             const next = [...prev]
             next[index] = { ...next[index], [key]: value }
@@ -43,7 +130,17 @@ export default function RegisterPage() {
 
     function addMember() {
         if (members.length < 5) {
-            setMembers(prev => [...prev, { name: "", email: "", phone: "", photo: null }])
+            setMembers(prev => [...prev, { 
+                name: "", 
+                email: "", 
+                phone: "", 
+                photo: null,
+                department: "",
+                collegeName: "",
+                yearOfStudy: 0,
+                location: "",
+                tShirtSize: ""
+            }])
         }
     }
 
@@ -59,8 +156,12 @@ export default function RegisterPage() {
         setError(null)
 
         if (currentStep === 2) {
-            if (!lead.name || !lead.email || !lead.phone) {
-                setError("Please complete all Team Lead fields.")
+            if (!teamName.trim()) {
+                setError("Please enter a team name.")
+                return
+            }
+            if (!lead.name || !lead.email || !lead.phone || !lead.collegeName || !lead.department || !lead.tShirtSize) {
+                setError("Please complete all required Team Lead fields.")
                 return
             }
             if (members.length < 3) {
@@ -72,16 +173,23 @@ export default function RegisterPage() {
                 return
             }
             // Check if all team members have required fields filled
-            const incompleteMembers = members.some(member => !member.name || !member.email || !member.phone)
+            const incompleteMembers = members.some(member => !member.name || !member.email || !member.phone || !member.collegeName || !member.department || !member.tShirtSize)
             if (incompleteMembers) {
                 setError("Please complete all fields for all team members.")
                 return
             }
 
             // Validate problem statement
-            if (!problemStatement.id || !problemStatement.title || !problemStatement.description || !problemStatement.category) {
-                setError("Please complete all problem statement fields (ID, title, description, and category).")
+            if (!selectedProblemStatementId) {
+                setError("Please select a problem statement.")
                 return
+            }
+            
+            if (showCustomProblemStatement) {
+                if (!problemStatement.title || !problemStatement.description || !problemStatement.category) {
+                    setError("Please complete all custom problem statement fields.")
+                    return
+                }
             }
         }
 
@@ -96,14 +204,76 @@ export default function RegisterPage() {
     async function handleSubmit() {
         try {
             setSubmitting(true)
-            // TODO: send to your API
-            // await fetch("/api/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ lead, members, problemStatement }) })
+            
+            const totalMembers = members.length + 1
+            const amountPerHead = 850
+            const totalAmount = totalMembers * amountPerHead
+            
+            // Prepare form data for submission
+            const formData = new FormData()
+            
+            // Team information
+            formData.append('teamName', teamName)
+            
+            // Team lead
+            formData.append('lead[name]', lead.name)
+            formData.append('lead[email]', lead.email)
+            formData.append('lead[phone]', lead.phone)
+            formData.append('lead[collegeName]', lead.collegeName)
+            formData.append('lead[department]', lead.department)
+            formData.append('lead[yearOfStudy]', lead.yearOfStudy.toString())
+            formData.append('lead[location]', lead.location)
+            formData.append('lead[tShirtSize]', lead.tShirtSize)
+            if (lead.photo) {
+                formData.append('lead[photo]', lead.photo)
+            }
+            
+            // Team members
+            members.forEach((member, index) => {
+                formData.append(`members[${index}][name]`, member.name)
+                formData.append(`members[${index}][email]`, member.email)
+                formData.append(`members[${index}][phone]`, member.phone)
+                formData.append(`members[${index}][collegeName]`, member.collegeName)
+                formData.append(`members[${index}][department]`, member.department)
+                formData.append(`members[${index}][yearOfStudy]`, member.yearOfStudy.toString())
+                formData.append(`members[${index}][location]`, member.location)
+                formData.append(`members[${index}][tShirtSize]`, member.tShirtSize)
+                if (member.photo) {
+                    formData.append(`members[${index}][photo]`, member.photo)
+                }
+            })
+            
+            // Problem statement
+            formData.append('problemStatement[id]', problemStatement.id)
+            if (problemStatement.psId) {
+                formData.append('problemStatement[psId]', problemStatement.psId)
+            }
+            formData.append('problemStatement[title]', problemStatement.title)
+            formData.append('problemStatement[description]', problemStatement.description)
+            formData.append('problemStatement[category]', problemStatement.category)
+            formData.append('problemStatement[tags]', JSON.stringify(problemStatement.tags))
+            if (problemStatement.isCustom !== undefined) {
+                formData.append('problemStatement[isCustom]', problemStatement.isCustom.toString())
+            }
+            
+            // Payment information
+            formData.append('payment[totalMembers]', totalMembers.toString())
+            formData.append('payment[amountPerHead]', amountPerHead.toString())
+            formData.append('payment[totalAmount]', totalAmount.toString())
+            formData.append('payment[screenshot]', paymentScreenshot!)
+            formData.append('payment[upiReferenceId]', upiReferenceId)
+            formData.append('payment[transactionId]', transactionId)
+            
+            // Send registration data to backend
+            const response = await ApiService.public.registerTeam(formData)
 
-            // simulate success
-            setTimeout(() => {
-                setSubmitting(false)
-                navigate("/login", { replace: true })
-            }, 800)
+            setRegistrationResponse({
+                message: response.message,
+                sccId: response.sccId
+            })
+
+            setSubmitting(false)
+            setShowSuccessModal(true)
         } catch (err) {
             console.error("Registration error:", err)
             setSubmitting(false)
@@ -115,14 +285,14 @@ export default function RegisterPage() {
         return (
             <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
                 <div className="text-center mb-10">
-                    <div className="inline-flex p-4 bg-primary/10 rounded-3xl mb-6">
+                    {/* <div className="inline-flex p-4 bg-primary/10 rounded-3xl mb-6">
                         <Sparkles className="h-12 w-12 text-primary" />
-                    </div>
+                    </div> */}
                     <h1 className="text-4xl lg:text-5xl font-bold mb-4">
                         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             HACKOVERFLOW
                         </span>
-                        <span className="text-foreground">-2K24</span>
+                        <span className="text-foreground">-2K25</span>
                     </h1>
                     <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6 rounded-full"></div>
                     <p className="text-xl text-muted-foreground font-medium">National-Level Hackathon by SRKR Coding Club</p>
@@ -131,11 +301,8 @@ export default function RegisterPage() {
                 <div className="space-y-8 text-foreground">
                     <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 rounded-2xl p-8 border border-border/50">
                         <p className="text-muted-foreground leading-relaxed text-lg">
-                            The SRKR Coding Club at SRKR Engineering College, Bhimavaram, is excited to announce HACKOVERFLOW-2K24, a
-                            prestigious national-level hackathon scheduled for{" "}
-                            <strong className="text-primary">October 18th and 19th, 2024</strong>. This 24-hour event is designed to
-                            challenge engineering students from across the country, providing a platform to showcase their coding
-                            skills and innovative thinking.
+                            Join HACKOVERFLOW-2K25, SRKR Coding Club's national-level hackathon on{" "}
+                            <strong className="text-primary">December 19th-20th, 2025</strong>. A 24-hour innovation challenge for engineering students nationwide to showcase coding skills and creative solutions.
                         </p>
                     </div>
 
@@ -149,7 +316,7 @@ export default function RegisterPage() {
                                 <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
                                     <span className="text-primary mt-1 font-bold">📅</span>
                                     <span>
-                                        <strong className="text-foreground">Dates:</strong> October 18th - 19th, 2024
+                                        <strong className="text-foreground">Dates:</strong> December 19th-20th, 2025
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
@@ -161,13 +328,13 @@ export default function RegisterPage() {
                                 <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
                                     <span className="text-primary mt-1 font-bold">💰</span>
                                     <span>
-                                        <strong className="text-foreground">Total Prize Pool:</strong> ₹30,000
+                                        <strong className="text-foreground">Prize Pool:</strong> ₹35,000
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
                                     <span className="text-primary mt-1 font-bold">📝</span>
                                     <span>
-                                        <strong className="text-foreground">Registration Deadline:</strong> October 11th, 2024
+                                        <strong className="text-foreground">Registration:</strong> December 15th, 2025
                                     </span>
                                 </li>
                             </ul>
@@ -178,20 +345,32 @@ export default function RegisterPage() {
                                 <Sparkles className="h-5 w-5" />
                                 Themes
                             </h3>
-                            <ul className="space-y-3 text-muted-foreground">
-                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
-                                    <span className="text-2xl">🌾</span>
-                                    <span className="text-foreground font-medium">Agriculture</span>
-                                </li>
-                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
-                                    <span className="text-2xl">🏥</span>
-                                    <span className="text-foreground font-medium">Healthcare</span>
-                                </li>
-                                <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
-                                    <span className="text-2xl">👩‍👧‍👦</span>
-                                    <span className="text-foreground font-medium">Women & Child Safety</span>
-                                </li>
-                            </ul>
+                            <div className="grid grid-cols-2 gap-3 text-muted-foreground">
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">AI & ML</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">Web3 & Blockchain</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">Healthcare Tech</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">Sustainable Dev</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">FinTech</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">EdTech</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">IoT & Smart Devices</span>
+                                </div>
+                                <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
+                                    <span className="text-foreground font-medium">Open Innovation</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -224,8 +403,7 @@ export default function RegisterPage() {
 
                     <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6">
                         <p className="text-amber-800 text-center">
-                            <strong>Objective:</strong> Develop tech-driven solutions addressing pressing societal issues. Open to
-                            engineering students from various disciplines and institutions nationwide.
+                            <strong>Objective:</strong> Build innovative tech solutions for societal challenges. Open to engineering students nationwide.
                         </p>
                     </div>
                 </div>
@@ -248,9 +426,9 @@ export default function RegisterPage() {
             <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
                 <header className="mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2 bg-primary/10 rounded-xl">
+                        {/* <div className="p-2 bg-primary/10 rounded-xl">
                             <Users className="h-6 w-6 text-primary" />
-                        </div>
+                        </div> */}
                         <h2 className="text-3xl font-bold text-foreground">Team Registration</h2>
                     </div>
                     <p className="text-muted-foreground">
@@ -267,15 +445,39 @@ export default function RegisterPage() {
                     </div>
                 )}
 
+                {/* Team Name Section */}
+                <fieldset className="mb-8">
+                    <legend className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Team Information
+                    </legend>
+                    <div className="p-6 bg-background/50 rounded-xl border border-border/50">
+                        <div className="flex flex-col gap-2 max-w-md">
+                            <label htmlFor="teamName" className="text-sm font-medium text-foreground">
+                                Team Name *
+                            </label>
+                            <input
+                                id="teamName"
+                                type="text"
+                                required
+                                value={teamName}
+                                onChange={(e) => setTeamName(e.target.value)}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="Enter your team name"
+                            />
+                        </div>
+                    </div>
+                </fieldset>
+
                 <fieldset className="mb-10">
                     <legend className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
                         <CheckCircle className="h-5 w-5" />
                         Team Lead
                     </legend>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-background/50 rounded-xl border border-border/50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-background/50 rounded-xl border border-border/50">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="leadName" className="text-sm font-medium text-foreground">
-                                Team Lead Name
+                                Team Lead Name *
                             </label>
                             <input
                                 id="leadName"
@@ -289,7 +491,7 @@ export default function RegisterPage() {
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="leadEmail" className="text-sm font-medium text-foreground">
-                                Team Lead Email ID
+                                Team Lead Email ID *
                             </label>
                             <input
                                 id="leadEmail"
@@ -303,17 +505,84 @@ export default function RegisterPage() {
                         </div>
                         <div className="flex flex-col gap-2">
                             <label htmlFor="leadPhone" className="text-sm font-medium text-foreground">
-                                Team Lead Mobile No
+                                Team Lead Mobile No *
                             </label>
                             <input
                                 id="leadPhone"
                                 type="tel"
                                 required
-                                pattern="^[0-9+\\-\\s()]{7,}$"
+                                pattern="^[0-9+\-\s()]{7,}$"
                                 value={lead.phone}
                                 onChange={(e) => setLead((p) => ({ ...p, phone: e.target.value }))}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="+1 555 555 1234"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadCollege" className="text-sm font-medium text-foreground">
+                                College Name *
+                            </label>
+                            <input
+                                id="leadCollege"
+                                type="text"
+                                required
+                                value={lead.collegeName}
+                                onChange={(e) => setLead((p) => ({ ...p, collegeName: e.target.value }))}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="SRKR Engineering College"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadDepartment" className="text-sm font-medium text-foreground">
+                                Department *
+                            </label>
+                            <Select
+                                id="leadDepartment"
+                                required
+                                value={lead.department}
+                                onChange={(e) => setLead((p) => ({ ...p, department: e.target.value }))}
+                                placeholder="Select department"
+                                options={[
+                                    { value: "CSE", label: "Computer Science & Engineering" },
+                                    { value: "IT", label: "Information Technology" },
+                                    { value: "ECE", label: "Electronics & Communication Engineering" },
+                                    { value: "EEE", label: "Electrical & Electronics Engineering" },
+                                    { value: "MECH", label: "Mechanical Engineering" },
+                                    { value: "CIVIL", label: "Civil Engineering" },
+                                    { value: "CHEM", label: "Chemical Engineering" },
+                                    { value: "BIO", label: "Biotechnology" },
+                                    { value: "OTHER", label: "Other" }
+                                ]}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadYear" className="text-sm font-medium text-foreground">
+                                Year of Study
+                            </label>
+                            <Select
+                                id="leadYear"
+                                value={lead.yearOfStudy}
+                                onChange={(e) => setLead((p) => ({ ...p, yearOfStudy: parseInt(e.target.value) || 0 }))}
+                                placeholder="Select year"
+                                options={[
+                                    { value: 1, label: "1st Year" },
+                                    { value: 2, label: "2nd Year" },
+                                    { value: 3, label: "3rd Year" },
+                                    { value: 4, label: "4th Year" }
+                                ]}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadLocation" className="text-sm font-medium text-foreground">
+                                Location
+                            </label>
+                            <input
+                                id="leadLocation"
+                                type="text"
+                                value={lead.location}
+                                onChange={(e) => setLead((p) => ({ ...p, location: e.target.value }))}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="Bhimavaram, Andhra Pradesh"
                             />
                         </div>
                         <div className="flex flex-col gap-2">
@@ -326,6 +595,27 @@ export default function RegisterPage() {
                                 accept="image/*"
                                 onChange={(e) => handleLeadPhotoChange(e.target.files?.[0] || null)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="leadTShirtSize" className="text-sm font-medium text-foreground">
+                                T-Shirt Size *
+                            </label>
+                            <Select
+                                id="leadTShirtSize"
+                                required
+                                value={lead.tShirtSize}
+                                onChange={(e) => setLead((p) => ({ ...p, tShirtSize: e.target.value }))}
+                                placeholder="Select size"
+                                options={[
+                                    { value: "XS", label: "XS" },
+                                    { value: "S", label: "S" },
+                                    { value: "M", label: "M" },
+                                    { value: "L", label: "L" },
+                                    { value: "XL", label: "XL" },
+                                    { value: "XXL", label: "XXL" },
+                                    { value: "XXXL", label: "XXXL" }
+                                ]}
                             />
                         </div>
                     </div>
@@ -345,14 +635,15 @@ export default function RegisterPage() {
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-name`} className="text-sm font-medium text-foreground">
-                                        Name
+                                        Name *
                                     </label>
                                     <input
                                         id={`m${i}-name`}
                                         type="text"
+                                        required
                                         value={m.name}
                                         onChange={(e) => onMemberChange(i, "name", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
@@ -361,11 +652,12 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-email`} className="text-sm font-medium text-foreground">
-                                        Email ID
+                                        Email ID *
                                     </label>
                                     <input
                                         id={`m${i}-email`}
                                         type="email"
+                                        required
                                         value={m.email}
                                         onChange={(e) => onMemberChange(i, "email", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
@@ -374,16 +666,84 @@ export default function RegisterPage() {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-phone`} className="text-sm font-medium text-foreground">
-                                        Mobile No
+                                        Mobile No *
                                     </label>
                                     <input
                                         id={`m${i}-phone`}
                                         type="tel"
-                                        pattern="^[0-9+\\-\\s()]{7,}$"
+                                        pattern="^[0-9+\-\s()]{7,}$"
+                                        required
                                         value={m.phone}
                                         onChange={(e) => onMemberChange(i, "phone", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="+1 555 123 4567"
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-college`} className="text-sm font-medium text-foreground">
+                                        College Name *
+                                    </label>
+                                    <input
+                                        id={`m${i}-college`}
+                                        type="text"
+                                        required
+                                        value={m.collegeName}
+                                        onChange={(e) => onMemberChange(i, "collegeName", e.target.value)}
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                        placeholder="SRKR Engineering College"
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-department`} className="text-sm font-medium text-foreground">
+                                        Department *
+                                    </label>
+                                    <Select
+                                        id={`m${i}-department`}
+                                        required
+                                        value={m.department}
+                                        onChange={(e) => onMemberChange(i, "department", e.target.value)}
+                                        placeholder="Select department"
+                                        options={[
+                                            { value: "CSE", label: "Computer Science & Engineering" },
+                                            { value: "IT", label: "Information Technology" },
+                                            { value: "ECE", label: "Electronics & Communication Engineering" },
+                                            { value: "EEE", label: "Electrical & Electronics Engineering" },
+                                            { value: "MECH", label: "Mechanical Engineering" },
+                                            { value: "CIVIL", label: "Civil Engineering" },
+                                            { value: "CHEM", label: "Chemical Engineering" },
+                                            { value: "BIO", label: "Biotechnology" },
+                                            { value: "OTHER", label: "Other" }
+                                        ]}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-year`} className="text-sm font-medium text-foreground">
+                                        Year of Study
+                                    </label>
+                                    <Select
+                                        id={`m${i}-year`}
+                                        value={m.yearOfStudy}
+                                        onChange={(e) => onMemberChange(i, "yearOfStudy", parseInt(e.target.value) || 0)}
+                                        placeholder="Select year"
+                                        options={[
+                                            { value: 1, label: "1st Year" },
+                                            { value: 2, label: "2nd Year" },
+                                            { value: 3, label: "3rd Year" },
+                                            { value: 4, label: "4th Year" }
+                                        ]}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-location`} className="text-sm font-medium text-foreground">
+                                        Location
+                                    </label>
+                                    <input
+                                        id={`m${i}-location`}
+                                        type="text"
+                                        value={m.location}
+                                        onChange={(e) => onMemberChange(i, "location", e.target.value)}
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                        placeholder="Bhimavaram, Andhra Pradesh"
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
@@ -396,6 +756,27 @@ export default function RegisterPage() {
                                         accept="image/*"
                                         onChange={(e) => onMemberChange(i, "photo", e.target.files?.[0] || null)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor={`m${i}-tShirtSize`} className="text-sm font-medium text-foreground">
+                                        T-Shirt Size *
+                                    </label>
+                                    <Select
+                                        id={`m${i}-tShirtSize`}
+                                        required
+                                        value={m.tShirtSize}
+                                        onChange={(e) => onMemberChange(i, "tShirtSize", e.target.value)}
+                                        placeholder="Select size"
+                                        options={[
+                                            { value: "XS", label: "XS" },
+                                            { value: "S", label: "S" },
+                                            { value: "M", label: "M" },
+                                            { value: "L", label: "L" },
+                                            { value: "XL", label: "XL" },
+                                            { value: "XXL", label: "XXL" },
+                                            { value: "XXXL", label: "XXXL" }
+                                        ]}
                                     />
                                 </div>
                             </div>
@@ -431,81 +812,123 @@ export default function RegisterPage() {
                 <fieldset className="mt-10">
                     <legend className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
                         <FileText className="h-5 w-5" />
-                        Problem Statement
+                        Problem Statement Selection
                     </legend>
                     <div className="space-y-6 p-6 bg-background/50 rounded-xl border border-border/50">
-                        {/* Problem Statement ID */}
+                        {/* Problem Statement Dropdown */}
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="problemId" className="text-sm font-medium text-foreground">
-                                Problem Statement ID *
+                            <label htmlFor="problemStatementSelect" className="text-sm font-medium text-foreground">
+                                Select Problem Statement *
                             </label>
-                            <input
-                                id="problemId"
-                                type="text"
-                                required
-                                value={problemStatement.id}
-                                onChange={(e) => setProblemStatement(prev => ({ ...prev, id: e.target.value }))}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                placeholder="e.g., PS001, HACK2024-01"
-                            />
+                            {loadingProblemStatements ? (
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                                    Loading problem statements...
+                                </div>
+                            ) : (
+                                <Select
+                                    id="problemStatementSelect"
+                                    value={selectedProblemStatementId}
+                                    onChange={(e) => handleProblemStatementSelect(e.target.value)}
+                                    placeholder="Choose a problem statement"
+                                    options={[
+                                        ...availableProblemStatements.map((ps) => ({
+                                            value: ps.psId,
+                                            label: `${ps.psId} - ${ps.title}`
+                                        })),
+                                        { value: "custom", label: "Create Custom Problem Statement" }
+                                    ]}
+                                />
+                            )}
                         </div>
 
-                        {/* Title */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="problemTitle" className="text-sm font-medium text-foreground">
-                                Problem Title *
-                            </label>
-                            <input
-                                id="problemTitle"
-                                type="text"
-                                required
-                                value={problemStatement.title}
-                                onChange={(e) => setProblemStatement(prev => ({ ...prev, title: e.target.value }))}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                placeholder="e.g., Smart Traffic Management System"
-                            />
-                        </div>
+                        {/* Selected Problem Statement Display */}
+                        {selectedProblemStatementId && !showCustomProblemStatement && (
+                            <div className="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                                <h4 className="font-semibold text-primary mb-2">Selected Problem Statement</h4>
+                                <div className="space-y-2 text-sm">
+                                    {problemStatement.psId && <p><strong>ID:</strong> {problemStatement.psId}</p>}
+                                    <p><strong>Title:</strong> {problemStatement.title}</p>
+                                    <p><strong>Category:</strong> {problemStatement.category}</p>
+                                    <p><strong>Description:</strong> {problemStatement.description}</p>
+                                    {problemStatement.tags.length > 0 && (
+                                        <div className="flex gap-2 flex-wrap mt-2">
+                                            {problemStatement.tags.map((tag, idx) => (
+                                                <span
+                                                    key={idx}
+                                                    className="px-2 py-1 text-xs rounded-full bg-primary/20 text-primary"
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
 
-                        {/* Category */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="problemCategory" className="text-sm font-medium text-foreground">
-                                Category *
-                            </label>
-                            <select
-                                id="problemCategory"
-                                required
-                                value={problemStatement.category}
-                                onChange={(e) => setProblemStatement(prev => ({ ...prev, category: e.target.value }))}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                            >
-                                <option value="">Select a category</option>
-                                <option value="healthcare">Healthcare</option>
-                                <option value="education">Education</option>
-                                <option value="environment">Environment</option>
-                                <option value="transportation">Transportation</option>
-                                <option value="agriculture">Agriculture</option>
-                                <option value="finance">Finance</option>
-                                <option value="social">Social Impact</option>
-                                <option value="technology">Technology</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
+                        {/* Custom Problem Statement Form */}
+                        {showCustomProblemStatement && (
+                            <div className="space-y-4 p-4 bg-amber-50/50 rounded-xl border border-amber-200/50">
+                                <h4 className="font-semibold text-amber-800 mb-4">Create Custom Problem Statement</h4>
+                                
+                                {/* Title */}
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor="customProblemTitle" className="text-sm font-medium text-foreground">
+                                        Problem Title *
+                                    </label>
+                                    <input
+                                        id="customProblemTitle"
+                                        type="text"
+                                        required
+                                        value={problemStatement.title}
+                                        onChange={(e) => setProblemStatement(prev => ({ ...prev, title: e.target.value }))}
+                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                        placeholder="e.g., Smart Traffic Management System"
+                                    />
+                                </div>
 
-                        {/* Description */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="problemDescription" className="text-sm font-medium text-foreground">
-                                Problem Description *
-                            </label>
-                            <textarea
-                                id="problemDescription"
-                                required
-                                rows={6}
-                                value={problemStatement.description}
-                                onChange={(e) => setProblemStatement(prev => ({ ...prev, description: e.target.value }))}
-                                className="rounded-xl border border-border bg-input px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 resize-vertical"
-                                placeholder="Describe the problem you want to solve, your approach, and the expected impact..."
-                            />
-                        </div>
+                                {/* Category */}
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor="customProblemCategory" className="text-sm font-medium text-foreground">
+                                        Category *
+                                    </label>
+                                    <Select
+                                        id="customProblemCategory"
+                                        value={problemStatement.category}
+                                        onChange={(e) => setProblemStatement(prev => ({ ...prev, category: e.target.value }))}
+                                        placeholder="Select a category"
+                                        options={[
+                                            { value: "healthcare", label: "Healthcare" },
+                                            { value: "education", label: "Education" },
+                                            { value: "environment", label: "Environment" },
+                                            { value: "transportation", label: "Transportation" },
+                                            { value: "agriculture", label: "Agriculture" },
+                                            { value: "finance", label: "Finance" },
+                                            { value: "social", label: "Social Impact" },
+                                            { value: "technology", label: "Technology" },
+                                            { value: "other", label: "Other" }
+                                        ]}
+                                    />
+                                </div>
+
+                                {/* Description */}
+                                <div className="flex flex-col gap-2">
+                                    <label htmlFor="customProblemDescription" className="text-sm font-medium text-foreground">
+                                        Problem Description *
+                                    </label>
+                                    <textarea
+                                        id="customProblemDescription"
+                                        required
+                                        rows={6}
+                                        value={problemStatement.description}
+                                        onChange={(e) => setProblemStatement(prev => ({ ...prev, description: e.target.value }))}
+                                        className="rounded-xl border border-border bg-input px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 resize-vertical"
+                                        placeholder="Describe the problem you want to solve, your approach, and the expected impact..."
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </fieldset>
             </div>
@@ -513,50 +936,166 @@ export default function RegisterPage() {
     }
 
     function renderStep4() {
+        const totalMembers = members.length + 1
+        const amountPerHead = 850
+        const totalAmount = totalMembers * amountPerHead
+
         return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-3xl mx-auto text-center">
-                <header className="mb-8">
-                    <div className="inline-flex p-3 bg-primary/10 rounded-2xl mb-4">
-                        <CreditCard className="h-8 w-8 text-primary" />
-                    </div>
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
+                <header className="mb-8 text-center">
                     <h2 className="text-3xl font-bold text-foreground mb-2">Complete Payment</h2>
-                    <p className="text-muted-foreground">Finalize your registration with a secure payment of ₹500</p>
+                    <p className="text-muted-foreground">
+                        Finalize your registration with a secure payment of ₹{amountPerHead} per member
+                    </p>
                 </header>
 
-                <div className="mb-8">
-                    <div className="bg-background/50 rounded-2xl p-8 mb-6 border border-border/50">
-                        <div className="w-48 h-48 bg-muted rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                            <span className="text-muted-foreground">QR Code Placeholder</span>
+                {error && (
+                    <div
+                        role="alert"
+                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
+                    >
+                        {error}
+                    </div>
+                )}
+
+                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                    {/* Payment Details */}
+                    <div className="space-y-6">
+                        <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                                <CreditCard className="h-5 w-5" />
+                                Payment Details
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+                                    <span className="text-sm text-muted-foreground">Team Members:</span>
+                                    <span className="font-medium">{totalMembers}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+                                    <span className="text-sm text-muted-foreground">Amount per Member:</span>
+                                    <span className="font-medium">₹{amountPerHead}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg border border-primary/20">
+                                    <span className="text-sm font-medium text-foreground">Total Amount:</span>
+                                    <span className="text-lg font-bold text-primary">₹{totalAmount}</span>
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-muted-foreground">Scan this QR code to pay ₹500 registration fee</p>
+
+                        <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                                <CheckCircle className="h-5 w-5" />
+                                Payment Information
+                            </h3>
+                            
+                            <div className="space-y-3 text-sm text-muted-foreground">
+                                <div className="flex justify-between">
+                                    <span>UPI ID:</span>
+                                    <span className="font-mono text-foreground">hackoverflow@upi</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Account:</span>
+                                    <span className="text-foreground">HackOverflow Registration</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
-                            <strong className="text-foreground block mb-1">Amount</strong>
-                            <span className="text-lg font-bold text-primary">₹500</span>
+                    {/* QR Code */}
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50 text-center">
+                        <h3 className="text-lg font-semibold mb-4 text-primary">Scan to Pay</h3>
+                        <div className="w-48 h-48 bg-muted rounded-2xl mx-auto mb-4 flex items-center justify-center border-2 border-dashed border-border">
+                            <span className="text-muted-foreground text-sm">QR Code Placeholder</span>
                         </div>
-                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
-                            <strong className="text-foreground block mb-1">UPI ID</strong>
-                            <span>hackoverflow@upi</span>
+                        <p className="text-muted-foreground text-sm mb-2">
+                            Scan this QR code to pay ₹{totalAmount}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Use any UPI app (Google Pay, PhonePe, Paytm, etc.)
+                        </p>
+                    </div>
+                </div>
+
+                {/* Payment Verification Form */}
+                <div className="bg-background/50 rounded-2xl p-6 border border-border/50 mb-8">
+                    <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                        <FileText className="h-5 w-5" />
+                        Payment Verification
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* Payment Screenshot */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="paymentScreenshot" className="text-sm font-medium text-foreground">
+                                Payment Screenshot *
+                            </label>
+                            <input
+                                id="paymentScreenshot"
+                                type="file"
+                                accept="image/*"
+                                required
+                                onChange={(e) => setPaymentScreenshot(e.target.files?.[0] || null)}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Upload screenshot of successful payment
+                            </p>
                         </div>
-                        <div className="p-4 bg-background/50 rounded-xl border border-border/50">
-                            <strong className="text-foreground block mb-1">Account</strong>
-                            <span>HackOverflow Registration</span>
+
+                        {/* UPI Reference ID */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="upiReferenceId" className="text-sm font-medium text-foreground">
+                                UPI Reference ID *
+                            </label>
+                            <input
+                                id="upiReferenceId"
+                                type="text"
+                                required
+                                value={upiReferenceId}
+                                onChange={(e) => setUpiReferenceId(e.target.value)}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="e.g., 123456789012"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Reference number from UPI app
+                            </p>
+                        </div>
+
+                        {/* Transaction ID */}
+                        <div className="flex flex-col gap-2">
+                            <label htmlFor="transactionId" className="text-sm font-medium text-foreground">
+                                Transaction ID *
+                            </label>
+                            <input
+                                id="transactionId"
+                                type="text"
+                                required
+                                value={transactionId}
+                                onChange={(e) => setTransactionId(e.target.value)}
+                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                placeholder="e.g., TXN123456789"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Transaction ID from payment app
+                            </p>
                         </div>
                     </div>
                 </div>
 
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
-                    <p className="text-amber-800">
-                        <strong>Important:</strong> After payment, take a screenshot and keep it for verification. Your registration
-                        will be confirmed once payment is verified.
-                    </p>
+                    <h4 className="font-semibold text-amber-800 mb-2">Important Instructions:</h4>
+                    <ul className="text-amber-800 text-sm space-y-1">
+                        <li>• Take a screenshot immediately after successful payment</li>
+                        <li>• Keep the UPI reference ID and transaction ID handy</li>
+                        <li>• Your registration will be confirmed once payment is verified</li>
+                        <li>• Payment verification may take up to 24 hours</li>
+                    </ul>
                 </div>
 
                 <Button
                     onClick={handleSubmit}
-                    disabled={submitting}
+                    disabled={submitting || !paymentScreenshot || !upiReferenceId.trim() || !transactionId.trim()}
                     className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2 mx-auto"
                 >
                     {submitting ? (
@@ -576,10 +1115,47 @@ export default function RegisterPage() {
     }
 
     return (
-        <main className="min-h-screen pt-16 bg-background text-foreground relative overflow-hidden">
+        <main className="min-h-screen pt-4 bg-background text-foreground relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 animate-gradient" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(190,18,60,0.08),transparent_50%)] opacity-60" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(236,72,153,0.06),transparent_50%)] opacity-40" />
+
+            {!isRegistrationOpen ? (
+                <section className="relative z-10 max-w-4xl mx-auto px-4 py-12 text-center">
+                    <div className="bg-card/80 border border-border/50 rounded-2xl p-12 shadow-2xl backdrop-blur-sm">
+                        <div className="inline-flex p-6 bg-amber-100 rounded-full mb-8">
+                            <Clock className="h-16 w-16 text-amber-600" />
+                        </div>
+                        <h1 className="text-4xl lg:text-5xl font-bold mb-6">
+                            <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                                Registration Closed
+                            </span>
+                        </h1>
+                        <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-8 rounded-full"></div>
+                        <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                            The registration period for HACKOVERFLOW-2K25 has ended. 
+                            We appreciate your interest in participating in our national-level hackathon.
+                        </p>
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8">
+                            <p className="text-amber-800 font-medium">
+                                Registration was open until <strong>December 13th, 2025 at 12:00 AM</strong>.
+                            </p>
+                        </div>
+                        <div className="space-y-4">
+                            <p className="text-muted-foreground">
+                                Stay tuned for future announcements and events from SRKR Coding Club!
+                            </p>
+                            <Button
+                                onClick={() => navigate("/", { replace: true })}
+                                className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2"
+                            >
+                                <Home className="h-5 w-5" />
+                                Back to Home
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+            ) : (
 
             <section className="relative z-10 max-w-6xl mx-auto px-4 py-12">
                 <div className="mb-12">
@@ -673,6 +1249,38 @@ export default function RegisterPage() {
                     </div>
                 )}
             </section>
+
+            )}
+
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center">
+                        <div className="inline-flex p-4 bg-green-100 rounded-full mb-6">
+                            <CheckCircle className="h-12 w-12 text-green-600" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-foreground mb-4">Registration Successful!</h3>
+                        <div className="text-muted-foreground mb-6 space-y-3">
+                            <p>{registrationResponse?.message}</p>
+                            {registrationResponse?.sccId && (
+                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
+                                    <p className="text-sm text-primary font-semibold">
+                                        Your SCC ID: <span className="font-mono text-lg">{registrationResponse.sccId}</span>
+                                    </p>
+                                    {/* <p className="text-xs text-muted-foreground mt-2">
+                                        Please save this ID and your password for future logins.
+                                    </p> */}
+                                </div>
+                            )}
+                        </div>
+                        <Button
+                            onClick={() => navigate("/", { replace: true })}
+                            className="w-full px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg"
+                        >
+                            Back to Home
+                        </Button>
+                    </div>
+                </div>
+            )}
         </main>
     )
 }
