@@ -138,7 +138,7 @@ export default function LoginPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                             {/* Role Selection */}
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <label className="text-sm font-medium text-foreground">Login As</label>
                                 <div className="flex gap-2 p-1 bg-muted rounded-lg">
                                     <button
@@ -164,7 +164,7 @@ export default function LoginPage() {
                                         Admin
                                     </button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             <div className="space-y-2">
                                 <label htmlFor="username" className="text-sm font-medium text-foreground">

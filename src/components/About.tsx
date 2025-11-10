@@ -55,11 +55,9 @@ const About: FC = () => {
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.3s" }}>
             <div className="relative">
               <div className="animate-float">
-                <div className="bg-gradient-to-br from-[#7715e8] to-[#b35605] h-64 md:h-80 rounded-lg flex items-center justify-center overflow-hidden shadow-2xl border border-gray-200/20">
+                <div className="rounded-lg flex items-center justify-center overflow-hidden shadow-2xl border border-gray-200/20">
                   <div className="text-center p-6 text-white">
-                    <Code size={48} className="mx-auto mb-4" />
-                    <p className="text-xl font-semibold">HackOverflow 2K25</p>
-                    <p className="text-sm mt-2">National Hackathon by SRKR Coding Club</p>
+                    <img src="poster.webp" alt="HackOverflow 2K25" />
                   </div>
                 </div>
               </div>
@@ -69,17 +67,6 @@ const About: FC = () => {
                 className="absolute -bottom-4 -left-4 w-6 h-6 bg-[#b35605] rounded-full animate-pulse"
                 style={{ animationDelay: "0.5s" }}
               />
-            </div>
-            
-            <div className="mt-6 flex items-center justify-center">
-              <div className="flex items-center text-[#b35605] mr-6">
-                <Calendar size={18} className="mr-2" />
-                <span>24 Hours</span>
-              </div>
-              <div className="flex items-center text-[#7715e8]">
-                <Trophy size={18} className="mr-2" />
-                <span>₹10L+ Prizes</span>
-              </div>
             </div>
           </div>
 

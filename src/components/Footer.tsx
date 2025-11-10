@@ -59,14 +59,14 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
               </span>
             </div>
             <p className="text-gray-300 mb-6">
-              India's premier nationwide 48-hour hackathon bringing together the brightest minds to innovate, collaborate, and create solutions for real-world problems.
+              Nationwide 24-hour hackathon bringing together the brightest minds to innovate, collaborate, and create solutions for real-world problems.
             </p>
             <div className="flex flex-wrap gap-4">
               {[
                 { icon: Calendar, label: "Oct 15-17, 2025" },
-                { icon: Clock, label: "48 Hours" },
+                { icon: Clock, label: "24 Hours" },
                 { icon: Users, label: "500+ Hackers" },
-                { icon: Trophy, label: "₹10L+ Prizes" },
+                { icon: Trophy, label: "₹30K+ Prizes" },
               ].map((item, index) => (
                 <div 
                   key={index}
@@ -114,15 +114,15 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
             <div className="space-y-4 mb-6">
               <div className="flex items-start">
                 <MapPin size={18} className="text-blue-400 mt-1 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">123 Tech Park, Innovation Road, Bengaluru, Karnataka 560001</span>
+                <span className="text-gray-300">Sagi Ramakrishnam Raju Engineering College, Bhimavaram</span>
               </div>
               <div className="flex items-center">
                 <Phone size={18} className="text-blue-400 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">+91 98765 43210</span>
+                <span className="text-gray-300">+91 9100579797</span>
               </div>
               <div className="flex items-center">
                 <Mail size={18} className="text-blue-400 mr-3 flex-shrink-0" />
-                <a href="mailto:info@hackoverflow.in" className="text-gray-300 hover:text-blue-400">info@hackoverflow.in</a>
+                <a href="mailto:srkrcodingclub@gmail.com" className="text-gray-300 hover:text-blue-400">srkrcodingclub@gmail.com</a>
               </div>
             </div>
             
@@ -130,7 +130,7 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
             <div className="bg-gray-800 p-3 rounded-lg mt-4">
               <h4 className="text-blue-400 font-semibold text-sm mb-1">Emergency Contact</h4>
               <p className="text-gray-300 text-sm">For urgent issues during the event</p>
-              <p className="text-gray-300 text-sm mt-1">+91 91234 56789</p>
+              <p className="text-gray-300 text-sm mt-1">+91 90321 49776</p>
             </div>
           </div>
         </div>
