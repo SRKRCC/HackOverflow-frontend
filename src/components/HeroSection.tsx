@@ -84,7 +84,7 @@ const HeroSection = () => {
             {[
               { icon: Calendar, label: "Duration", value: "24H" },
               { icon: Users, label: "Hackers", value: "500+" },
-              { icon: Trophy, label: "Prizes", value: "30K" },
+              { icon: Trophy, label: "Prizes", value: "35K" },
             ].map((stat, idx) => (
               <div
                 key={stat.label}

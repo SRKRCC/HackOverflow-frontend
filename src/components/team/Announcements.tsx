@@ -17,7 +17,7 @@ const AnnouncementsTeam: React.FC = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await ApiService.admin.getAnnouncements();
+      const response = await ApiService.team.getAnnouncements();
       setAnnouncements(response || []);
     } catch (err) {
       setError("Failed to load announcements. Please try again.");

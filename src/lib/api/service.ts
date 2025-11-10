@@ -172,7 +172,7 @@ export class ApiService {
 
     getTeamImages: async (): Promise<string[]> => {
       const response = await apiClient.get(`/teams/gallery`);
-      return response.data;
+      return response.data.data;
     },
 
     getTasks: async (): Promise<Task[]> => {
@@ -197,8 +197,8 @@ export class ApiService {
     },
 
     getAnnouncements: async (): Promise<any[]> => {
-      const response = await apiClient.get('/announcements');
-      return response.data;
+      const response = await apiClient.get('/teams/announcements');
+      return response.data.data;
     },
 
     logout: async (): Promise<{ message: string }> => {

@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CalendarCheck,
   CheckSquare,
   FileText,
   Images,
@@ -87,7 +86,6 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     { path: "/team/team-details", label: "Team Details", icon: <Users size={20} /> },
     { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },
     { path: "/team/gallery", label: "Gallery", icon: <Images size={20} /> },
-    { path: "/team/attendance", label: "Attendance", icon: <CalendarCheck size={20} /> },
     { path: "/team/announcements", label: "Announcements", icon: <Megaphone size={20} /> },
   ];
 

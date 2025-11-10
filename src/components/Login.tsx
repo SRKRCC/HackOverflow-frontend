@@ -12,7 +12,7 @@ export default function LoginPage() {
     const { login, loading: authLoading } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [role, setRole] = useState<'team' | 'admin'>('team')
+    const role: 'team' | 'admin' = 'team'
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(true)
     const [error, setError] = useState<string | null>(null)

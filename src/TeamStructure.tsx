@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Sidebar from "./components/team/Sidebar";
 import { Route, Routes } from "react-router-dom";
 import ProblemStatement from "./components/team/ProblemStatement";
-import Attendance from "./components/team/Attendance";
 import TeamDetails from "./components/team/TeamDetails";
 import Tasks from "./components/team/Tasks";
 import Gallery from "./components/team/Gallery";
@@ -34,7 +33,6 @@ const TeamStructure = () => {
           <Route path="/team-details" element={<TeamDetails />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/attendance" element={<Attendance />} />
           <Route path="/announcements" element={<AnnouncementsTeam />} />
            <Route path="/teamtasks" element={<TaskStatusManager/>} />
         </Routes>

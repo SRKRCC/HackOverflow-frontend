@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Menu, X, Calendar, Users, Trophy, Zap, Home } from "lucide-react"
+import { Menu, X, Calendar, Trophy, Zap, Home, FileText } from "lucide-react"
 import Button from "@/components/ui/button"
 import { Link, useNavigate } from "react-router-dom"
 import ThemeToggle from "./ThemeToggle"
@@ -28,7 +28,7 @@ const Navbar = ({ className = "" }) => {
         return [
             { name: "Home", icon: Home, href: "/" },
             { name: "Schedule", icon: Calendar, href: "/schedule" },
-            { name: "Teams", icon: Users, href: "/team" },
+            { name: "Problem Statements", icon: FileText, href: "/problem-statements" },
             { name: "Prizes", icon: Trophy, href: "/prizes" },
         ]
     }

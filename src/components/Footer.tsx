@@ -63,10 +63,10 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
             </p>
             <div className="flex flex-wrap gap-4">
               {[
-                { icon: Calendar, label: "Oct 15-17, 2025" },
+                { icon: Calendar, label: "Dec 19-20, 2025" },
                 { icon: Clock, label: "24 Hours" },
                 { icon: Users, label: "500+ Hackers" },
-                { icon: Trophy, label: "₹30K+ Prizes" },
+                { icon: Trophy, label: "₹35K+ Prizes" },
               ].map((item, index) => (
                 <div 
                   key={index}
