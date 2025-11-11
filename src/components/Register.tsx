@@ -586,18 +586,6 @@ export default function RegisterPage() {
                             />
                         </div>
                         <div className="flex flex-col gap-2">
-                            <label htmlFor="leadPhoto" className="text-sm font-medium text-foreground">
-                                Upload Photo
-                            </label>
-                            <input
-                                id="leadPhoto"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleLeadPhotoChange(e.target.files?.[0] || null)}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-2">
                             <label htmlFor="leadTShirtSize" className="text-sm font-medium text-foreground">
                                 T-Shirt Size *
                             </label>
@@ -744,18 +732,6 @@ export default function RegisterPage() {
                                         onChange={(e) => onMemberChange(i, "location", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="Bhimavaram, Andhra Pradesh"
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <label htmlFor={`m${i}-photo`} className="text-sm font-medium text-foreground">
-                                        Upload Photo
-                                    </label>
-                                    <input
-                                        id={`m${i}-photo`}
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={(e) => onMemberChange(i, "photo", e.target.files?.[0] || null)}
-                                        className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
                                     />
                                 </div>
                                 <div className="flex flex-col gap-2">
