@@ -86,16 +86,13 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
             </h3>
             <ul className="space-y-3">
               {[
-                { text: "Schedule", icon: Calendar },
-                { text: "Tracks & Themes", icon: Code },
-                { text: "Prizes", icon: Trophy },
-                { text: "Judges & Mentors", icon: Users },
-                { text: "Rules", icon: Award },
-                { text: "Code of Conduct", icon: Shield },
-              ].map((item, index) => (
+                { text: "Schedule", icon: Calendar, link: '/schedule' },
+                { text: "Tracks & Themes", icon: Code, link: '/problem-statements' },
+                { text: "Prizes", icon: Trophy, link: '/prizes' },
+              ].map((item, index) => ( 
                 <li key={index}>
                   <a 
-                    href="#" 
+                    href={`${item.link}`} 
                     className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group"
                   >
                     <item.icon size={16} className="mr-2 group-hover:scale-110 transition-transform" /> 

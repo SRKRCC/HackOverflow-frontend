@@ -128,6 +128,20 @@ export default function RegisterPage() {
         })
     }
 
+    function copyTeamLeadDetails(index: number) {
+        setMembers((prev) => {
+            const next = [...prev]
+            next[index] = { 
+                ...next[index], 
+                collegeName: lead.collegeName,
+                department: lead.department,
+                yearOfStudy: lead.yearOfStudy,
+                location: lead.location
+            }
+            return next
+        })
+    }
+
     function addMember() {
         if (members.length < 5) {
             setMembers(prev => [...prev, { 
@@ -146,10 +160,6 @@ export default function RegisterPage() {
 
     function removeMember(index: number) {
         setMembers(prev => prev.filter((_, i) => i !== index))
-    }
-
-    function handleLeadPhotoChange(file: File | null) {
-        setLead((prev) => ({ ...prev, photo: file }))
     }
 
     function handleNextStep() {
@@ -209,60 +219,68 @@ export default function RegisterPage() {
             const amountPerHead = 850
             const totalAmount = totalMembers * amountPerHead
             
-            // Prepare form data for submission
+            // Prepare registration data object
+            const registrationData = {
+                teamName,
+                lead: {
+                    name: lead.name,
+                    email: lead.email,
+                    phone: lead.phone,
+                    collegeName: lead.collegeName,
+                    department: lead.department,
+                    yearOfStudy: lead.yearOfStudy,
+                    location: lead.location,
+                    tShirtSize: lead.tShirtSize,
+                    photo: null // Will be handled separately
+                },
+                members: members.map(member => ({
+                    name: member.name,
+                    email: member.email,
+                    phone: member.phone,
+                    collegeName: member.collegeName,
+                    department: member.department,
+                    yearOfStudy: member.yearOfStudy,
+                    location: member.location,
+                    tShirtSize: member.tShirtSize,
+                    photo: null // Will be handled separately
+                })),
+                problemStatement: {
+                    id: problemStatement.id,
+                    psId: problemStatement.psId,
+                    title: problemStatement.title,
+                    description: problemStatement.description,
+                    category: problemStatement.category,
+                    tags: problemStatement.tags,
+                    isCustom: problemStatement.isCustom || false
+                },
+                payment: {
+                    totalMembers,
+                    amountPerHead,
+                    totalAmount,
+                    screenshot: null, // Will be handled separately
+                    upiReferenceId,
+                    transactionId
+                }
+            }
+
+            // Create FormData and append the data as JSON string
             const formData = new FormData()
+            formData.append('data', JSON.stringify(registrationData))
             
-            // Team information
-            formData.append('teamName', teamName)
-            
-            // Team lead
-            formData.append('lead[name]', lead.name)
-            formData.append('lead[email]', lead.email)
-            formData.append('lead[phone]', lead.phone)
-            formData.append('lead[collegeName]', lead.collegeName)
-            formData.append('lead[department]', lead.department)
-            formData.append('lead[yearOfStudy]', lead.yearOfStudy.toString())
-            formData.append('lead[location]', lead.location)
-            formData.append('lead[tShirtSize]', lead.tShirtSize)
+            // Append files separately
             if (lead.photo) {
-                formData.append('lead[photo]', lead.photo)
+                formData.append('leadPhoto', lead.photo)
             }
             
-            // Team members
             members.forEach((member, index) => {
-                formData.append(`members[${index}][name]`, member.name)
-                formData.append(`members[${index}][email]`, member.email)
-                formData.append(`members[${index}][phone]`, member.phone)
-                formData.append(`members[${index}][collegeName]`, member.collegeName)
-                formData.append(`members[${index}][department]`, member.department)
-                formData.append(`members[${index}][yearOfStudy]`, member.yearOfStudy.toString())
-                formData.append(`members[${index}][location]`, member.location)
-                formData.append(`members[${index}][tShirtSize]`, member.tShirtSize)
                 if (member.photo) {
-                    formData.append(`members[${index}][photo]`, member.photo)
+                    formData.append(`memberPhoto_${index}`, member.photo)
                 }
             })
             
-            // Problem statement
-            formData.append('problemStatement[id]', problemStatement.id)
-            if (problemStatement.psId) {
-                formData.append('problemStatement[psId]', problemStatement.psId)
+            if (paymentScreenshot) {
+                formData.append('paymentScreenshot', paymentScreenshot)
             }
-            formData.append('problemStatement[title]', problemStatement.title)
-            formData.append('problemStatement[description]', problemStatement.description)
-            formData.append('problemStatement[category]', problemStatement.category)
-            formData.append('problemStatement[tags]', JSON.stringify(problemStatement.tags))
-            if (problemStatement.isCustom !== undefined) {
-                formData.append('problemStatement[isCustom]', problemStatement.isCustom.toString())
-            }
-            
-            // Payment information
-            formData.append('payment[totalMembers]', totalMembers.toString())
-            formData.append('payment[amountPerHead]', amountPerHead.toString())
-            formData.append('payment[totalAmount]', totalAmount.toString())
-            formData.append('payment[screenshot]', paymentScreenshot!)
-            formData.append('payment[upiReferenceId]', upiReferenceId)
-            formData.append('payment[transactionId]', transactionId)
             
             // Send registration data to backend
             const response = await ApiService.public.registerTeam(formData)
@@ -614,15 +632,35 @@ export default function RegisterPage() {
                         <fieldset key={i} className="border border-border/50 rounded-xl p-6 bg-background/30">
                             <div className="flex justify-between items-center mb-4">
                                 <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 1}</legend>
-                                <Button
-                                    type="button"
-                                    onClick={() => removeMember(i)}
-                                    variant="outline"
-                                    className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        onClick={() => copyTeamLeadDetails(i)}
+                                        variant="outline"
+                                        className="h-8 px-3 text-xs text-primary hover:text-primary hover:bg-primary/10 border-primary/30 disabled:opacity-50"
+                                        title="Copy Team Lead's college, department, year, and location"
+                                        disabled={!lead.collegeName || !lead.department}
+                                    >
+                                        Same as Team Lead
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        onClick={() => removeMember(i)}
+                                        variant="outline"
+                                        className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
+                            {(lead.collegeName || lead.department) && (
+                                <div className="mb-4 p-3 bg-blue-50/50 rounded-lg border border-blue-200/50">
+                                    <p className="text-xs text-blue-700 flex items-center gap-2">
+                                        <CheckCircle className="h-3 w-3" />
+                                        Use "Same as Team Lead" to copy: College, Department, Year & Location
+                                    </p>
+                                </div>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-name`} className="text-sm font-medium text-foreground">
