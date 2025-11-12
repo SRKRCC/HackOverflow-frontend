@@ -91,17 +91,17 @@ export default function TeamsTable() {
               {paginatedTeams.length > 0 ? (
                 paginatedTeams.map((team) => (
                   <tr
-                    key={team.id}
+                    key={team.teamId}
                     className="border-b border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-600/20 transition"
                   >
                     <td className="px-4 py-3 text-gray-800 dark:text-white">{team.teamId}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.scc_id}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.title}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                      {team.team_members?.[0]?.name || "N/A"}
+                      {team.members?.[0]?.name || "N/A"}
                     </td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                      {team.team_members?.length || 0}
+                      {team.members?.length || 0}
                     </td>
                   </tr>
                 ))

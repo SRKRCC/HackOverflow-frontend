@@ -12,7 +12,7 @@ export default function LoginPage() {
     const { login, loading: authLoading } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const role: 'team' | 'admin' = 'team'
+    const role = 'team' as const
     const [showPassword, setShowPassword] = useState(false)
     const [rememberMe, setRememberMe] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -28,21 +28,15 @@ export default function LoginPage() {
             return
         }
 
-        // Validation based on role
-        if (role === 'team' && !/^SCC\d{3}$/.test(username.toUpperCase())) {
+        // Validation for team login
+        if (!/^SCC\d{3}$/.test(username.toUpperCase())) {
             setError("Please enter a valid SCC ID (format: SCC001).")
             return
         }
 
         try {
             await login({ role, username, password })
-            
-            // Navigate based on role
-            if (role === 'admin') {
-                navigate("/admin/dashboard", { replace: true })
-            } else {
-                navigate("/team", { replace: true })
-            }
+            navigate("/team", { replace: true })
         } catch (err: any) {
             setError(err.message || "Login failed. Please try again.")
         }
@@ -131,9 +125,9 @@ export default function LoginPage() {
                                 <Lock className="h-8 w-8 text-primary" />
                             </div>
                             <h2 id="login-title" className="text-3xl font-bold mb-2 text-balance text-foreground">
-                                Welcome Back
+                                Team Login
                             </h2>
-                            <p className="text-muted-foreground">Access your dashboard and manage your hackathon journey</p>
+                            <p className="text-muted-foreground">Access your team dashboard and manage your hackathon journey</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
@@ -168,7 +162,7 @@ export default function LoginPage() {
 
                             <div className="space-y-2">
                                 <label htmlFor="username" className="text-sm font-medium text-foreground">
-                                    {role === 'team' ? 'SCC ID' : 'Email Address'}
+                                    SCC ID
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-3 flex items-center text-muted-foreground pointer-events-none">
@@ -176,15 +170,15 @@ export default function LoginPage() {
                                     </span>
                                     <input
                                         id="username"
-                                        type={role === 'team' ? 'text' : 'email'}
-                                        pattern={role === 'team' ? "SCC\\d{3}" : undefined}
-                                        maxLength={role === 'team' ? 6 : undefined}
+                                        type="text"
+                                        pattern="SCC\\d{3}"
+                                        maxLength={6}
                                         autoComplete="username"
                                         value={username}
-                                        onChange={(e) => setUsername(role === 'team' ? e.target.value.toUpperCase() : e.target.value)}
+                                        onChange={(e) => setUsername(e.target.value.toUpperCase())}
                                         required
                                         aria-invalid={!!error && !username}
-                                        placeholder={role === 'team' ? 'SCC001' : 'admin@example.com'}
+                                        placeholder="SCC001"
                                         className="w-full bg-input border border-border rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         data-testid="username-input"
                                     />
@@ -229,12 +223,13 @@ export default function LoginPage() {
                                     />
                                     <span className="text-muted-foreground">Remember me</span>
                                 </label>
-                                <a
-                                    href="#forgot-password"
+                                <button 
+                                    type="button"
+                                    onClick={() => navigate('/admin-login')}
                                     className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
                                 >
-                                    Forgot password?
-                                </a>
+                                    Admin Login
+                                </button>
                             </div>
 
                             {error ? (

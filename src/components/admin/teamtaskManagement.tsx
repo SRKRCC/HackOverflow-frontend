@@ -402,7 +402,7 @@ export default function TeamTaskManagement() {
                 const isSelected = selectedTeamId === team.teamId
                 return (
                   <button
-                    key={team.id}
+                    key={team.teamId}
                     onClick={() => setSelectedTeamId(team?.teamId)}
                     className={`w-full text-left px-6 py-3.5 transition-all border-l-4 group ${
                       isSelected
