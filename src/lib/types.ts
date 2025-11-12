@@ -28,10 +28,11 @@ export interface Team {
   teamId : number ;
   scc_id: string;           // Team's SCC ID (e.g., "SCC001")
   title: string;            // Team name (e.g., "Green Farmers")
-  ps_id: number;           // Problem statement ID
-  gallery_images: string[]; // Array of image URLs
+  ps_id?: number;           // Problem statement ID
+  gallery_images?: string[]; // Array of image URLs
   problem_statement?: ProblemStatement;
-  team_members: Member[];  // Note: called 'members' in backend
+  team_members?: Member[];  // For backward compatibility
+  members: Member[];       // Backend returns this field name in getAllTeams
   tasks?: Task[];
 }
 
@@ -97,6 +98,19 @@ export interface CreateTaskRequest {
 
 export interface TaskSubmissionRequest {
   teamNotes: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export interface RegistrationResponse {
+  success: boolean;
+  teamId?: number;
+  sccId?: string;
+  message: string;
+  errors?: ValidationError[];
 }
 
 export type Announcement = {

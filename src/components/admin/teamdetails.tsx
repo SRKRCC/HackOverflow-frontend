@@ -77,95 +77,46 @@ export default function TeamsTable() {
         ) : error ? (
           <div className="text-center py-10 text-sm sm:text-base text-red-500 px-4">{error}</div>
         ) : (
-          <>
-            {/* Mobile Card View */}
-            <div className="block md:hidden space-y-4">
+          <table className="bg-white dark:bg-gray-900 shadow-lg border border-orange-200 dark:border-gray-700 w-full">
+            <thead className="bg-orange-100 dark:bg-gray-800 text-orange-700 dark:text-orange-300">
+              <tr>
+                <th className="px-4 py-3 text-left">Team ID</th>
+                <th className="px-4 py-3 text-left">SCC ID</th>
+                <th className="px-4 py-3 text-left">Team Name</th>
+                <th className="px-4 py-3 text-left">Team Leader</th>
+                <th className="px-4 py-3 text-left">Member Count</th>
+              </tr>
+            </thead>
+            <tbody>
               {paginatedTeams.length > 0 ? (
                 paginatedTeams.map((team) => (
-                  <div
-                    key={team.id}
-                    className="bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-orange-200 dark:border-gray-700 p-4 hover:bg-orange-50 dark:hover:bg-orange-600/20 transition"
+                  <tr
+                    key={team.teamId}
+                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-600/20 transition"
                   >
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Team ID</p>
-                          <p className="text-sm font-semibold text-gray-800 dark:text-orange-400">{team.teamId}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">Members</p>
-                          <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">{team.team_members?.length || 0}</p>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">SCC ID</p>
-                        <p className="text-sm text-gray-800 dark:text-orange-400">{team.scc_id}</p>
-                      </div>
-                      
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Team Name</p>
-                        <p className="text-sm font-medium text-gray-800 dark:text-orange-400">{team.title}</p>
-                      </div>
-                      
-                      <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Team Leader</p>
-                        <p className="text-sm text-gray-800 dark:text-orange-400">{team.team_members?.[0]?.name || "N/A"}</p>
-                      </div>
-                    </div>
-                  </div>
+                    <td className="px-4 py-3 text-gray-800 dark:text-white">{team.teamId}</td>
+                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.scc_id}</td>
+                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.title}</td>
+                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
+                      {team.members?.[0]?.name || "N/A"}
+                    </td>
+                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
+                      {team.members?.length || 0}
+                    </td>
+                  </tr>
                 ))
               ) : (
-                <div className="text-center py-10 text-sm text-gray-500 dark:text-gray-400 italic">
-                  No matching teams found
-                </div>
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center px-4 py-6 text-gray-500 dark:text-gray-400 italic"
+                  >
+                    No matching teams found
+                  </td>
+                </tr>
               )}
-            </div>
-
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto rounded-lg">
-              <table className="bg-white dark:bg-gray-900 shadow-lg border border-orange-200 dark:border-gray-700 w-full">
-                <thead className="bg-orange-100 dark:bg-gray-800 text-orange-700 dark:text-orange-300">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Team ID</th>
-                    <th className="px-4 py-3 text-left">SCC ID</th>
-                    <th className="px-4 py-3 text-left">Team Name</th>
-                    <th className="px-4 py-3 text-left">Team Leader</th>
-                    <th className="px-4 py-3 text-left">Member Count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedTeams.length > 0 ? (
-                    paginatedTeams.map((team) => (
-                      <tr
-                        key={team.id}
-                        className="border-b border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-600/20 transition"
-                      >
-                        <td className="px-4 py-3 text-gray-800 dark:text-white">{team.teamId}</td>
-                        <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.scc_id}</td>
-                        <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.title}</td>
-                        <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                          {team.team_members?.[0]?.name || "N/A"}
-                        </td>
-                        <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                          {team.team_members?.length || 0}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="text-center px-4 py-6 text-gray-500 dark:text-gray-400 italic"
-                      >
-                        No matching teams found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
+            </tbody>
+          </table>
         )}
 
         {/* Pagination Controls */}

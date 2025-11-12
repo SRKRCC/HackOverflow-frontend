@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { 
   Code,
   Users,
-  Trophy,
-  Calendar,
   MapPin
 } from "lucide-react";
 
@@ -42,8 +40,8 @@ const About: FC = () => {
               <Code size={36} className="text-white" />
             </div>
           </div>
-          <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
-            About <span className="text-[#b35605]">HackOverflow</span> <span className="text-[#7715e8]">2K25</span>
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
+            About <span className="text-[#b35605]">HackOverflow</span> <span className="text-secondary">2K25</span>
           </h1>
           <p className={`text-base md:text-lg text-muted-foreground max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
             India's premier nationwide hackathon bringing together innovators to solve real-world challenges
@@ -55,11 +53,9 @@ const About: FC = () => {
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.3s" }}>
             <div className="relative">
               <div className="animate-float">
-                <div className="bg-gradient-to-br from-[#7715e8] to-[#b35605] h-64 md:h-80 rounded-lg flex items-center justify-center overflow-hidden shadow-2xl border border-gray-200/20">
+                <div className="rounded-lg flex items-center justify-center overflow-hidden shadow-2xl border border-gray-200/20">
                   <div className="text-center p-6 text-white">
-                    <Code size={48} className="mx-auto mb-4" />
-                    <p className="text-xl font-semibold">HackOverflow 2K25</p>
-                    <p className="text-sm mt-2">National Hackathon by SRKR Coding Club</p>
+                    <img src="poster.webp" alt="HackOverflow 2K25" />
                   </div>
                 </div>
               </div>
@@ -70,29 +66,18 @@ const About: FC = () => {
                 style={{ animationDelay: "0.5s" }}
               />
             </div>
-            
-            <div className="mt-6 flex items-center justify-center flex-wrap gap-4">
-              <div className="flex items-center text-[#b35605]">
-                <Calendar size={18} className="mr-2" />
-                <span>24 Hours</span>
-              </div>
-              <div className="flex items-center text-[#7715e8]">
-                <Trophy size={18} className="mr-2" />
-                <span>₹10L+ Prizes</span>
-              </div>
-            </div>
           </div>
 
           {/* Organizer Information - RIGHT side */}
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.4s" }}>
-            <h2 className="text-xl md:text-2xl font-bold mb-6 flex items-center text-[#7715e8]">
+            <h2 className="text-2xl font-bold mb-6 flex items-center text-secondary">
               <Users className="mr-3" size={24} />
               Organized by SRKR Coding Club
             </h2>
             
             <div className="bg-muted p-6 rounded-lg mb-6">
               <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-[#7715e8] rounded-full flex items-center justify-center mr-4">
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mr-4">
                   <Code className="text-white" size={24} />
                 </div>
                 <div>
@@ -111,9 +96,9 @@ const About: FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-[#7715e8] to-[#b35605] p-6 rounded-lg text-white">
-              <h3 className="font-bold text-base md:text-lg mb-2">Our Mission</h3>
-              <p className="text-sm md:text-base">
+            <div className="bg-secondary p-6 rounded-lg text-white">
+              <h3 className="font-bold text-lg mb-2">Our Mission</h3>
+              <p>
                 To create a platform where students can learn, collaborate, and innovate through practical coding experiences and competitive programming.
               </p>
             </div>

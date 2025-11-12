@@ -7,7 +7,8 @@ import type {
   LeaderboardEntry, 
   ProblemStatement,
   CreateTaskRequest,
-  TaskSubmissionRequest
+  TaskSubmissionRequest,
+  RegistrationResponse
 } from '../types';
 
 /**
@@ -172,7 +173,7 @@ export class ApiService {
 
     getTeamImages: async (): Promise<string[]> => {
       const response = await apiClient.get(`/teams/gallery`);
-      return response.data;
+      return response.data.data;
     },
 
     getTasks: async (): Promise<Task[]> => {
@@ -197,8 +198,8 @@ export class ApiService {
     },
 
     getAnnouncements: async (): Promise<any[]> => {
-      const response = await apiClient.get('/announcements');
-      return response.data;
+      const response = await apiClient.get('/teams/announcements');
+      return response.data.data;
     },
 
     logout: async (): Promise<{ message: string }> => {
@@ -210,6 +211,15 @@ export class ApiService {
   static public = {
     getProblemStatements: async (): Promise<ProblemStatement[]> => {
       const response = await apiClient.get('/public/problem-statements');
+      return response.data.data;
+    },
+
+    registerTeam: async (formData: FormData): Promise<RegistrationResponse> => {
+      const response = await apiClient.post('/teams/register', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return response.data;
     },
   };
