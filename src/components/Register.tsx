@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import Button from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock } from "lucide-react"
+import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock, MessageCircle, QrCode } from "lucide-react"
 import { ApiService } from '@/lib/api/service'
 import type { ProblemStatement as ApiProblemStatement } from '@/lib/types'
 
@@ -70,6 +70,7 @@ export default function RegisterPage() {
     const [showSuccessModal, setShowSuccessModal] = useState(false)
     const [registrationResponse, setRegistrationResponse] = useState<{ message: string; sccId?: string } | null>(null)
     const [loadingProblemStatements, setLoadingProblemStatements] = useState(false)
+    const [showWhatsAppQR, setShowWhatsAppQR] = useState(false)
 
     // Fetch available problem statements
     useEffect(() => {
@@ -1266,9 +1267,9 @@ export default function RegisterPage() {
 
             )}
 
-            {showSuccessModal && (
+            {!showSuccessModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center">
+                    <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-2xl max-w-lg w-full text-center">
                         <div className="inline-flex p-4 bg-green-100 rounded-full mb-6">
                             <CheckCircle className="h-12 w-12 text-green-600" />
                         </div>
@@ -1280,12 +1281,87 @@ export default function RegisterPage() {
                                     <p className="text-sm text-primary font-semibold">
                                         Your SCC ID: <span className="font-mono text-lg">{registrationResponse.sccId}</span>
                                     </p>
+                                    <p></p>
                                     {/* <p className="text-xs text-muted-foreground mt-2">
                                         Please save this ID and your password for future logins.
                                     </p> */}
                                 </div>
                             )}
                         </div>
+                        
+                        {/* WhatsApp Group Section */}
+                        <div className="bg-green-50/50 border border-green-200/50 rounded-xl p-6 mb-6">
+                            <h4 className="text-lg font-semibold text-green-800 mb-3 flex items-center justify-center gap-2">
+                                <MessageCircle className="h-5 w-5" />
+                                Join our WhatsApp Group
+                            </h4>
+                            <p className="text-sm text-green-700 mb-4">
+                                Stay updated with the latest announcements, important updates, and connect with other participants!
+                            </p>
+                            
+                            {!showWhatsAppQR ? (
+                                <div className="space-y-3">
+                                    <Button
+                                        onClick={() => window.open('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy', '_blank')}
+                                        className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                                    >
+                                        <MessageCircle className="h-4 w-4" />
+                                        Join WhatsApp Group
+                                    </Button>
+                                    <Button
+                                        onClick={() => setShowWhatsAppQR(true)}
+                                        variant="outline"
+                                        className="w-full px-4 py-2 border-green-300 text-green-700 hover:bg-green-50 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                                    >
+                                        <QrCode className="h-4 w-4" />
+                                        Show QR Code
+                                    </Button>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="w-48 h-48 bg-white border-2 border-green-300 rounded-xl mx-auto p-2 flex flex-col items-center justify-center">
+                                        {/* Using QR Server API to generate QR code */}
+                                        <img 
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy')}`}
+                                            alt="WhatsApp Group QR Code"
+                                            className="w-full h-auto rounded-lg"
+                                            onError={(e) => {
+                                                // Fallback if QR service fails
+                                                e.currentTarget.style.display = 'none';
+                                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                                if (fallback) {
+                                                    fallback.style.display = 'flex';
+                                                }
+                                            }}
+                                        />
+                                        <div className="hidden flex-col items-center justify-center w-full h-full">
+                                            <QrCode className="h-16 w-16 text-green-600 mb-2" />
+                                            <p className="text-xs text-green-700 text-center">
+                                                QR Code unavailable
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-green-700 text-center">
+                                        Scan this QR code with your WhatsApp camera to join the group
+                                    </p>
+                                    <Button
+                                        onClick={() => setShowWhatsAppQR(false)}
+                                        variant="outline"
+                                        className="w-full px-4 py-2 border-green-300 text-green-700 hover:bg-green-50 rounded-lg font-medium transition-all duration-300"
+                                    >
+                                        Hide QR Code
+                                    </Button>
+                                    <Button
+                                        onClick={() => window.open('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy', '_blank')}
+                                        className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                                    >
+                                        <MessageCircle className="h-4 w-4" />
+                                        Or Click to Join
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
                         <Button
                             onClick={() => navigate("/", { replace: true })}
                             className="w-full px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg"

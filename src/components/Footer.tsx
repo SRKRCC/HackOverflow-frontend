@@ -8,9 +8,7 @@ import {
   Trophy,
   Users,
   Code,
-  Award,
   Clock,
-  Shield,
   BookOpen,
   Heart
 } from "lucide-react";

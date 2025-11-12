@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   UserPlus,
-  Presentation,
-  ClipboardList,
   Laptop,
   Trophy,
   Calendar,
