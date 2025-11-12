@@ -1,5 +1,5 @@
 import { ApiService } from "@/lib/api";
-import type { Team, Member } from "@/lib/types";
+import type { Member } from "@/lib/types";
 import { useState, useEffect } from "react";
 
 interface TeamDetails {
