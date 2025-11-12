@@ -10,7 +10,7 @@ const Gallery: React.FC = () => {
   const [downloading, setDownloading] = useState<string | null>(null);
 
   // ✅ Fetch images from API
-  const loadImages = async () => {
+  /*const loadImages = async () => {
     try {
       setLoading(true);
       setError(null);
@@ -31,7 +31,43 @@ const Gallery: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+
+  const loadImages = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    // ---- TEMP MOCK DATA (comment real API below) ----
+    /*
+    const response = await ApiService.team.getTeamImages();
+    if (Array.isArray(response)) {
+      setImages(response);
+    } else if (response) {
+      setImages(response);
+    } else {
+      setImages([]);
+    }
+    */
+
+    const mockImages = [
+      "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?w=400",
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400",
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400",
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400",
+    ];
+
+    await new Promise((r) => setTimeout(r, 500)); // simulate delay
+    setImages(mockImages);
+  } catch (err) {
+    console.error("Error fetching images:", err);
+    setError("Failed to load images. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   useEffect(() => {
     loadImages();

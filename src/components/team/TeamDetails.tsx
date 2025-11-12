@@ -279,8 +279,8 @@ export default function TeamCompass() {
 
       <div className="flex flex-col md:grid md:grid-cols-5 min-h-[calc(100vh-200px)]">
         {/* Left Side - Detailed Profile */}
-        <div className="md:col-span-3 flex flex-col justify-center p-4 md:p-8 order-2 md:order-1">
-          <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : selectedColorScheme.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
+        <div className="md:col-span-3 flex flex-col justify-center p-4 pt-0 md:p-8 order-2 md:order-1">
+          <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : selectedColorScheme.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform mx-2 border`}>
             {/* Profile Header */}
             <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-6 mb-6">
               <div className="relative mb-4 md:mb-0">
@@ -356,12 +356,12 @@ export default function TeamCompass() {
         </div>
 
         {/* Right Side - Dynamic Carousel */}
-        <div className="md:col-span-2 relative h-80 md:h-auto order-1 md:order-2">
+        <div className="md:col-span-2 relative h-60 md:h-auto order-1 md:order-2">
           {/* Path Indicator - Hidden on mobile */}
           <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
           
           {/* Cards Container */}
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full ">
             {teamDetails.team_members.map((member, index) => {
               const position = getCardPosition(index);
               const shape = getCardShape(index);
@@ -377,7 +377,7 @@ export default function TeamCompass() {
                   style={{
                     top: position.top,
                     right: typeof window !== 'undefined' && window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
-                    left: typeof window !== 'undefined' && window.innerWidth < 768 && 'left' in position ? position.left : undefined,
+                    left: typeof window !== 'undefined' && window.innerWidth < 768 && 'left' in position ? `calc(${position.left} + 14%)` : undefined,
                     transform: `translate(-50%, -50%) scale(${position.scale})`,
                     opacity: position.opacity,
                     zIndex: position.zIndex,

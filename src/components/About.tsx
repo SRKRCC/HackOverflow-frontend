@@ -20,7 +20,7 @@ const About: FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden px-24">
+    <div className="min-h-screen bg-background relative overflow-hidden px-4 md:px-24">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#7715e8]/5 via-background to-[#b35605]/5" />
 
@@ -42,10 +42,10 @@ const About: FC = () => {
               <Code size={36} className="text-white" />
             </div>
           </div>
-          <h1 className={`text-4xl md:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
+          <h1 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
             About <span className="text-[#b35605]">HackOverflow</span> <span className="text-[#7715e8]">2K25</span>
           </h1>
-          <p className={`text-lg text-muted-foreground max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
+          <p className={`text-base md:text-lg text-muted-foreground max-w-3xl mx-auto ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
             India's premier nationwide hackathon bringing together innovators to solve real-world challenges
           </p>
         </div>
@@ -71,8 +71,8 @@ const About: FC = () => {
               />
             </div>
             
-            <div className="mt-6 flex items-center justify-center">
-              <div className="flex items-center text-[#b35605] mr-6">
+            <div className="mt-6 flex items-center justify-center flex-wrap gap-4">
+              <div className="flex items-center text-[#b35605]">
                 <Calendar size={18} className="mr-2" />
                 <span>24 Hours</span>
               </div>
@@ -85,7 +85,7 @@ const About: FC = () => {
 
           {/* Organizer Information - RIGHT side */}
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.4s" }}>
-            <h2 className="text-2xl font-bold mb-6 flex items-center text-[#7715e8]">
+            <h2 className="text-xl md:text-2xl font-bold mb-6 flex items-center text-[#7715e8]">
               <Users className="mr-3" size={24} />
               Organized by SRKR Coding Club
             </h2>
@@ -96,24 +96,24 @@ const About: FC = () => {
                   <Code className="text-white" size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-foreground">SRKR Coding Club</h3>
-                  <p className="text-muted-foreground">SRKR Engineering College, Bhimavaram</p>
+                  <h3 className="font-bold text-base md:text-lg text-foreground">SRKR Coding Club</h3>
+                  <p className="text-sm md:text-base text-muted-foreground">SRKR Engineering College, Bhimavaram</p>
                 </div>
               </div>
               
-              <p className="text-muted-foreground mb-4">
+              <p className="text-sm md:text-base text-muted-foreground mb-4">
                 A student-run community dedicated to promoting coding culture, technical skills, and innovation among students. We organize workshops, coding competitions, and hackathons to nurture the next generation of developers.
               </p>
               
-              <div className="flex items-center text-muted-foreground">
+              <div className="flex items-center text-sm md:text-base text-muted-foreground">
                 <MapPin size={16} className="mr-2" />
                 <span>West Godavari District, Andhra Pradesh</span>
               </div>
             </div>
 
             <div className="bg-gradient-to-r from-[#7715e8] to-[#b35605] p-6 rounded-lg text-white">
-              <h3 className="font-bold text-lg mb-2">Our Mission</h3>
-              <p>
+              <h3 className="font-bold text-base md:text-lg mb-2">Our Mission</h3>
+              <p className="text-sm md:text-base">
                 To create a platform where students can learn, collaborate, and innovate through practical coding experiences and competitive programming.
               </p>
             </div>
@@ -122,7 +122,7 @@ const About: FC = () => {
 
         {/* Themes Section */}
         <div className={`mb-16 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.5s" }}>
-          <h2 className="text-2xl font-bold mb-8 text-center text-foreground">Hackathon Themes</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-8 text-center text-foreground">Hackathon Themes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { theme: "AI & Machine Learning", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300" },
@@ -135,7 +135,7 @@ const About: FC = () => {
               { theme: "Open Innovation", color: "bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-300" },
             ].map((item, index) => (
               <div key={index} className={`p-4 rounded-lg ${item.color} text-center hover:shadow-md transform hover:scale-105 transition-transform duration-300`}>
-                <h3 className="font-semibold">{item.theme}</h3>
+                <h3 className="font-semibold text-sm md:text-base">{item.theme}</h3>
               </div>
             ))}
           </div>

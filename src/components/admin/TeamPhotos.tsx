@@ -143,43 +143,43 @@ export default function TeamGalleryManager() {
   );
 
   return (
-    <div className="flex h-screen bg-background text-foreground relative">
+    <div className="flex h-screen bg-background text-foreground relative overflow-hidden">
       {/* Sidebar (Mobile friendly) */}
       <aside
-        className={`fixed md:static md:translate-x-0 top-0 left-0 w-72 bg-sidebar-inner border-r border-border text-sidebar-foreground h-full transition-transform duration-300 z-40 shadow-lg ${
+        className={`fixed md:static md:translate-x-0 top-0 left-65px w-64 sm:w-72 bg-sidebar-inner border-r border-border text-sidebar-foreground h-full transition-transform duration-300 z-40 shadow-lg ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center p-4 border-b border-border">
-          <h2 className="text-lg font-semibold">Teams</h2>
+        <div className="flex justify-between items-center p-3 sm:p-4 border-b border-border">
+          <h2 className="text-base sm:text-lg font-semibold">Teams</h2>
           <button
             className="md:hidden text-muted-foreground hover:text-foreground"
             onClick={() => setSidebarOpen(false)}
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
 
         {/* Search Bar */}
-        <div className="m-3">
-          <div className="relative rounded-lg bg-sidebar flex items-center border px-3">
+        <div className="m-2 sm:m-3">
+          <div className="relative rounded-lg bg-sidebar flex items-center border px-2 sm:px-3">
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search teams..."
-              className="w-full py-2 pr-10 bg-transparent outline-none"
+              className="w-full py-1.5 sm:py-2 pr-8 sm:pr-10 bg-transparent outline-none text-sm sm:text-base"
             />
-            <Search className="absolute right-3 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute right-2 sm:right-3 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
           </div>
         </div>
 
         {/* Team List */}
         <ul className="overflow-y-auto h-[calc(100%-6rem)] pb-20">
           {loading && teams.length === 0 ? (
-            <li className="px-4 py-3 text-muted-foreground">Loading teams...</li>
+            <li className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-muted-foreground">Loading teams...</li>
           ) : filteredTeams.length === 0 ? (
-            <li className="px-4 py-3 text-muted-foreground">No teams found</li>
+            <li className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base text-muted-foreground">No teams found</li>
           ) : (
             filteredTeams.map((team) => (
               <li key={team.teamId}>
@@ -188,7 +188,7 @@ export default function TeamGalleryManager() {
                     setSelectedTeam(team);
                     setSidebarOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-3 rounded-md transition ${
+                  className={`w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-md transition text-sm sm:text-base ${
                     selectedTeam?.teamId === team.teamId
                       ? "bg-primary text-primary-foreground"
                       : "hover:bg-muted"
@@ -204,50 +204,50 @@ export default function TeamGalleryManager() {
 
       {/* Mobile Menu Button */}
       <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-md shadow-lg"
+        className="md:hidden fixed top-3 left-3 sm:top-4 sm:left-4 z-50 bg-primary text-white p-2 rounded-md shadow-lg"
         onClick={() => setSidebarOpen(true)}
       >
-        <Menu className="h-5 w-5" />
+        <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+      <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-y-auto pt-14 md:pt-4">
         {status && (
-          <div className="mb-4 text-sm bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
+          <div className="mb-3 sm:mb-4 text-xs sm:text-sm bg-blue-100 text-blue-800 px-3 sm:px-4 py-2 rounded-lg">
             {status}
           </div>
         )}
 
         {!selectedTeam ? (
-          <div className="text-center text-muted-foreground mt-20">
+          <div className="text-center text-sm sm:text-base text-muted-foreground mt-10 sm:mt-20 px-4">
             Select a team to view photos
           </div>
         ) : loading && images.length === 0 ? (
-          <div className="flex justify-center items-center mt-20">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="ml-2">Loading images...</span>
+          <div className="flex justify-center items-center mt-10 sm:mt-20">
+            <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin text-primary" />
+            <span className="ml-2 text-sm sm:text-base">Loading images...</span>
           </div>
         ) : images.length === 0 ? (
-          <div className="text-center text-muted-foreground mt-20">
+          <div className="text-center text-sm sm:text-base text-muted-foreground mt-10 sm:mt-20 px-4">
             No images uploaded yet
           </div>
         ) : (
           <>
             {/* Selection Actions */}
             {selectionMode && (
-              <div className="flex justify-between items-center mb-4">
+              <div className="flex justify-between items-center mb-3 sm:mb-4 gap-2">
                 <button
                   onClick={() => {
                     setSelectionMode(false);
                     setSelectedPhotos([]);
                   }}
-                  className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-200 rounded-md hover:bg-gray-300 text-primary"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={selectAll}
-                  className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-primary text-white rounded-md hover:bg-primary/90"
                 >
                   {selectedPhotos.length === images.length
                     ? "Deselect All"
@@ -256,15 +256,15 @@ export default function TeamGalleryManager() {
               </div>
             )}
 
-            {/* Image Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* Image Grid - One per row on mobile */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
               {images.map((photo, idx) => {
                 const isSelected = selectedPhotos.includes(photo);
                 return (
                   <div
                     key={idx}
                     className={`relative overflow-hidden rounded-lg shadow-md group cursor-pointer ${
-                      isSelected ? "ring-4 ring-primary" : ""
+                      isSelected ? "ring-2 sm:ring-4 ring-primary" : ""
                     }`}
                     onClick={() =>
                       selectionMode
@@ -275,10 +275,10 @@ export default function TeamGalleryManager() {
                     <img
                       src={photo}
                       alt=""
-                      className="w-full h-60 object-cover transition-transform group-hover:scale-105"
+                      className="w-full h-40 sm:h-48 md:h-60 object-cover transition-transform group-hover:scale-105"
                     />
                     <div
-                      className={`absolute top-2 right-2 w-6 h-6 rounded-sm border-2 flex items-center justify-center transition
+                      className={`absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-sm border-2 flex items-center justify-center transition
                       ${
                         isSelected
                           ? "bg-primary border-primary text-white"
@@ -294,7 +294,7 @@ export default function TeamGalleryManager() {
                         }
                       }}
                     >
-                      {isSelected && <Check size={14} strokeWidth={3} />}
+                      {isSelected && <Check size={12} className="sm:w-3.5 sm:h-3.5" strokeWidth={3} />}
                     </div>
                   </div>
                 );
@@ -310,20 +310,20 @@ export default function TeamGalleryManager() {
               <button
                 onClick={() => setConfirmDelete(true)}
                 disabled={loading}
-                className="fixed bottom-10 right-10 p-4 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 hover:scale-110 transition-all z-50 disabled:opacity-50"
+                className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 p-3 sm:p-4 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 hover:scale-110 transition-all z-50 disabled:opacity-50"
               >
                 {loading ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 animate-spin" />
                 ) : (
-                  <Trash2 className="h-6 w-6" />
+                  <Trash2 className="h-5 w-5 sm:h-6 sm:w-6" />
                 )}
               </button>
             ) : (
-              <label className="fixed bottom-10 right-10 p-4 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg cursor-pointer hover:scale-110 transition-all duration-300 z-50">
+              <label className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 md:bottom-10 md:right-10 p-3 sm:p-4 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg cursor-pointer hover:scale-110 transition-all duration-300 z-50">
                 {loading ? (
-                  <Loader2 className="h-6 w-6 text-white animate-spin" />
+                  <Loader2 className="h-5 w-5 sm:h-6 sm:w-6 text-white animate-spin" />
                 ) : (
-                  <ImageUp className="h-6 w-6 text-white" />
+                  <ImageUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 )}
                 <input
                   type="file"
@@ -340,25 +340,25 @@ export default function TeamGalleryManager() {
 
       {/* Delete Confirmation Modal */}
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-xl max-w-sm w-full text-center">
-            <h3 className="text-lg font-semibold mb-2">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neutral-900 p-4 sm:p-6 rounded-xl shadow-xl max-w-sm w-full text-center">
+            <h3 className="text-base sm:text-lg font-semibold mb-2">
               Confirm Delete
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4">
               Are you sure you want to delete the selected image(s)?
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-3 sm:gap-4">
               <button
                 onClick={() => setConfirmDelete(false)}
-                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-gray-200 rounded-md hover:bg-gray-300 text-primary"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeletePhoto}
                 disabled={loading}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin inline" />
@@ -374,30 +374,30 @@ export default function TeamGalleryManager() {
       {/* Enlarged Image Modal */}
       {selectedImg && !selectionMode && (
         <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
           onClick={() => setSelectedImg(null)}
         >
           <div
-            className="relative flex flex-col items-center"
+            className="relative flex flex-col items-center max-w-full"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={selectedImg}
               alt="Enlarged"
-              className="max-w-[90vw] max-h-[80vh] rounded-xl object-cover"
+              className="max-w-[90vw] max-h-[80vh] rounded-lg sm:rounded-xl object-contain"
             />
-            <div className="absolute top-3 right-3 flex gap-2">
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex gap-1.5 sm:gap-2">
               <button
-                className="bg-white text-red-500 rounded-full p-2 shadow hover:bg-red-500 hover:text-white transition-all"
+                className="bg-white text-red-500 rounded-full p-1.5 sm:p-2 shadow hover:bg-red-500 hover:text-white transition-all"
                 onClick={() => setConfirmDelete(true)}
               >
-                <Trash2 size={20} />
+                <Trash2 size={16} className="sm:w-5 sm:h-5" />
               </button>
               <button
-                className="bg-white text-gray-600 rounded-full p-2 shadow hover:bg-gray-800 hover:text-white transition-all"
+                className="bg-white text-gray-600 rounded-full p-1.5 sm:p-2 shadow hover:bg-gray-800 hover:text-white transition-all"
                 onClick={() => setSelectedImg(null)}
               >
-                <X size={20} />
+                <X size={16} className="sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>

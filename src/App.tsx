@@ -16,7 +16,7 @@ function AppContent() {
   const location = useLocation()
   const { user } = useAuth()
   const hideNavbarFooter = ['/login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team/') || location.pathname.startsWith('/admin/')
-  const marginLeft = (location.pathname.startsWith("/team/") || location.pathname.startsWith("/admin/")) ? "ml-[60px]" : ""
+  const marginLeft = (location.pathname.startsWith("/team") || location.pathname.startsWith("/admin/")) ? "ml-[55px]" : ""
 
   return (
     <>

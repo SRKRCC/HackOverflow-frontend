@@ -111,97 +111,110 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     <>
       {/* Sidebar */}
       <motion.div
-        animate={{
-          width: isMobile ? 60 : openSidebar ? 250 : 60,
-        }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="fixed z-50 top-0 left-0 h-full bg-sidebar border-r rounded-r-xl border-sidebar shadow-lg flex flex-col"
-        onMouseEnter={() => {
-          if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(true);
-        }}
-        onMouseLeave={() => {
-          if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(false);
-        }}
+  animate={{
+    width: isMobile ? 60 : openSidebar ? 250 : 60,
+  }}
+  transition={{ duration: 0.3, ease: "easeInOut" }}
+  className="fixed top-0 left-0 z-50 bg-sidebar border-r rounded-r-xl border-sidebar shadow-lg"
+  style={{ height: "100svh", overflow: "hidden" }}
+  onMouseEnter={() => {
+    if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(true);
+  }}
+  onMouseLeave={() => {
+    if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(false);
+  }}
+>
+  {/* Sidebar container with internal absolute layout */}
+  <div className="relative h-full w-full">
+    {/* Top spacing */}
+    <div className="absolute top-0 left-0 w-full p-2 pt-7 ml-2"></div>
+
+    {/* Scrollable links area */}
+    <div
+      className="absolute top-16 bottom-80 left-0 right-0 overflow-y-auto no-scrollbar px-1"
+      style={{ scrollbarGutter: "stable" }}
+    >
+      <nav className="flex flex-col">
+        {links.map(({ path, label, icon }) => (
+          <Link
+            onClick={() => isMobile && setOpenSidebar(false)}
+            key={path}
+            to={path}
+            className={`flex items-center gap-3 p-2 m-1 rounded-lg transition-colors ${
+              location.pathname === path
+                ? "bg-sidebar-accent text-primary"
+                : "text-primary hover:bg-sidebar-accent"
+            }`}
+          >
+            <span className="ml-2">{icon}</span>
+            <AnimatePresence>
+              {openSidebar && !isMobile && (
+                <motion.span
+                  className="text-sm font-semibold flex"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  {label.split("").map((char, i) => (
+                    <motion.span key={i} custom={i} variants={letterAnimation}>
+                      <span>{char === " " ? "\u00A0" : char}</span>
+                    </motion.span>
+                  ))}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Link>
+        ))}
+      </nav>
+    </div>
+
+    {/* Fixed bottom section */}
+    <div className="absolute bottom-0 left-0 w-full border-t border-sidebar bg-sidebar p-3">
+      {/* Theme Toggle */}
+      <div
+        className="flex items-center p-2 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer"
+        onClick={handleTheme}
       >
-        <div className="p-2 mt-5 ml-2"></div>
-
-        <nav className="flex flex-col mt-2">
-          {links.map(({ path, label, icon }) => (
-            <Link
-              onClick={() => isMobile && setOpenSidebar(false)}
-              key={path}
-              to={path}
-              className={`flex items-center gap-3 p-2 m-1 rounded-lg transition-colors ${
-                location.pathname === path
-                  ? "bg-sidebar-accent text-primary"
-                  : "text-primary hover:bg-sidebar-accent"
-              }`}
+        <ThemeToggle />
+        <AnimatePresence>
+          {openSidebar && !isMobile && (
+            <motion.span
+              className="text-sm font-semibold ml-3"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
-              <span className="ml-2">{icon}</span>
-              <AnimatePresence>
-                {openSidebar && !isMobile && (
-                  <motion.span
-                    className="text-sm font-semibold flex"
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                  >
-                    {label.split("").map((char, i) => (
-                      <motion.span key={i} custom={i} variants={letterAnimation}>
-                        <span>{char === " " ? "\u00A0" : char}</span>
-                      </motion.span>
-                    ))}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
-          ))}
-        </nav>
+              {currentTheme}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
 
-        {/* Bottom Section */}
-        <div className="mt-auto mb-4 flex flex-col gap-2">
-          <div
-            className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer"
-            onClick={handleTheme}
-          >
-            <ThemeToggle />
-            <AnimatePresence>
-              {openSidebar && !isMobile && (
-                <motion.span
-                  className="text-sm font-semibold ml-3"
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  {currentTheme}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
+      {/* Logout */}
+      <button
+        onClick={handleLogoutClick}
+        className="flex items-center gap-3 p-2 rounded-lg transition-colors text-primary hover:bg-sidebar-accent w-full"
+      >
+        <span className="ml-2">
+          <LogOut size={20} />
+        </span>
+        <AnimatePresence>
+          {openSidebar && !isMobile && (
+            <motion.span
+              className="text-sm font-semibold"
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              Logout
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
+    </div>
+  </div>
+</motion.div>
 
-          {/* Logout button */}
-          <button
-            onClick={handleLogoutClick}
-            className="flex items-center gap-3 p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent"
-          >
-            <span className="ml-2">
-              <LogOut size={20} />
-            </span>
-            <AnimatePresence>
-              {openSidebar && !isMobile && (
-                <motion.span
-                  className="text-sm font-semibold"
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  Logout
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
-        </div>
-      </motion.div>
 
       {/* ✅ Confirmation Popup */}
       <AnimatePresence>

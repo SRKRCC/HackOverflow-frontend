@@ -63,76 +63,76 @@ const Dashboard = () => {
   const remaining = leaderboard.slice(3, 5);
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-bold text-foreground mb-2">
+        <div className="mb-6 sm:mb-8 md:mb-10">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2">
             Admin Dashboard
           </h1>
-          <p className="text-muted-foreground text-lg">
-            Welcome back, <span className="text-primary font-semibold">{user?.email}</span>
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
+            Welcome back, <span className="text-primary font-semibold break-all">{user?.email}</span>
           </p>
         </div>
         
         {error && (
-          <div className="bg-destructive/10 border border-destructive/50 text-destructive px-6 py-4 rounded-xl mb-8">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">⚠️</span>
-              <span>{error}</span>
+          <div className="bg-destructive/10 border border-destructive/50 text-destructive px-4 sm:px-6 py-3 sm:py-4 rounded-xl mb-6 sm:mb-8">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-lg sm:text-xl">⚠️</span>
+              <span className="text-sm sm:text-base">{error}</span>
             </div>
           </div>
         )}
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8 md:mb-10">
           {stats.map((stat, index) => (
             <div 
               key={index} 
-              className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-2xl p-6 hover:scale-105 transition-transform duration-300`}
+              className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-xl sm:rounded-2xl p-4 sm:p-5 md:p-6 hover:scale-105 transition-transform duration-300`}
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-muted-foreground text-sm font-medium mb-2 uppercase tracking-wide">
+                <div className="flex-1 min-w-0">
+                  <p className="text-muted-foreground text-[10px] sm:text-xs md:text-sm font-medium mb-1 sm:mb-2 uppercase tracking-wide">
                     {stat.title}
                   </p>
-                  <p className="text-5xl font-bold text-foreground">
+                  <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground truncate">
                     {stat.value}
                   </p>
                 </div>
-                <div className="text-5xl opacity-30">{stat.icon}</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl opacity-30 shrink-0 ml-2">{stat.icon}</div>
               </div>
             </div>
           ))}
         </div>
           
         {/* Content Grid  */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* 📝 Recent Tasks */}
-          <div className="bg-card border border-border rounded-xl p-6 shadow-sm backdrop-blur-sm flex flex-col h-full">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-semibold text-card-foreground flex items-center gap-2">
-                <span>📝</span>
-                Recent Tasks
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-5 md:p-6 shadow-sm backdrop-blur-sm flex flex-col h-full">
+            <div className="flex items-center justify-between mb-4 sm:mb-5">
+              <h2 className="text-base sm:text-lg md:text-xl font-semibold text-card-foreground flex items-center gap-2">
+                <span className="text-lg sm:text-xl">📝</span>
+                <span>Recent Tasks</span>
               </h2>
-              <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-lg text-xs font-medium">
+              <span className="px-2 sm:px-3 py-1 bg-secondary/10 text-secondary rounded-lg text-[10px] sm:text-xs font-medium">
                 {tasks.length}
               </span>
             </div>
 
             {tasks.length > 0 ? (
-              <div className="space-y-3 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent">
+              <div className="space-y-2 sm:space-y-3 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent max-h-[400px] sm:max-h-none">
                 {tasks.slice(0, 5).map((task) => (
                   <div
                     key={task.id}
-                    className="group bg-muted/40 border border-border hover:border-accent/40 rounded-lg p-4 transition-all hover:shadow-sm"
+                    className="group bg-muted/40 border border-border hover:border-accent/40 rounded-lg p-3 sm:p-4 transition-all hover:shadow-sm"
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-sm sm:text-base text-card-foreground group-hover:text-accent transition-colors flex-1">
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <h3 className="font-semibold text-xs sm:text-sm md:text-base text-card-foreground group-hover:text-accent transition-colors flex-1 break-words">
                         {task.title}
                       </h3>
                       <span
-                        className={`ml-3 px-2 py-1 rounded-md text-[10px] font-semibold uppercase ${
+                        className={`shrink-0 px-2 py-1 rounded-md text-[9px] sm:text-[10px] font-semibold uppercase ${
                           task.completed
                             ? 'bg-emerald-500/20 text-emerald-500'
                             : task.in_review
@@ -144,7 +144,7 @@ const Dashboard = () => {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mt-1">
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs md:text-sm text-muted-foreground mt-1">
                       <span className="px-2 py-1 bg-background border border-border rounded-md font-medium">
                         Round {task.round_num}
                       </span>
@@ -154,59 +154,59 @@ const Dashboard = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-10 text-muted-foreground flex-1 flex flex-col items-center justify-center">
-                <div className="text-4xl mb-2 opacity-30">📋</div>
-                <p>No tasks available</p>
+              <div className="text-center py-8 sm:py-10 text-muted-foreground flex-1 flex flex-col items-center justify-center">
+                <div className="text-3xl sm:text-4xl mb-2 opacity-30">📋</div>
+                <p className="text-sm sm:text-base">No tasks available</p>
               </div>
             )}
           </div>
 
           {/* 🏆 Leaderboard */}
-          <div className="bg-card border border-border rounded-xl p-6 shadow-sm backdrop-blur-sm flex flex-col h-full">
-            <h2 className="text-xl font-bold text-card-foreground mb-6 flex items-center gap-2 justify-center">
-              <span className="text-2xl">🏆</span>
-              Leaderboard
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-5 md:p-6 shadow-sm backdrop-blur-sm flex flex-col h-full">
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-card-foreground mb-4 sm:mb-5 md:mb-6 flex items-center gap-2 justify-center">
+              <span className="text-xl sm:text-2xl">🏆</span>
+              <span>Leaderboard</span>
             </h2>
 
             {leaderboard.length > 0 ? (
               <div className="flex-1 flex flex-col">
                 {/* --- Top 3 Podium --- */}
-                <div className="flex items-end justify-center gap-3 mb-6">
+                <div className="flex items-end justify-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
                   {/* 2nd Place */}
                   {top3[1] && (
-                    <div className="flex flex-col items-center flex-1">
-                      <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-500 rounded-xl flex items-center justify-center text-2xl mb-2 shadow">
+                    <div className="flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px]">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-slate-300 to-slate-500 rounded-lg sm:rounded-xl flex items-center justify-center text-xl sm:text-2xl mb-2 shadow">
                         🥈
                       </div>
-                      <div className="border border-border rounded-lg p-3 text-center h-20 w-full flex flex-col justify-center">
-                        <p className="font-semibold text-sm truncate">{top3[1].title}</p>
-                        <p className="text-lg font-bold text-slate-600 dark:text-slate-200">{top3[1].totalPoints}</p>
+                      <div className="border border-border rounded-lg p-2 sm:p-3 text-center h-16 sm:h-20 w-full flex flex-col justify-center">
+                        <p className="font-semibold text-[10px] sm:text-xs md:text-sm truncate px-1">{top3[1].title}</p>
+                        <p className="text-sm sm:text-base md:text-lg font-bold text-slate-600 dark:text-slate-200">{top3[1].totalPoints}</p>
                       </div>
                     </div>
                   )}
 
                   {/* 1st Place */}
                   {top3[0] && (
-                    <div className="flex flex-col items-center flex-1 scale-110">
-                      <div className="w-14 h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center text-3xl mb-2 shadow-lg ring-2 ring-yellow-300/40 animate-pulse">
+                    <div className="flex flex-col items-center flex-1 max-w-[110px] sm:max-w-[130px] scale-105 sm:scale-110">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg sm:rounded-xl flex items-center justify-center text-2xl sm:text-3xl mb-2 shadow-lg ring-2 ring-yellow-300/40 animate-pulse">
                         🥇
                       </div>
-                      <div className="border border-yellow-400/50 rounded-lg p-4 text-center h-24 w-full flex flex-col justify-center">
-                        <p className="font-bold text-base truncate">{top3[0].title}</p>
-                        <p className="text-xl font-extrabold text-yellow-600 dark:text-yellow-300">{top3[0].totalPoints}</p>
+                      <div className="border border-yellow-400/50 rounded-lg p-3 sm:p-4 text-center h-20 sm:h-24 w-full flex flex-col justify-center">
+                        <p className="font-bold text-xs sm:text-sm md:text-base truncate px-1">{top3[0].title}</p>
+                        <p className="text-base sm:text-lg md:text-xl font-extrabold text-yellow-600 dark:text-yellow-300">{top3[0].totalPoints}</p>
                       </div>
                     </div>
                   )}
 
                   {/* 3rd Place */}
                   {top3[2] && (
-                    <div className="flex flex-col items-center flex-1">
-                      <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-800 rounded-xl flex items-center justify-center text-2xl mb-2 shadow">
+                    <div className="flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px]">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-700 to-amber-800 rounded-lg sm:rounded-xl flex items-center justify-center text-xl sm:text-2xl mb-2 shadow">
                         🥉
                       </div>
-                      <div className="border border-amber-700/40 rounded-lg p-3 text-center h-20 w-full flex flex-col justify-center">
-                        <p className="font-semibold text-sm truncate">{top3[2].title}</p>
-                        <p className="text-lg font-bold text-amber-700 dark:text-amber-300">{top3[2].totalPoints}</p>
+                      <div className="border border-amber-700/40 rounded-lg p-2 sm:p-3 text-center h-16 sm:h-20 w-full flex flex-col justify-center">
+                        <p className="font-semibold text-[10px] sm:text-xs md:text-sm truncate px-1">{top3[2].title}</p>
+                        <p className="text-sm sm:text-base md:text-lg font-bold text-amber-700 dark:text-amber-300">{top3[2].totalPoints}</p>
                       </div>
                     </div>
                   )}
@@ -214,25 +214,25 @@ const Dashboard = () => {
 
                 {/* --- Remaining Teams --- */}
                 {remaining.length > 0 && (
-                  <div className="space-y-2 border-t border-border pt-3 overflow-y-auto scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent">
+                  <div className="space-y-2 border-t border-border pt-3 overflow-y-auto scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent max-h-[200px] sm:max-h-[250px] md:max-h-none">
                     {remaining.map((entry) => (
                       <div
                         key={entry.id}
-                        className="bg-muted/30 border border-border rounded-lg p-3 hover:bg-muted/60 transition-all shadow-sm"
+                        className="bg-muted/30 border border-border rounded-lg p-2.5 sm:p-3 hover:bg-muted/60 transition-all shadow-sm"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-accent/10 rounded-md flex items-center justify-center text-accent text-xs font-semibold">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-accent/10 rounded-md flex items-center justify-center text-accent text-[10px] sm:text-xs font-semibold shrink-0">
                               #{entry.rank}
                             </div>
-                            <div>
-                              <p className="font-medium text-sm truncate">{entry.title}</p>
-                              <p className="text-xs text-muted-foreground">{entry.completedTasks} tasks</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-medium text-xs sm:text-sm truncate">{entry.title}</p>
+                              <p className="text-[10px] sm:text-xs text-muted-foreground">{entry.completedTasks} tasks</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-base font-bold text-foreground">{entry.totalPoints}</p>
-                            <p className="text-[10px] text-muted-foreground">pts</p>
+                          <div className="text-right shrink-0">
+                            <p className="text-sm sm:text-base font-bold text-foreground">{entry.totalPoints}</p>
+                            <p className="text-[9px] sm:text-[10px] text-muted-foreground">pts</p>
                           </div>
                         </div>
                       </div>
@@ -241,9 +241,9 @@ const Dashboard = () => {
                 )}
               </div>
             ) : (
-              <div className="text-center py-10 text-muted-foreground flex-1 flex flex-col items-center justify-center">
-                <div className="text-4xl mb-2 opacity-30">🏆</div>
-                <p>No leaderboard data available</p>
+              <div className="text-center py-8 sm:py-10 text-muted-foreground flex-1 flex flex-col items-center justify-center">
+                <div className="text-3xl sm:text-4xl mb-2 opacity-30">🏆</div>
+                <p className="text-sm sm:text-base">No leaderboard data available</p>
               </div>
             )}
           </div>
