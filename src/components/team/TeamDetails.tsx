@@ -1,5 +1,5 @@
 import { ApiService } from "@/lib/api";
-import type { Member } from "@/lib/types";
+import type { Team, Member } from "@/lib/types";
 import { useState, useEffect } from "react";
 
 interface TeamDetails {
@@ -49,7 +49,7 @@ export default function TeamCompass() {
   const getTeamMembers = async () => {
     try {
       setLoading(true);
-      const response = await ApiService.team.getDetails();
+      const response = await ApiService.team.getDetails() as TeamDetails; 
       console.log(response);
       setTeamDetails(response);
     } catch (error) {
