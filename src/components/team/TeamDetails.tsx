@@ -49,7 +49,7 @@ export default function TeamCompass() {
   const getTeamMembers = async () => {
     try {
       setLoading(true);
-      const response = await ApiService.team.getDetails();
+      const response = await ApiService.team.getDetails() as TeamDetails; 
       console.log(response);
       setTeamDetails(response);
     } catch (error) {
