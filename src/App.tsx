@@ -11,6 +11,8 @@ import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
 import Schedule from './components/Schedule'
 import Prizes from './components/Prizes'
+import PrivacyPolicy from './components/PrivacyPolicy'
+import TermsOfServices from './components/TermsOfServices'
 import { AdminRoute, TeamRoute } from './components/ProtectedRoute'
 import { useAuth } from './lib/hooks'
 
@@ -35,6 +37,8 @@ function AppContent() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/teams" element={<div>Teams Page</div>} />
           <Route path="/prizes" element={<Prizes />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-services" element={<TermsOfServices />} />
           
           {/* Protected Routes */}
           <Route path='/team/*' element={

@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { 
+import { Link, useNavigate } from "react-router-dom";
+import {
   MapPin,
   Phone,
   Mail,
@@ -10,7 +11,7 @@ import {
   Code,
   Clock,
   BookOpen,
-  Heart
+  Heart,
 } from "lucide-react";
 
 interface FooterProps {
@@ -24,12 +25,14 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <footer className={`w-full overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white ${className}`}>
+    <footer
+      className={`w-full overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white ${className}`}
+    >
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500 rounded-full animate-float" />
@@ -42,12 +45,18 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
           style={{ animationDelay: "2s" }}
         />
       </div>
-      
+
       <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Main footer content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* Brand and description */}
-          <div className={`lg:col-span-2 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`}>
+          <div
+            className={`lg:col-span-2 ${
+              isVisible
+                ? "animate-slide-up opacity-100"
+                : "translate-y-10 opacity-0"
+            }`}
+          >
             <div className="flex items-center mb-4">
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg mr-3">
                 <Code size={28} className="text-white" />
@@ -57,7 +66,9 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
               </span>
             </div>
             <p className="text-gray-300 mb-6">
-              Nationwide 24-hour hackathon bringing together the brightest minds to innovate, collaborate, and create solutions for real-world problems.
+              Nationwide 24-hour hackathon bringing together the brightest minds
+              to innovate, collaborate, and create solutions for real-world
+              problems.
             </p>
             <div className="flex flex-wrap gap-4">
               {[
@@ -66,7 +77,7 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
                 { icon: Users, label: "500+ Hackers" },
                 { icon: Trophy, label: "₹35K+ Prizes" },
               ].map((item, index) => (
-                <div 
+                <div
                   key={index}
                   className="bg-gray-800 p-2 rounded-lg flex items-center"
                 >
@@ -78,22 +89,36 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
           </div>
 
           {/* Quick Links */}
-          <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.2s" }}>
+          <div
+            className={`${
+              isVisible
+                ? "animate-slide-up opacity-100"
+                : "translate-y-10 opacity-0"
+            }`}
+            style={{ animationDelay: "0.2s" }}
+          >
             <h3 className="text-lg font-semibold mb-6 border-b border-gray-700 pb-2 flex items-center">
               <Code className="mr-2" size={18} /> Hackathon Info
             </h3>
             <ul className="space-y-3">
               {[
-                { text: "Schedule", icon: Calendar, link: '/schedule' },
-                { text: "Tracks & Themes", icon: Code, link: '/problem-statements' },
-                { text: "Prizes", icon: Trophy, link: '/prizes' },
-              ].map((item, index) => ( 
+                { text: "Schedule", icon: Calendar, link: "/schedule" },
+                {
+                  text: "Tracks & Themes",
+                  icon: Code,
+                  link: "/problem-statements",
+                },
+                { text: "Prizes", icon: Trophy, link: "/prizes" },
+              ].map((item, index) => (
                 <li key={index}>
-                  <a 
-                    href={`${item.link}`} 
+                  <a
+                    href={`${item.link}`}
                     className="text-gray-300 hover:text-blue-400 transition-colors flex items-center group"
                   >
-                    <item.icon size={16} className="mr-2 group-hover:scale-110 transition-transform" /> 
+                    <item.icon
+                      size={16}
+                      className="mr-2 group-hover:scale-110 transition-transform"
+                    />
                     {item.text}
                   </a>
                 </li>
@@ -102,14 +127,26 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
           </div>
 
           {/* Contact Information */}
-          <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.4s" }}>
+          <div
+            className={`${
+              isVisible
+                ? "animate-slide-up opacity-100"
+                : "translate-y-10 opacity-0"
+            }`}
+            style={{ animationDelay: "0.4s" }}
+          >
             <h3 className="text-lg font-semibold mb-6 border-b border-gray-700 pb-2 flex items-center">
               <BookOpen className="mr-2" size={18} /> Quick Support
             </h3>
             <div className="space-y-4 mb-6">
               <div className="flex items-start">
-                <MapPin size={18} className="text-blue-400 mt-1 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">Sagi Ramakrishnam Raju Engineering College, Bhimavaram</span>
+                <MapPin
+                  size={18}
+                  className="text-blue-400 mt-1 mr-3 flex-shrink-0"
+                />
+                <span className="text-gray-300">
+                  Sagi Ramakrishnam Raju Engineering College, Bhimavaram
+                </span>
               </div>
               <div className="flex items-center">
                 <Phone size={18} className="text-blue-400 mr-3 flex-shrink-0" />
@@ -117,14 +154,23 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
               </div>
               <div className="flex items-center">
                 <Mail size={18} className="text-blue-400 mr-3 flex-shrink-0" />
-                <a href="mailto:srkrcodingclub@gmail.com" className="text-gray-300 hover:text-blue-400">srkrcodingclub@gmail.com</a>
+                <a
+                  href="mailto:srkrcodingclub@gmail.com"
+                  className="text-gray-300 hover:text-blue-400"
+                >
+                  srkrcodingclub@gmail.com
+                </a>
               </div>
             </div>
-            
+
             {/* Emergency Contact */}
             <div className="bg-gray-800 p-3 rounded-lg mt-4">
-              <h4 className="text-blue-400 font-semibold text-sm mb-1">Emergency Contact</h4>
-              <p className="text-gray-300 text-sm">For urgent issues during the event</p>
+              <h4 className="text-blue-400 font-semibold text-sm mb-1">
+                Emergency Contact
+              </h4>
+              <p className="text-gray-300 text-sm">
+                For urgent issues during the event
+              </p>
               <p className="text-gray-300 text-sm mt-1">+91 90321 49776</p>
             </div>
           </div>
@@ -169,18 +215,36 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
         </div> */}
 
         {/* Bottom section */}
-        <div className={`border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "1s" }}>
+        <div
+          className={`border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center ${
+            isVisible
+              ? "animate-slide-up opacity-100"
+              : "translate-y-10 opacity-0"
+          }`}
+          style={{ animationDelay: "1s" }}
+        >
           <div className="text-gray-400 text-sm mb-4 md:mb-0 flex items-center">
-            Made with <Heart size={14} className="text-red-500 mx-1" /> for the developer community
+            Made with <Heart size={14} className="text-red-500 mx-1" /> for the
+            developer community
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</a>
-            <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">Code of Conduct</a>
+            <Link
+              to="/privacy-policy"
+              className="text-gray-400 hover:text-white text-sm transition-colors"
+            >
+              Privacy Policy
+            </Link>
+
+            <Link
+              to="/terms-of-services"
+              className="text-gray-400 hover:text-white text-sm transition-colors"
+            >
+              Terms of Service
+            </Link>
           </div>
         </div>
       </div>
-      
+
       {/* Add CSS for animations */}
       <style>{`
         @keyframes float {
