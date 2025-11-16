@@ -1,6 +1,6 @@
-"use client"
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+"use client";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
   CheckCircle,
@@ -15,79 +15,79 @@ import {
   Menu,
   Filter,
   ChevronDown,
-} from "lucide-react"
-import { ApiService } from '../../lib/api'
-import { useAuth } from '../../lib/hooks'
-import type { Task, Team, CreateTaskRequest } from '../../lib/types'
+} from "lucide-react";
+import { ApiService } from "../../lib/api";
+import { useAuth } from "../../lib/hooks";
+import type { Task, Team, CreateTaskRequest } from "../../lib/types";
 
 export default function TeamTaskManagement() {
-  const { isAuthenticated, user } = useAuth()
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [teams, setTeams] = useState<Team[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [submitting, setSubmitting] = useState(false)
+  const { isAuthenticated, user } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [successMessage, setSuccessMessage] = useState(false)
-  const [filterStatus, setFilterStatus] = useState<string>("all")
-  const [teamSearchTerm, setTeamSearchTerm] = useState<string>("")
-  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null)
-  const [modalMode, setModalMode] = useState<"create" | "edit">("edit")
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [teamSearchTerm, setTeamSearchTerm] = useState<string>("");
+  const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
+  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [newTask, setNewTask] = useState<CreateTaskRequest>({
-    title: '',
-    description: '',
-    difficulty: 'medium',
+    title: "",
+    description: "",
+    difficulty: "medium",
     round_num: 1,
     points: 0,
-    teamId: ''
-  })
+    teamId: "",
+  });
 
   // Load data on component mount
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'admin') {
-      loadTasks()
-      loadTeams()
+    if (isAuthenticated && user?.role === "admin") {
+      loadTasks();
+      loadTeams();
     }
-  }, [isAuthenticated, user])
+  }, [isAuthenticated, user]);
 
   const loadTasks = async () => {
     try {
-      setLoading(true)
-      setError(null)
-      const tasksData = await ApiService.admin.getAllTasks()
+      setLoading(true);
+      setError(null);
+      const tasksData = await ApiService.admin.getAllTasks();
 
-      setTasks(tasksData)
+      setTasks(tasksData);
     } catch (err) {
-      setError('Failed to load tasks')
-      console.error('Error loading tasks:', err)
+      setError("Failed to load tasks");
+      console.error("Error loading tasks:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadTeams = async () => {
     try {
-      const teamsData = await ApiService.admin.getAllTeams()
-      setTeams(teamsData)
+      const teamsData = await ApiService.admin.getAllTeams();
+      setTeams(teamsData);
     } catch (err) {
-      setError('Failed to load teams')
-      console.error('Error loading teams:', err)
+      setError("Failed to load teams");
+      console.error("Error loading teams:", err);
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    })
-  }
+    });
+  };
 
   const getStatusConfig = (status: Task["status"]) => {
     const configs = {
@@ -109,9 +109,9 @@ export default function TeamTaskManagement() {
         icon: CheckCircle,
         label: "Completed",
       },
-    }
-    return configs[status] || configs.Pending
-  }
+    };
+    return configs[status] || configs.Pending;
+  };
 
   // const openEditModal = (task: Task) => {
   //   setModalMode("edit")
@@ -121,131 +121,157 @@ export default function TeamTaskManagement() {
   // }
 
   const openCreateModal = () => {
-    setModalMode("create")
+    setModalMode("create");
     setNewTask({
-      title: '',
-      description: '',
-      difficulty: 'medium',
+      title: "",
+      description: "",
+      difficulty: "medium",
       round_num: 1,
       points: 0,
-      teamId: ''
-    })
-    setSelectedTask(null)
-    setIsModalOpen(true)
-    setSuccessMessage(false)
-  }
+      teamId: "",
+    });
+    setSelectedTask(null);
+    setIsModalOpen(true);
+    setSuccessMessage(false);
+  };
 
   const closeModal = () => {
-    setIsModalOpen(false)
-    setSelectedTask(null)
-    setSuccessMessage(false)
-    setSubmitting(false)
-  }
+    setIsModalOpen(false);
+    setSelectedTask(null);
+    setSuccessMessage(false);
+    setSubmitting(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     try {
-      setSubmitting(true)
+      setSubmitting(true);
       if (modalMode === "create") {
-        await ApiService.admin.createTask(newTask)
-        setSuccessMessage(true)
+        await ApiService.admin.createTask(newTask);
+        setSuccessMessage(true);
         setTimeout(() => {
-          closeModal()
-          loadTasks()
-        }, 1200)
+          closeModal();
+          loadTasks();
+        }, 1200);
       } else if (selectedTask && modalMode === "edit") {
         await ApiService.admin.updateTask(selectedTask.id, {
           title: selectedTask.title,
           description: selectedTask.description,
           difficulty: selectedTask.difficulty,
           round_num: selectedTask.round_num,
-          points: selectedTask.points
-        })
-        setSuccessMessage(true)
+          points: selectedTask.points,
+        });
+        setSuccessMessage(true);
         setTimeout(() => {
-          closeModal()
-          loadTasks()
-        }, 1200)
+          closeModal();
+          loadTasks();
+        }, 1200);
       }
     } catch (err) {
-      setError('Failed to save task')
-      console.error('Error saving task:', err)
-      setSubmitting(false)
+      setError("Failed to save task");
+      console.error("Error saving task:", err);
+      setSubmitting(false);
     }
-  }
+  };
 
   const handleTaskInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
-    const { name, value } = e.target
-    
+    const { name, value } = e.target;
+
     if (modalMode === "create") {
       setNewTask({
         ...newTask,
-        [name]: name === "round_num" || name === "points" ? parseInt(value) || 0 : value,
-      })
+        [name]:
+          name === "round_num" || name === "points"
+            ? parseInt(value) || 0
+            : value,
+      });
     } else if (selectedTask) {
       setSelectedTask({
         ...selectedTask,
-        [name]: name === "round_num" || name === "points" ? parseInt(value) || 0 : value,
-      } as Task)
+        [name]:
+          name === "round_num" || name === "points"
+            ? parseInt(value) || 0
+            : value,
+      } as Task);
     }
-  }
+  };
 
   // Client-side filtering
   const filteredTasks = tasks.filter((task) => {
     // Status filter
-    const matchesStatus = 
-      filterStatus === "all" || 
+    const matchesStatus =
+      filterStatus === "all" ||
       (filterStatus === "pending" && task.status === "Pending") ||
       (filterStatus === "in-review" && task.status === "InReview") ||
-      (filterStatus === "completed" && task.status === "Completed")
-    
+      (filterStatus === "completed" && task.status === "Completed");
+
     // Team filter - check multiple possible team identifier formats
-    const matchesTeam = 
-      selectedTeamId === null || 
+    const matchesTeam =
+      selectedTeamId === null ||
       task.team?.id === selectedTeamId ||
-      task.teamId === selectedTeamId 
-    
-    return matchesStatus && matchesTeam
-  })
+      task.teamId === selectedTeamId;
+
+    return matchesStatus && matchesTeam;
+  });
 
   // Filter teams by search
-  const filteredTeams = teams.filter(team => 
-    team.title?.toLowerCase().includes(teamSearchTerm.toLowerCase()) ||
-    team.scc_id?.toLowerCase().includes(teamSearchTerm.toLowerCase())
-  )
+  const filteredTeams = teams.filter(
+    (team) =>
+      team.title?.toLowerCase().includes(teamSearchTerm.toLowerCase()) ||
+      team.scc_id?.toLowerCase().includes(teamSearchTerm.toLowerCase())
+  );
 
   const approveTask = async (id: number) => {
     try {
-      await ApiService.admin.completeTask(id, 'Task approved by admin')
-      await loadTasks()
-      setSuccessMessage(true)
-      setTimeout(() => setSuccessMessage(false), 2000)
+      await ApiService.admin.completeTask(id, "Task approved by admin");
+      await loadTasks();
+      setSuccessMessage(true);
+      setTimeout(() => setSuccessMessage(false), 2000);
     } catch (err) {
-      setError('Failed to approve task')
-      console.error('Error approving task:', err)
+      setError("Failed to approve task");
+      console.error("Error approving task:", err);
     }
-  }
+  };
 
   const getTeamTaskCount = (teamId: number) => {
-    return tasks.filter(task => 
-      task.team?.id === teamId || 
-      task.teamId === teamId 
-    ).length
-  }
-
- 
+    return tasks.filter(
+      (task) => task.team?.id === teamId || task.teamId === teamId
+    ).length;
+  };
 
   const statusFilters = [
-    { id: "all", label: "All", color: "bg-orange-600 hover:bg-orange-700", count: tasks.length },
-    { id: "pending", label: "Pending", color: "bg-amber-600 hover:bg-amber-700", count: tasks.filter(t => t.status === "Pending").length },
-    { id: "in-review", label: "In Review", color: "bg-purple-600 hover:bg-purple-700", count: tasks.filter(t => t.status === "InReview").length },
-    { id: "completed", label: "Completed", color: "bg-green-600 hover:bg-green-700", count: tasks.filter(t => t.status === "Completed").length }
-  ]
+    {
+      id: "all",
+      label: "All",
+      color: "bg-orange-600 hover:bg-orange-700",
+      count: tasks.length,
+    },
+    {
+      id: "pending",
+      label: "Pending",
+      color: "bg-amber-600 hover:bg-amber-700",
+      count: tasks.filter((t) => t.status === "Pending").length,
+    },
+    {
+      id: "in-review",
+      label: "In Review",
+      color: "bg-purple-600 hover:bg-purple-700",
+      count: tasks.filter((t) => t.status === "InReview").length,
+    },
+    {
+      id: "completed",
+      label: "Completed",
+      color: "bg-green-600 hover:bg-green-700",
+      count: tasks.filter((t) => t.status === "Completed").length,
+    },
+  ];
 
-  const selectedTeam = teams.find(t => t.teamId === selectedTeamId)
+  const selectedTeam = teams.find((t) => t.teamId === selectedTeamId);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-100 dark:from-gray-950 dark:via-orange-950/10 dark:to-black">
@@ -293,8 +319,8 @@ export default function TeamTaskManagement() {
 
               <button
                 onClick={() => {
-                  setSelectedTeamId(null)
-                  setIsMobileMenuOpen(false)
+                  setSelectedTeamId(null);
+                  setIsMobileMenuOpen(false);
                 }}
                 className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center justify-between ${
                   selectedTeamId === null
@@ -303,11 +329,13 @@ export default function TeamTaskManagement() {
                 }`}
               >
                 <span>All Teams</span>
-                <span className={`text-xs px-2 py-1 rounded-full ${
-                  selectedTeamId === null 
-                    ? "bg-orange-600 text-white" 
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}>
+                <span
+                  className={`text-xs px-2 py-1 rounded-full ${
+                    selectedTeamId === null
+                      ? "bg-orange-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                >
                   {tasks.length}
                 </span>
               </button>
@@ -316,8 +344,8 @@ export default function TeamTaskManagement() {
                 <button
                   key={team.id}
                   onClick={() => {
-                    setSelectedTeamId(team?.teamId)
-                    setIsMobileMenuOpen(false)
+                    setSelectedTeamId(team?.teamId);
+                    setIsMobileMenuOpen(false);
                   }}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                     selectedTeamId === team.teamId
@@ -328,13 +356,17 @@ export default function TeamTaskManagement() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="font-medium truncate">{team.title}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{team.scc_id}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {team.scc_id}
+                      </div>
                     </div>
-                    <span className={`ml-3 text-xs px-2 py-1 rounded-full ${
-                      selectedTeamId === team.teamId
-                        ? "bg-orange-600 text-white" 
-                        : "bg-gray-200 dark:bg-gray-700"
-                    }`}>
+                    <span
+                      className={`ml-3 text-xs px-2 py-1 rounded-full ${
+                        selectedTeamId === team.teamId
+                          ? "bg-orange-600 text-white"
+                          : "bg-gray-200 dark:bg-gray-700"
+                      }`}
+                    >
                       {getTeamTaskCount(team.teamId)}
                     </span>
                   </div>
@@ -355,7 +387,7 @@ export default function TeamTaskManagement() {
               </div>
               <h2 className="text-lg font-bold">Teams</h2>
             </div>
-            
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
@@ -364,13 +396,13 @@ export default function TeamTaskManagement() {
                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
                 value={teamSearchTerm}
                 onChange={(e) => setTeamSearchTerm(e.target.value)}
-              />  
+              />
             </div>
           </div>
-          
+
           <nav className="flex-1 overflow-y-auto">
             <button
-              key={''}
+              key={""}
               onClick={() => setSelectedTeamId(null)}
               className={`w-full text-left px-6 py-3.5 transition-all border-l-4 flex items-center justify-between group ${
                 selectedTeamId === null
@@ -379,11 +411,13 @@ export default function TeamTaskManagement() {
               }`}
             >
               <span>All Teams</span>
-              <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
-                selectedTeamId === null 
-                  ? "bg-orange-600 text-white" 
-                  : "bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
-              }`}>
+              <span
+                className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                  selectedTeamId === null
+                    ? "bg-orange-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
+                }`}
+              >
                 {tasks.length}
               </span>
             </button>
@@ -399,7 +433,7 @@ export default function TeamTaskManagement() {
               </p>
             ) : (
               filteredTeams.map((team) => {
-                const isSelected = selectedTeamId === team.teamId
+                const isSelected = selectedTeamId === team.teamId;
                 return (
                   <button
                     key={team.teamId}
@@ -417,16 +451,18 @@ export default function TeamTaskManagement() {
                           {team.scc_id}
                         </div>
                       </div>
-                      <span className={`ml-3 text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
-                        isSelected
-                          ? "bg-orange-600 text-white" 
-                          : "bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
-                      }`}>
+                      <span
+                        className={`ml-3 text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
+                          isSelected
+                            ? "bg-orange-600 text-white"
+                            : "bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
+                        }`}
+                      >
                         {getTeamTaskCount(team.teamId)}
                       </span>
                     </div>
                   </button>
-                )
+                );
               })
             )}
           </nav>
@@ -438,7 +474,9 @@ export default function TeamTaskManagement() {
             {/* Desktop Header */}
             <div className="hidden lg:flex items-center justify-between mb-6 lg:mb-8">
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold mb-1">Task Management</h1>
+                <h1 className="text-2xl lg:text-3xl font-bold mb-1">
+                  Task Management
+                </h1>
                 <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
                   Monitor and manage team tasks
                 </p>
@@ -457,7 +495,9 @@ export default function TeamTaskManagement() {
               <div className="lg:hidden mb-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Viewing tasks for</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Viewing tasks for
+                    </p>
                     <p className="font-semibold">{selectedTeam.title}</p>
                   </div>
                   <button
@@ -504,10 +544,13 @@ export default function TeamTaskManagement() {
                   Filter by Status
                 </h2>
                 <span className="text-xs lg:text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{filteredTasks.length}</span> of {tasks.length}
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    {filteredTasks.length}
+                  </span>{" "}
+                  of {tasks.length}
                 </span>
               </div>
-              
+
               {/* Desktop Filter Buttons */}
               <div className="hidden sm:flex flex-wrap gap-2">
                 {statusFilters.map((filter) => (
@@ -521,11 +564,13 @@ export default function TeamTaskManagement() {
                     }`}
                   >
                     {filter.label}
-                    <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
-                      filterStatus === filter.id
-                        ? "bg-white/30"
-                        : "bg-gray-200 dark:bg-gray-700"
-                    }`}>
+                    <span
+                      className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                        filterStatus === filter.id
+                          ? "bg-white/30"
+                          : "bg-gray-200 dark:bg-gray-700"
+                      }`}
+                    >
                       {filter.count}
                     </span>
                   </button>
@@ -538,10 +583,17 @@ export default function TeamTaskManagement() {
                   onClick={() => setIsFilterOpen(!isFilterOpen)}
                   className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-between text-sm font-medium"
                 >
-                  <span>{statusFilters.find(f => f.id === filterStatus)?.label || "All"}</span>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${isFilterOpen ? "rotate-180" : ""}`} />
+                  <span>
+                    {statusFilters.find((f) => f.id === filterStatus)?.label ||
+                      "All"}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      isFilterOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                
+
                 <AnimatePresence>
                   {isFilterOpen && (
                     <motion.div
@@ -554,8 +606,8 @@ export default function TeamTaskManagement() {
                         <button
                           key={filter.id}
                           onClick={() => {
-                            setFilterStatus(filter.id)
-                            setIsFilterOpen(false)
+                            setFilterStatus(filter.id);
+                            setIsFilterOpen(false);
                           }}
                           className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center justify-between ${
                             filterStatus === filter.id
@@ -579,23 +631,27 @@ export default function TeamTaskManagement() {
             {loading ? (
               <div className="text-center py-12 lg:py-20">
                 <Loader2 className="h-10 w-10 lg:h-12 lg:w-12 animate-spin mx-auto text-orange-600 mb-4" />
-                <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">Loading tasks...</p>
+                <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
+                  Loading tasks...
+                </p>
               </div>
             ) : filteredTasks.length === 0 ? (
               <div className="text-center py-12 lg:py-20 bg-white/50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm">
                 <div className="p-3 lg:p-4 bg-gray-100 dark:bg-gray-800 rounded-full w-12 h-12 lg:w-16 lg:h-16 mx-auto flex items-center justify-center mb-4">
                   <AlertCircle className="h-6 w-6 lg:h-8 lg:w-8 text-gray-400" />
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg font-medium">No tasks found</p>
+                <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg font-medium">
+                  No tasks found
+                </p>
                 <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-500 mt-2">
                   Try adjusting your filters or create a new task
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 lg:gap-6">
                 {filteredTasks.map((task) => {
-                  const statusConfig = getStatusConfig(task.status)
-                  const StatusIcon = statusConfig.icon
+                  const statusConfig = getStatusConfig(task.status);
+                  const StatusIcon = statusConfig.icon;
                   return (
                     <motion.div
                       key={task.id}
@@ -617,7 +673,7 @@ export default function TeamTaskManagement() {
                           {statusConfig.label}
                         </span>
                       </div>
-                      
+
                       {task.team && (
                         <div className="mb-3">
                           <span className="inline-flex items-center text-xs font-medium bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 px-2.5 lg:px-3 py-1 lg:py-1.5 rounded-lg border border-blue-200 dark:border-blue-800">
@@ -626,26 +682,40 @@ export default function TeamTaskManagement() {
                           </span>
                         </div>
                       )}
-                      
-                      <h3 className="text-base lg:text-lg font-bold mb-2 line-clamp-2">{task.title}</h3>
+
+                      <h3 className="text-base lg:text-lg font-bold mb-2 line-clamp-2">
+                        {task.title}
+                      </h3>
                       <p className="text-xs lg:text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                         {task.description}
                       </p>
 
                       <div className="space-y-2 mb-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
                         <div className="flex justify-between items-center text-xs lg:text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">Points</span>
-                          <span className="font-bold text-orange-600 dark:text-orange-400">{task.points}</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Points
+                          </span>
+                          <span className="font-bold text-orange-600 dark:text-orange-400">
+                            {task.points}
+                          </span>
                         </div>
                         {task.difficulty && (
                           <div className="flex justify-between items-center text-xs lg:text-sm">
-                            <span className="text-gray-600 dark:text-gray-400">Difficulty</span>
-                            <span className="font-semibold capitalize text-gray-900 dark:text-gray-100">{task.difficulty}</span>
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Difficulty
+                            </span>
+                            <span className="font-semibold capitalize text-gray-900 dark:text-gray-100">
+                              {task.difficulty}
+                            </span>
                           </div>
                         )}
                         <div className="flex justify-between items-center text-xs lg:text-sm">
-                          <span className="text-gray-600 dark:text-gray-400">Round</span>
-                          <span className="font-semibold text-gray-900 dark:text-gray-100">Round {task.round_num}</span>
+                          <span className="text-gray-600 dark:text-gray-400">
+                            Round
+                          </span>
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">
+                            Round {task.round_num}
+                          </span>
                         </div>
                       </div>
 
@@ -656,15 +726,23 @@ export default function TeamTaskManagement() {
 
                       {task.teamNotes && (
                         <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg text-xs lg:text-sm border border-blue-200 dark:border-blue-800">
-                          <strong className="text-blue-700 dark:text-blue-300">Team Notes:</strong>
-                          <p className="text-gray-700 dark:text-gray-300 mt-1">{task.teamNotes}</p>
+                          <strong className="text-blue-700 dark:text-blue-300">
+                            Team Notes:
+                          </strong>
+                          <p className="text-gray-700 dark:text-gray-300 mt-1">
+                            {task.teamNotes}
+                          </p>
                         </div>
                       )}
 
                       {task.reviewNotes && (
                         <div className="mb-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg text-xs lg:text-sm border border-green-200 dark:border-green-800">
-                          <strong className="text-green-700 dark:text-green-300">Admin Review:</strong>
-                          <p className="text-gray-700 dark:text-gray-300 mt-1">{task.reviewNotes}</p>
+                          <strong className="text-green-700 dark:text-green-300">
+                            Admin Review:
+                          </strong>
+                          <p className="text-gray-700 dark:text-gray-300 mt-1">
+                            {task.reviewNotes}
+                          </p>
                         </div>
                       )}
 
@@ -687,7 +765,7 @@ export default function TeamTaskManagement() {
                         </button> */}
                       </div>
                     </motion.div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -698,14 +776,14 @@ export default function TeamTaskManagement() {
       {/* Modal */}
       <AnimatePresence>
         {isModalOpen && (modalMode === "create" || selectedTask) && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 ">
             <motion.div
-              className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto text-base scrollbar-none"
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
             >
-              <div className="p-5 lg:p-6">
+              <div className="p-4">
                 <div className="flex justify-between items-center mb-5 lg:mb-6 pb-4 border-b border-gray-200 dark:border-gray-800">
                   <h3 className="text-xl lg:text-2xl font-bold flex items-center gap-2">
                     {modalMode === "create" ? (
@@ -735,22 +813,29 @@ export default function TeamTaskManagement() {
 
                 {successMessage && (
                   <motion.div
-                    className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 p-3 lg:p-4 rounded-xl mb-5 lg:mb-6 flex items-center gap-3 border border-green-200 dark:border-green-800 text-sm lg:text-base"
+                    className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 p-3 lg:p-4 rounded-xl mb-5 lg:mb-6 flex items-center gap-3 border border-green-200 dark:border-green-800 text-base lg:text-base"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
                     <CheckCircle className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">Task saved successfully!</span>
+                    <span className="font-medium">
+                      Task saved successfully!
+                    </span>
                   </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4 lg:space-y-5">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-5 lg:space-y-5"
+                >
                   {modalMode === "create" && (
                     <div>
-                      <label className="block font-semibold mb-2 text-xs lg:text-sm">Assign to Team *</label>
+                      <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                        Assign to Team *
+                      </label>
                       <select
                         name="teamId"
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
                         value={newTask.teamId}
                         onChange={handleTaskInputChange}
                         disabled={submitting}
@@ -767,12 +852,18 @@ export default function TeamTaskManagement() {
                   )}
 
                   <div>
-                    <label className="block font-semibold mb-2 text-xs lg:text-sm">Task Title *</label>
+                    <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                      Task Title *
+                    </label>
                     <input
                       name="title"
                       type="text"
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
-                      value={modalMode === "create" ? newTask.title : selectedTask?.title || ""}
+                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
+                      value={
+                        modalMode === "create"
+                          ? newTask.title
+                          : selectedTask?.title || ""
+                      }
                       onChange={handleTaskInputChange}
                       placeholder="Enter task title..."
                       disabled={submitting}
@@ -781,12 +872,18 @@ export default function TeamTaskManagement() {
                   </div>
 
                   <div>
-                    <label className="block font-semibold mb-2 text-xs lg:text-sm">Task Description *</label>
+                    <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                      Task Description *
+                    </label>
                     <textarea
                       name="description"
                       rows={4}
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all resize-none disabled:opacity-50"
-                      value={modalMode === "create" ? newTask.description : selectedTask?.description || ""}
+                      className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all resize-none disabled:opacity-50"
+                      value={
+                        modalMode === "create"
+                          ? newTask.description
+                          : selectedTask?.description || ""
+                      }
                       onChange={handleTaskInputChange}
                       placeholder="Describe the task in detail..."
                       disabled={submitting}
@@ -796,13 +893,19 @@ export default function TeamTaskManagement() {
 
                   <div className="grid grid-cols-3 gap-3 lg:gap-4">
                     <div>
-                      <label className="block font-semibold mb-2 text-xs lg:text-sm">Round *</label>
+                      <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                        Round *
+                      </label>
                       <input
                         name="round_num"
                         type="number"
                         min="1"
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
-                        value={modalMode === "create" ? newTask.round_num : selectedTask?.round_num || 1}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
+                        value={
+                          modalMode === "create"
+                            ? newTask.round_num
+                            : selectedTask?.round_num || 1
+                        }
                         onChange={handleTaskInputChange}
                         disabled={submitting}
                         required
@@ -810,13 +913,19 @@ export default function TeamTaskManagement() {
                     </div>
 
                     <div>
-                      <label className="block font-semibold mb-2 text-xs lg:text-sm">Points *</label>
+                      <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                        Points *
+                      </label>
                       <input
                         name="points"
                         type="number"
                         min="0"
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
-                        value={modalMode === "create" ? newTask.points : selectedTask?.points || 0}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
+                        value={
+                          modalMode === "create"
+                            ? newTask.points
+                            : selectedTask?.points || 0
+                        }
                         onChange={handleTaskInputChange}
                         disabled={submitting}
                         required
@@ -824,11 +933,17 @@ export default function TeamTaskManagement() {
                     </div>
 
                     <div>
-                      <label className="block font-semibold mb-2 text-xs lg:text-sm">Difficulty *</label>
+                      <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                        Difficulty *
+                      </label>
                       <select
                         name="difficulty"
-                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 lg:px-4 py-2 lg:py-2.5 text-xs lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
-                        value={modalMode === "create" ? newTask.difficulty : selectedTask?.difficulty || "medium"}
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all disabled:opacity-50"
+                        value={
+                          modalMode === "create"
+                            ? newTask.difficulty
+                            : selectedTask?.difficulty || "medium"
+                        }
                         onChange={handleTaskInputChange}
                         disabled={submitting}
                       >
@@ -844,24 +959,28 @@ export default function TeamTaskManagement() {
                       type="button"
                       onClick={closeModal}
                       disabled={submitting}
-                      className="flex-1 px-3 lg:px-4 py-2 lg:py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-xs lg:text-sm disabled:opacity-50"
+                      className="flex-1 px-4 lg:px-4 py-3 lg:py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm lg:text-sm disabled:opacity-50"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex-1 px-3 lg:px-4 py-2 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-lg flex items-center justify-center gap-2 text-xs lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-4 lg:px-4 py-3 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-lg flex items-center justify-center gap-2 text-sm lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {submitting ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          {modalMode === "create" ? "Creating..." : "Updating..."}
+                          {modalMode === "create"
+                            ? "Creating..."
+                            : "Updating..."}
                         </>
                       ) : (
                         <>
                           <Save className="h-4 w-4" />
-                          {modalMode === "create" ? "Create Task" : "Update Task"}
+                          {modalMode === "create"
+                            ? "Create Task"
+                            : "Update Task"}
                         </>
                       )}
                     </button>
@@ -873,5 +992,5 @@ export default function TeamTaskManagement() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

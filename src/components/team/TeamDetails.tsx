@@ -149,34 +149,24 @@ export default function TeamCompass() {
         </div>
       </header>
 
-      <div className="flex flex-col md:grid md:grid-cols-5 min-h-[calc(100vh-200px)]">
-        {/* Left Side - Detailed Profile */}
-        <div className="md:col-span-3 flex flex-col justify-center p-4 md:p-8 order-2 md:order-1">
-          <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : selectedColorScheme.bgColor} rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-700 transform max-w-2xl mx-auto border`}>
-            {/* Profile Header */}
-            <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-6 mb-6">
-              <div className="relative mb-4 md:mb-0">
-                <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r ${selectedColorScheme.color} p-1 shadow-xl`}>
-                  <ProfileImage size="normal" />
-                </div>
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">{selectedMember.name}</h2>
-                <p className={`text-lg md:text-xl font-semibold bg-gradient-to-r ${selectedColorScheme.color} bg-clip-text text-transparent mb-1`}>
-                  Team Member
-                </p>
-                <p className="text-base md:text-lg text-muted-foreground">{selectedMember.department}</p>
-              </div>
-            </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <div className="lg:col-span-2">
+            <div className="bg-card rounded-2xl border border-border/50 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+              {/* Profile Header Background */}
+              <div
+                className={`h-32 bg-gradient-to-r ${selectedColorGradient}`}
+              />
 
-            {/* Detailed Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${selectedColorScheme.color} flex items-center justify-center`}>
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
-                    </svg>
+              {/* Profile Content */}
+              <div className="px-6 sm:px-8 py-8">
+                {/* Profile Avatar and Basic Info */}
+                <div className="flex flex-col sm:flex-row items-start gap-6 mb-8">
+                  <div className={`w-24 h-24 rounded-full bg-gradient-to-r ${selectedColorGradient} p-1 flex-shrink-0 shadow-lg`}>
+                    <div className="w-full h-full rounded-full bg-card flex items-center justify-center">
+                      <ProfileImage size="normal" />
+                    </div>
                   </div>
 
                   <div className="flex-1 pt-2">
@@ -237,92 +227,99 @@ export default function TeamCompass() {
             </div>
           </div>
 
-        {/* Right Side - Dynamic Carousel */}
-        <div className="md:col-span-2 relative h-80 md:h-auto order-1 md:order-2">
-          {/* Path Indicator - Hidden on mobile */}
-          <div className="hidden md:block absolute top-1/2 right-16 w-1 h-auto bg-gradient-to-b from-transparent via-border to-transparent rounded-full transform -translate-y-1/2 opacity-30"></div>
-          
-          {/* Cards Container */}
-          <div className="relative w-full h-full">
-            {teamDetails.team_members.map((member, index) => {
-              const position = getCardPosition(index);
-              const shape = getCardShape(index);
-              const isCenter = shape === 'center';
-              const memberColorScheme = colorSchemes[index % colorSchemes.length];
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <h3 className="text-lg font-semibold text-foreground mb-6 px-2">
+                Team Members
+              </h3>
 
-              if (!position) return null;
-              
-              return (
-                <div
-                  key={member.id}
-                  className="absolute transition-all duration-700 ease-in-out cursor-pointer hover:scale-110"
-                  style={{
-                    top: position.top,
-                    right: typeof window !== 'undefined' && window.innerWidth >= 768 && 'right' in position ? position.right : undefined,
-                    left: typeof window !== 'undefined' && window.innerWidth < 768 && 'left' in position ? position.left : undefined,
-                    transform: `translate(-50%, -50%) scale(${position.scale})`,
-                    opacity: position.opacity,
-                    zIndex: position.zIndex,
-                  }}
-                  onClick={() => handleMemberClick(index)}
-                >
-                  {isCenter ? (
-                    <div
-                      className={`${
-                        typeof window !== "undefined" && localStorage.getItem("theme") === "dark"
-                          ? "bg-zinc-900"
-                          : memberColorScheme.bgColor
-                      } rounded-2xl p-4 shadow-xl w-64 md:w-72 border-4 border-background hover:shadow-2xl transition-all duration-300`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className={`w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${memberColorScheme.color} p-[2px] shadow-lg overflow-hidden`}
-                        >
-                          <div className="w-full h-full rounded-full overflow-hidden bg-background">
-                            <ProfileImage
-                              size="large"
-                              className="w-full h-full object-cover rounded-full"
-                            />
+              {/* Carousel Container */}
+              <div className="relative h-96 flex items-center justify-center">
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  {teamDetails.team_members.map((member, index) => {
+                    const position = getCarouselPosition(index);
+                    const colorGradient = memberColors[index % memberColors.length];
+                    const isCenter = position.zIndex === 3;
+
+                    return (
+                      <div
+                        key={member.id}
+                        className="absolute transition-all duration-500 ease-out cursor-pointer"
+                        style={{
+                          transform: `translateY(${position.translateY}px) scale(${position.scale})`,
+                          opacity: position.opacity,
+                          zIndex: position.zIndex,
+                        }}
+                        onClick={() => handleMemberClick(index)}
+                      >
+                        {isCenter ? (
+                          // Center highlighted card
+                          <div className={`w-48 bg-gradient-to-r ${colorGradient} rounded-xl p-4 shadow-lg border-2 border-background`}>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${colorGradient} p-[2px]`}>
+                                <div className="w-full h-full rounded-lg bg-card flex items-center justify-center">
+                                  <ProfileImage size="small" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-white text-sm truncate">
+                                  {member.name}
+                                </p>
+                                <p className="text-white/80 text-xs truncate">
+                                  {member.department}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-
-                        <div className="flex-1">
-                          <h3 className="font-bold text-foreground text-base md:text-lg">
-                            {member.name}
-                          </h3>
-                          <p
-                            className={`text-xs md:text-sm font-medium bg-gradient-to-r ${memberColorScheme.color} bg-clip-text text-transparent`}
-                          >
-                            Team Member
-                          </p>
-                          <p className="text-xs md:text-sm text-muted-foreground">
-                            {member.department}
-                          </p>
-                        </div>
+                        ) : (
+                          // Side cards - more subtle
+                          <div className="w-40 bg-card rounded-lg p-3 shadow-sm border border-border/50">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-10 h-10 rounded-md bg-gradient-to-r ${colorGradient} p-[2px] flex-shrink-0`}>
+                                <div className="w-full h-full rounded-md bg-card flex items-center justify-center">
+                                  <ProfileImage size="small" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-foreground text-xs truncate">
+                                  {member.name}
+                                </p>
+                                <p className="text-muted-foreground text-xs truncate">
+                                  Team Member
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-
-
-                  ) : (
-                    // Non-center Cards - Uniform card style
-                    <div className={`${typeof window !== 'undefined' && localStorage.getItem("theme") === "dark" ? "bg-zinc-900" : memberColorScheme.bgColor} rounded-xl p-3 shadow-lg w-40 md:w-48 hover:shadow-xl transition-all duration-300 border`}>
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${memberColorScheme.color} p-1 shadow-md`}>
-                          <ProfileImage size="small" className="w-full h-full" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-foreground dark:text-sidebar-foreground text-xs md:text-sm truncate">{member.name}</h4>
-                          <p className="text-xs text-muted-foreground dark:text-sidebar-foreground/70 truncate">Team Member</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Carousel Indicators */}
+              <div className="flex justify-center gap-2 mt-6">
+                {teamDetails.team_members.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setAutoScroll(false);
+                      setTimeout(() => setAutoScroll(true), 5000);
+                    }}
+                    className={`w-2 h-2 rounded-full transition-all ${
+                      index === selectedMemberIndex
+                        ? "bg-primary w-8"
+                        : "bg-border hover:bg-muted-foreground"
+                    }`}
+                    aria-label={`Go to member ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

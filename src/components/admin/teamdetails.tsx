@@ -77,7 +77,7 @@ export default function TeamsTable() {
         ) : error ? (
           <div className="text-center py-10 text-sm sm:text-base text-red-500 px-4">{error}</div>
         ) : (
-          <table className="bg-white dark:bg-gray-900 shadow-lg border border-orange-200 dark:border-gray-700 w-full">
+          <table className="bg-white dark:bg-gray-900 shadow-lg border border-orange-200 dark:border-gray-700 w-full rounded-lg overflow-hidden">
             <thead className="bg-orange-100 dark:bg-gray-800 text-orange-700 dark:text-orange-300">
               <tr>
                 <th className="px-4 py-3 text-left">Team ID</th>

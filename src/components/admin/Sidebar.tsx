@@ -51,21 +51,17 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     return () => observer.disconnect();
   }, []);
 
-  // ✅ Logout confirmation handler
   const handleLogoutClick = () => {
     setShowLogoutConfirm(true);
   };
 
-  // ✅ Confirm logout
   const handleLogout = async () => {
     try {
-      // Call backend logout API if you have one
       await ApiService.admin.logout();
     } catch (error) {
       console.error("Logout failed:", error);
     }
 
-    // Clear localStorage and cookies
     localStorage.clear();
     document.cookie.split(";").forEach((c) => {
       document.cookie = c
@@ -77,7 +73,16 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     navigate("/");
   };
 
-  
+  const handleTheme = () => {
+    if (currentTheme !== "Dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
+
   const links = [
     { path: "/admin/dashboard", label: "Dashboard", icon: <Home size={20} /> },
     { path: "/admin/team-details", label: "Team Details", icon: <Users size={20} /> },
@@ -97,126 +102,106 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     exit: { opacity: 0, x: -5, transition: { duration: 0.1 } },
   };
 
-  const handleTheme = () => {
-    if (currentTheme !== "Dark") {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  };
-
   return (
     <>
-      {/* Sidebar */}
+      {/* ---- FIXED SIDEBAR ---- */}
       <motion.div
-  animate={{
-    width: isMobile ? 60 : openSidebar ? 250 : 60,
-  }}
-  transition={{ duration: 0.3, ease: "easeInOut" }}
-  className="fixed top-0 left-0 z-50 bg-sidebar border-r rounded-r-xl border-sidebar shadow-lg"
-  style={{ height: "100svh", overflow: "hidden" }}
-  onMouseEnter={() => {
-    if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(true);
-  }}
-  onMouseLeave={() => {
-    if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(false);
-  }}
->
-  {/* Sidebar container with internal absolute layout */}
-  <div className="relative h-full w-full">
-    {/* Top spacing */}
-    <div className="absolute top-0 left-0 w-full p-2 pt-7 ml-2"></div>
+        animate={{
+          width: isMobile ? 60 : openSidebar ? 250 : 60,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+        className="fixed top-0 left-0 h-full z-50 bg-sidebar border-r rounded-r-xl border-sidebar shadow-lg flex flex-col"
+        onMouseEnter={() => {
+          if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(true);
+        }}
+        onMouseLeave={() => {
+          if (!isMobile && !("ontouchstart" in window)) setOpenSidebar(false);
+        }}
+      >
+        {/* spacing */}
+        <div className="p-2 mt-5 ml-2"></div>
 
-    {/* Scrollable links area */}
-    <div
-      className="absolute top-16 bottom-80 left-0 right-0 overflow-y-auto no-scrollbar px-1"
-      style={{ scrollbarGutter: "stable" }}
-    >
-      <nav className="flex flex-col">
-        {links.map(({ path, label, icon }) => (
-          <Link
-            onClick={() => isMobile && setOpenSidebar(false)}
-            key={path}
-            to={path}
-            className={`flex items-center gap-3 p-2 m-1 rounded-lg transition-colors ${
-              location.pathname === path
-                ? "bg-sidebar-accent text-primary"
-                : "text-primary hover:bg-sidebar-accent"
-            }`}
+        {/* --- NAVIGATION LINKS --- */}
+        <nav className="flex flex-col mt-2">
+          {links.map(({ path, label, icon }) => (
+            <Link
+              key={path}
+              to={path}
+              onClick={() => isMobile && setOpenSidebar(false)}
+              className={`flex items-center gap-3 p-2 m-1 rounded-lg transition-colors ${
+                location.pathname === path
+                  ? "bg-sidebar-accent text-primary"
+                  : "text-primary hover:bg-sidebar-accent"
+              }`}
+            >
+              <span className="ml-2">{icon}</span>
+              <AnimatePresence>
+                {openSidebar && !isMobile && (
+                  <motion.span
+                    className="text-sm font-semibold flex"
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                  >
+                    {label.split("").map((char, i) => (
+                      <motion.span key={i} custom={i} variants={letterAnimation}>
+                        <span>{char === " " ? "\u00A0" : char}</span>
+                      </motion.span>
+                    ))}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          ))}
+        </nav>
+
+        {/* --- BOTTOM SECTION --- */}
+        <div className="mt-auto mb-4 flex flex-col gap-2">
+          {/* Theme Toggle */}
+          <div
+            className="flex items-center p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer"
+            onClick={handleTheme}
           >
-            <span className="ml-2">{icon}</span>
+            <ThemeToggle />
             <AnimatePresence>
               {openSidebar && !isMobile && (
                 <motion.span
-                  className="text-sm font-semibold flex"
+                  className="text-sm font-semibold ml-3"
                   initial="hidden"
                   animate="visible"
                   exit="exit"
                 >
-                  {label.split("").map((char, i) => (
-                    <motion.span key={i} custom={i} variants={letterAnimation}>
-                      <span>{char === " " ? "\u00A0" : char}</span>
-                    </motion.span>
-                  ))}
+                  {currentTheme}
                 </motion.span>
               )}
             </AnimatePresence>
-          </Link>
-        ))}
-      </nav>
-    </div>
+          </div>
 
-    {/* Fixed bottom section */}
-    <div className="absolute bottom-0 left-0 w-full border-t border-sidebar bg-sidebar p-3">
-      {/* Theme Toggle */}
-      <div
-        className="flex items-center p-2 rounded-lg transition-colors text-primary hover:bg-sidebar-accent cursor-pointer"
-        onClick={handleTheme}
-      >
-        <ThemeToggle />
-        <AnimatePresence>
-          {openSidebar && !isMobile && (
-            <motion.span
-              className="text-sm font-semibold ml-3"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              {currentTheme}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </div>
+          {/* Logout */}
+          <button
+            onClick={handleLogoutClick}
+            className="flex items-center gap-3 p-2 m-1 rounded-lg transition-colors text-primary hover:bg-sidebar-accent"
+          >
+            <span className="ml-2">
+              <LogOut size={20} />
+            </span>
+            <AnimatePresence>
+              {openSidebar && !isMobile && (
+                <motion.span
+                  className="text-sm font-semibold"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  Logout
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+        </div>
+      </motion.div>
 
-      {/* Logout */}
-      <button
-        onClick={handleLogoutClick}
-        className="flex items-center gap-3 p-2 rounded-lg transition-colors text-primary hover:bg-sidebar-accent w-full"
-      >
-        <span className="ml-2">
-          <LogOut size={20} />
-        </span>
-        <AnimatePresence>
-          {openSidebar && !isMobile && (
-            <motion.span
-              className="text-sm font-semibold"
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              Logout
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </button>
-    </div>
-  </div>
-</motion.div>
-
-
-      {/* ✅ Confirmation Popup */}
+      {/* ---- LOGOUT CONFIRMATION ---- */}
       <AnimatePresence>
         {showLogoutConfirm && (
           <motion.div
@@ -232,12 +217,14 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
               exit={{ scale: 0.8, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">
+              <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">
                 Confirm Logout
               </h2>
+
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Are you sure you want to log out?
               </p>
+
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setShowLogoutConfirm(false)}

@@ -37,7 +37,7 @@ const HeroSection = () => {
   return (
     <div
       id="home"
-      className="min-h-screen flex items-center justify-between px-4 md:px-40 gap-8 md:gap-16 relative overflow-hidden pt-20 md:pt-0"
+      className="min-h-screen flex items-center justify-between px-4 md:px-40 gap-8 md:gap-16 relative overflow-hidden pt-5 pb-5"
     >
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
@@ -127,7 +127,7 @@ const HeroSection = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-primary/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                <div className="relative bg-gradient-to-br from-card/60 to-card/30 border border-primary/30 backdrop-blur-xl rounded-xl p-5 md:p-6 min-w-[70px] md:min-w-[85px] text-center hover:border-primary/70 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:from-card/80 hover:to-card/50 group-hover:scale-110">
+                <div className="relative bg-gradient-to-br from-card/60 to-card/30 border border-primary/30 backdrop-blur-xl rounded-xl p-3 md:p-6 min-w-[55px] md:min-w-[85px] text-center hover:border-primary/70 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:from-card/80 hover:to-card/50 group-hover:scale-110">
                   <div className="flex flex-col items-center gap-3">
                     <div className="text-2xl md:text-4xl font-black text-primary font-mono tracking-tighter">
                       {String(value).padStart(2, "0")}
@@ -149,7 +149,7 @@ const HeroSection = () => {
             onMouseEnter={() => setIsHovering("register")}
             onMouseLeave={() => setIsHovering(null)}
             onClick={() => navigate('/register')}
-            className="group relative overflow-hidden rounded-lg px-8 py-4 bg-primary hover:bg-primary/85 text-primary-foreground font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-primary/50 active:scale-95"
+            className="group relative overflow-hidden rounded-lg px-8 py-2 bg-primary hover:bg-primary/85 text-primary-foreground font-bold text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-primary/50 active:scale-95"
           >
             {/* Animated background gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -165,7 +165,7 @@ const HeroSection = () => {
           <button
             onMouseEnter={() => setIsHovering("learn")}
             onMouseLeave={() => setIsHovering(null)}
-            className="group relative overflow-hidden rounded-lg px-8 py-4 border-2 border-primary/50 text-primary hover:border-primary/100 font-semibold text-lg bg-transparent backdrop-blur-sm transition-all duration-300 hover:bg-primary/10 hover:shadow-xl hover:shadow-primary/20 active:scale-95"
+            className="group relative overflow-hidden rounded-lg px-8 py-2 border-2 border-primary/50 text-primary hover:border-primary/100 font-semibold text-lg bg-transparent backdrop-blur-sm transition-all duration-300 hover:bg-primary/10 hover:shadow-xl hover:shadow-primary/20 active:scale-95"
           >
             {/* Animated border glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />

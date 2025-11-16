@@ -29,7 +29,7 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
   }, []);
 
   return (
-    <footer className={`overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white ${className}`}>
+    <footer className={`w-full overflow-hidden relative bg-gradient-to-b from-gray-900 to-gray-800 text-white ${className}`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500 rounded-full animate-float" />
