@@ -8,8 +8,7 @@ import {
     Shield,
     AlertTriangle,
     Scale,
-    Gavel,
-    Mail
+    Gavel
 } from "lucide-react"
 
 // Loading skeleton
