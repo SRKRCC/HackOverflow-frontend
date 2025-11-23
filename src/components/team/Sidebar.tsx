@@ -81,7 +81,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   };
 
   const links = [
-    { path: "/", label: "Home", icon: <Home size={20} /> },
+    { path: "/team", label: "Home", icon: <Home size={20} /> },
     { path: "/team/problem-statement", label: "Problem Statement", icon: <FileText size={20} /> },
     { path: "/team/team-details", label: "Team Details", icon: <Users size={20} /> },
     { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },

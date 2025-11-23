@@ -129,8 +129,7 @@ const handleSubmitForReview = async (id: number, noteText: string) => {
       {/* ---- Header + Filter ---- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
-          <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-          <h2 className="text-xl sm:text-2xl font-semibold">My Team Tasks</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">My Tasks</h2>
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
