@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Filter,
   CheckCircle,
   Send,
   Clock,
@@ -23,7 +22,7 @@ export default function TaskStatusManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ---- Fetch tasks dynamically ----
+  // Fetch tasks dynamically
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -43,20 +42,18 @@ export default function TaskStatusManager() {
     fetchTasks();
   }, []);
 
-  // ---- Helper: Format date ----
+  // Helper: Format date
   const formatDate = (iso?: string) =>
     iso ? new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) : "";
 
-  // ---- Submit for Review ----
+  // Submit for Review
 const handleSubmitForReview = async (id: number, noteText: string) => {
   try {
     setLoading(true);
     setError("");
 
-    // 🔥 Actual backend call
     await ApiService.team.submitTask(id, { teamNotes: noteText });
 
-    // ✅ Optimistic UI update after success
     setTasks((prev) =>
       prev.map((t) =>
         t.id === id
@@ -79,7 +76,7 @@ const handleSubmitForReview = async (id: number, noteText: string) => {
 };
 
 
-  // ---- Modal Controls ----
+  // Modal Controls
   const openSubmitModal = (task: Task) => {
     setSelectedTask(task);
     setTeamNote(task.teamNotes ?? "");

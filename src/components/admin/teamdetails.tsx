@@ -11,7 +11,7 @@ export default function TeamsTable() {
 
   const rowsPerPage = 10; // Number of rows per page
 
-  // ✅ Load teams from API
+  // Load teams from API
   const loadTeams = async () => {
     try {
       setLoading(true);
@@ -30,20 +30,20 @@ export default function TeamsTable() {
     loadTeams();
   }, []);
 
-  // ✅ Filter teams by ID or Title
+  // Filter teams by ID or Title
   const filteredTeams = teams.filter((team) =>
     [team.teamId.toString(), team.title.toLowerCase()].some((value) =>
       value.includes(search.toLowerCase())
     )
   );
 
-  // ✅ Pagination logic
+  // Pagination logic
   const startIndex = page * rowsPerPage;
   const paginatedTeams = filteredTeams.slice(startIndex, startIndex + rowsPerPage);
   const hasPrevious = page > 0;
   const hasNext = startIndex + rowsPerPage < filteredTeams.length;
 
-  // ✅ Render UI
+  // Render UI
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-orange-50 dark:from-black dark:to-black px-4 sm:px-6 py-8 sm:py-12 transition-colors duration-300">
       {/* Page Heading */}

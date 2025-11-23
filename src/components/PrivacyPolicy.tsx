@@ -38,7 +38,6 @@ export default function PrivacyPolicyPage() {
         visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
     }
 
-    // 🔥 Updated for HackOverflow Hackathon
     const sections = [
         {
             icon: <Eye className="h-6 w-6" />,
