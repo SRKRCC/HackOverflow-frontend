@@ -19,7 +19,7 @@ import { useAuth } from './lib/hooks'
 function AppContent() {
   const location = useLocation()
   const { user } = useAuth()
-  const hideNavbarFooter = ['/login', '/admin-login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team/') || location.pathname.startsWith('/admin/')
+  const hideNavbarFooter = ['/login', '/admin-login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team') || location.pathname.startsWith('/admin/')
   const marginLeft = (location.pathname.startsWith("/team") || location.pathname.startsWith("/admin/")) ? "ml-[60px]" : ""
 
   return (

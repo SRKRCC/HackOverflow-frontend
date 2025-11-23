@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { ApiService } from '../api';
 import { auth } from '../auth';
-import type { Team, Task, ProblemStatement, TaskSubmissionRequest } from '../types';
+import type { Team, Task, ProblemStatement, TaskSubmissionRequest, Announcement } from '../types';
 
 interface TeamStore {
   team: Team | null;
   tasks: Task[];
   problemStatements: ProblemStatement[];
+  announcements: Announcement[];
   loading: boolean;
   error: string | null;
   
@@ -14,6 +15,7 @@ interface TeamStore {
   fetchTasks: () => Promise<void>;
   submitTask: (taskId: number, submission: TaskSubmissionRequest) => Promise<void>;
   fetchProblemStatements: () => Promise<void>;
+  fetchAnnouncements: () => Promise<void>;
   
   clearError: () => void;
 }
@@ -22,8 +24,19 @@ export const useTeamStore = create<TeamStore>((set) => ({
   team: null,
   tasks: [],
   problemStatements: [],
+  announcements: [],
   loading: false,
   error: null,
+
+  fetchAnnouncements: async () => {
+    try {
+      set({ loading: true, error: null });
+      const announcements = await ApiService.team.getAnnouncements();
+      set({ announcements, loading: false });
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+    }
+  },
   
   fetchTeam: async () => {
     const user = auth.getUser();
@@ -57,7 +70,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
     
     try {
       set({ loading: true, error: null });
-      const result = await ApiService.team.submitTask( taskId, submission);
+      const result = await ApiService.team.submitTask(taskId, submission);
       set(state => ({
         tasks: state.tasks.map(task => 
           task.id === taskId ? result.task : task

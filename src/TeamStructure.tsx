@@ -5,9 +5,9 @@ import ProblemStatement from "./components/team/ProblemStatement";
 import TeamDetails from "./components/team/TeamDetails";
 import Tasks from "./components/team/Tasks";
 import Gallery from "./components/team/Gallery";
-import HeroSection from "./components/HeroSection";
 import AnnouncementsTeam from "./components/team/Announcements"
 import TaskStatusManager from "./components/team/Tasks";
+import Dashboard from "./components/team/Dashboard";
 
 const TeamStructure = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -28,7 +28,7 @@ const TeamStructure = () => {
         isMobile ? 'ml-[60px]' : (openSidebar ? 'ml-[250px]' : 'ml-[60px]')
       }`}>
         <Routes>
-          <Route path="/" element={<HeroSection />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/problem-statement" element={<ProblemStatement />} />
           <Route path="/team-details" element={<TeamDetails />} />
           <Route path="/tasks" element={<Tasks />} />
