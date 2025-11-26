@@ -79,35 +79,40 @@ export class ApiService {
       return response.data;
     },
 
-    getAllProblemStatements: async (): Promise<ProblemStatement[]> => {
-      const response = await apiClient.get('/admin/problem-statements');
-      return response.data;
-    },
+    problemStatements: {
+      getAll: async () => {
+        const response = await apiClient.get('/admin/problem-statements');
+        return response.data;
+      },
 
-    createProblemStatement: async (ps: Omit<ProblemStatement, 'id'>): Promise<ProblemStatement> => {
-      const response = await apiClient.post('/admin/problem-statements', ps);
-      return response.data;
-    },
+      getById: async (psId: string) => {
+        const response = await apiClient.get(`/admin/problem-statements/${psId}`);
+        return response.data;
+      },
 
-    updateProblemStatement: async (id: number, updates: Partial<ProblemStatement>): Promise<ProblemStatement> => {
-      const response = await apiClient.put(`/admin/problem-statements/${id}`, updates);
-      return response.data;
-    },
+      create: async (ps: { title: string; description: string; category: string; tags: string[] }) => {
+        const response = await apiClient.post('/admin/problem-statements', ps);
+        return response.data;
+      },
 
-    deleteProblemStatement: async (id: number): Promise<{ message: string }> => {
-      const response = await apiClient.delete(`/admin/problem-statements/${id}`);
-      return response.data;
-    },
+      update: async (psId: string, updates: { title?: string; description?: string; category?: string; tags?: string[] }) => {
+        const response = await apiClient.put(`/admin/problem-statements/${psId}`, updates);
+        return response.data;
+      },
 
-    uploadProblemStatementsCSV: async (file: File): Promise<{ message: string; count: number }> => {
-      const formData = new FormData();
-      formData.append('csv-file', file);
-      const response = await apiClient.post('/admin/problem-statements/csv', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      return response.data;
+      delete: async (psId: string) => {
+        const response = await apiClient.delete(`/admin/problem-statements/${psId}`);
+        return response.data;
+      },
+
+      uploadCsv: async (formData: FormData) => {
+        const response = await apiClient.post('/admin/problem-statements/csv', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        return response.data;
+      },
     },
 
     getAnnouncements: async (): Promise<any[]> => {
@@ -219,6 +224,14 @@ export class ApiService {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+      });
+      return response.data;
+    },
+
+    confirmPayment: async (teamId: string, paymentDetails: any): Promise<{ message: string }> => {
+      const response = await apiClient.post('/teams/confirm-payment', {
+        teamId,
+        paymentDetails
       });
       return response.data;
     },

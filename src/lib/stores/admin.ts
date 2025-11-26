@@ -103,7 +103,7 @@ export const useAdminStore = create<AdminStore>((set) => ({
 
   fetchProblemStatements: async () => {
     try {
-      const problemStatements = await ApiService.admin.getAllProblemStatements();
+      const problemStatements = await ApiService.admin.problemStatements.getAll();
       set({ problemStatements });
     } catch (error) {
       set({ error: (error as Error).message });

@@ -6,6 +6,7 @@ import AdminStructure from './AdminStructure'
 import Login from './components/Login'
 import AdminLogin from './components/AdminLogin'
 import Register from './components/Register'
+import PaymentSuccess from './components/PaymentSuccess'
 import Footer from './components/Footer'
 import ProblemStatements from './components/ProblemStatement'
 import Home from './components/Home'
@@ -19,7 +20,7 @@ import { useAuth } from './lib/hooks'
 function AppContent() {
   const location = useLocation()
   const { user } = useAuth()
-  const hideNavbarFooter = ['/login', '/admin-login', '/register'].includes(location.pathname) || location.pathname.startsWith('/team') || location.pathname.startsWith('/admin/')
+  const hideNavbarFooter = ['/login', '/admin-login', '/register', '/payment-success'].includes(location.pathname) || location.pathname.startsWith('/team') || location.pathname.startsWith('/admin/')
   const marginLeft = (location.pathname.startsWith("/team") || location.pathname.startsWith("/admin/")) ? "ml-[60px]" : ""
 
   return (
@@ -33,6 +34,7 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/problem-statements" element={<ProblemStatements />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/teams" element={<div>Teams Page</div>} />

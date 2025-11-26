@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import Button from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
-import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock, MessageCircle, QrCode } from "lucide-react"
+import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock } from "lucide-react"
 import { ApiService } from '@/lib/api/service'
 import type { ProblemStatement as ApiProblemStatement } from '@/lib/types'
 
@@ -64,13 +64,7 @@ export default function RegisterPage() {
     const [availableProblemStatements, setAvailableProblemStatements] = useState<ApiProblemStatement[]>([])
     const [selectedProblemStatementId, setSelectedProblemStatementId] = useState<string>("")
     const [showCustomProblemStatement, setShowCustomProblemStatement] = useState(false)
-    const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null)
-    const [upiReferenceId, setUpiReferenceId] = useState("")
-    const [transactionId, setTransactionId] = useState("")
-    const [showSuccessModal, setShowSuccessModal] = useState(false)
-    const [registrationResponse, setRegistrationResponse] = useState<{ message: string; sccId?: string } | null>(null)
     const [loadingProblemStatements, setLoadingProblemStatements] = useState(false)
-    const [showWhatsAppQR, setShowWhatsAppQR] = useState(false)
 
     // Fetch available problem statements
     useEffect(() => {
@@ -257,10 +251,7 @@ export default function RegisterPage() {
                 payment: {
                     totalMembers,
                     amountPerHead,
-                    totalAmount,
-                    screenshot: null, // Will be handled separately
-                    upiReferenceId,
-                    transactionId
+                    totalAmount
                 }
             }
 
@@ -279,24 +270,25 @@ export default function RegisterPage() {
                 }
             })
             
-            if (paymentScreenshot) {
-                formData.append('paymentScreenshot', paymentScreenshot)
-            }
-            
-            // Send registration data to backend
+            // Send registration data to backend and get team ID
             const response = await ApiService.public.registerTeam(formData)
 
-            setRegistrationResponse({
+            // Store registration response temporarily
+            sessionStorage.setItem('registrationData', JSON.stringify({
                 message: response.message,
-                sccId: response.sccId
-            })
+                sccId: response.sccId,
+                teamName: teamName,
+                totalAmount: totalAmount
+            }))
 
-            setSubmitting(false)
-            setShowSuccessModal(true)
-        } catch (err) {
+            const paymentUrl = `https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?saralID=-924485972&categoryName=SRKREC-CODING%20CLUB`
+            
+            window.location.href = paymentUrl
+            
+        } catch (err: any) {
             console.error("Registration error:", err)
             setSubmitting(false)
-            setError("There was an issue submitting your registration. Please try again.")
+            setError(err?.message)
         }
     }
 
@@ -973,150 +965,64 @@ export default function RegisterPage() {
                     </div>
                 )}
 
-                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                <div className="max-w-2xl mx-auto mb-8">
                     {/* Payment Details */}
-                    <div className="space-y-6">
-                        <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
-                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
-                                <CreditCard className="h-5 w-5" />
-                                Payment Details
-                            </h3>
-                            
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
-                                    <span className="text-sm text-muted-foreground">Team Members:</span>
-                                    <span className="font-medium">{totalMembers}</span>
-                                </div>
-                                <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
-                                    <span className="text-sm text-muted-foreground">Amount per Member:</span>
-                                    <span className="font-medium">₹{amountPerHead}</span>
-                                </div>
-                                <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg border border-primary/20">
-                                    <span className="text-sm font-medium text-foreground">Total Amount:</span>
-                                    <span className="text-lg font-bold text-primary">₹{totalAmount}</span>
-                                </div>
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50 mb-6">
+                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <CreditCard className="h-5 w-5" />
+                            Payment Details
+                        </h3>
+                        
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+                                <span className="text-sm text-muted-foreground">Team Members:</span>
+                                <span className="font-medium">{totalMembers}</span>
                             </div>
-                        </div>
-
-                        <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
-                            <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
-                                <CheckCircle className="h-5 w-5" />
-                                Payment Information
-                            </h3>
-                            
-                            <div className="space-y-3 text-sm text-muted-foreground">
-                                <div className="flex justify-between">
-                                    <span>UPI ID:</span>
-                                    <span className="font-mono text-foreground">hackoverflow@upi</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Account:</span>
-                                    <span className="text-foreground">HackOverflow Registration</span>
-                                </div>
+                            <div className="flex justify-between items-center p-3 bg-primary/5 rounded-lg">
+                                <span className="text-sm text-muted-foreground">Amount per Member:</span>
+                                <span className="font-medium">₹{amountPerHead}</span>
+                            </div>
+                            <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg border border-primary/20">
+                                <span className="text-sm font-medium text-foreground">Total Amount:</span>
+                                <span className="text-lg font-bold text-primary">₹{totalAmount}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* QR Code */}
-                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50 text-center">
-                        <h3 className="text-lg font-semibold mb-4 text-primary">Scan to Pay</h3>
-                        <div className="w-48 h-48 bg-muted rounded-2xl mx-auto mb-4 flex items-center justify-center border-2 border-dashed border-border">
-                            <span className="text-muted-foreground text-sm">QR Code Placeholder</span>
-                        </div>
-                        <p className="text-muted-foreground text-sm mb-2">
-                            Scan this QR code to pay ₹{totalAmount}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                            Use any UPI app (Google Pay, PhonePe, Paytm, etc.)
-                        </p>
-                    </div>
-                </div>
-
-                {/* Payment Verification Form */}
-                <div className="bg-background/50 rounded-2xl p-6 border border-border/50 mb-8">
-                    <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Payment Verification
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Payment Screenshot */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="paymentScreenshot" className="text-sm font-medium text-foreground">
-                                Payment Screenshot *
-                            </label>
-                            <input
-                                id="paymentScreenshot"
-                                type="file"
-                                accept="image/*"
-                                required
-                                onChange={(e) => setPaymentScreenshot(e.target.files?.[0] || null)}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-primary/10 file:text-primary"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                Upload screenshot of successful payment
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5" />
+                            Payment Process
+                        </h3>
+                        
+                        <div className="space-y-3 text-sm text-muted-foreground">
+                            <p className="text-foreground mb-4">
+                                You will be redirected to SBI Collect for secure payment processing.
                             </p>
-                        </div>
-
-                        {/* UPI Reference ID */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="upiReferenceId" className="text-sm font-medium text-foreground">
-                                UPI Reference ID *
-                            </label>
-                            <input
-                                id="upiReferenceId"
-                                type="text"
-                                required
-                                value={upiReferenceId}
-                                onChange={(e) => setUpiReferenceId(e.target.value)}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                placeholder="e.g., 123456789012"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                Reference number from UPI app
-                            </p>
-                        </div>
-
-                        {/* Transaction ID */}
-                        <div className="flex flex-col gap-2">
-                            <label htmlFor="transactionId" className="text-sm font-medium text-foreground">
-                                Transaction ID *
-                            </label>
-                            <input
-                                id="transactionId"
-                                type="text"
-                                required
-                                value={transactionId}
-                                onChange={(e) => setTransactionId(e.target.value)}
-                                className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                placeholder="e.g., TXN123456789"
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                Transaction ID from payment app
-                            </p>
+                            <div className="bg-blue-50/50 border border-blue-200/50 rounded-lg p-4">
+                                <h4 className="font-medium text-blue-800 mb-2">Payment Instructions:</h4>
+                                <ul className="text-blue-700 text-xs space-y-1">
+                                    <li>• Complete the payment on SBI Collect portal</li>
+                                    <li>• You will be redirected back after successful payment</li>
+                                    <li>• Keep your transaction receipt for records</li>
+                                    <li>• Registration will be confirmed upon successful payment</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
-                    <h4 className="font-semibold text-amber-800 mb-2">Important Instructions:</h4>
-                    <ul className="text-amber-800 text-sm space-y-1">
-                        <li>• Take a screenshot immediately after successful payment</li>
-                        <li>• Keep the UPI reference ID and transaction ID handy</li>
-                        <li>• Your registration will be confirmed once payment is verified</li>
-                        <li>• Payment verification may take up to 24 hours</li>
-                    </ul>
-                </div>
+
 
                 <Button
                     onClick={handleSubmit}
-                    disabled={submitting || !paymentScreenshot || !upiReferenceId.trim() || !transactionId.trim()}
+                    disabled={submitting}
                     className="px-8 py-3 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2 mx-auto"
                 >
                     {submitting ? (
                         <>
                             <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                            Completing Registration...
+                            Redirecting to Payment...
                         </>
                     ) : (
                         <>
@@ -1267,110 +1173,6 @@ export default function RegisterPage() {
 
             )}
 
-            {showSuccessModal && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-card border border-border/50 rounded-2xl p-8 shadow-2xl max-w-lg w-full text-center">
-                        <div className="inline-flex p-4 bg-green-100 rounded-full mb-6">
-                            <CheckCircle className="h-12 w-12 text-green-600" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-foreground mb-4">Registration Successful!</h3>
-                        <div className="text-muted-foreground mb-6 space-y-3">
-                            <p>{registrationResponse?.message}</p>
-                            {registrationResponse?.sccId && (
-                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mt-4">
-                                    <p className="text-sm text-primary font-semibold">
-                                        Your SCC ID: <span className="font-mono text-lg">{registrationResponse.sccId}</span>
-                                    </p>
-                                    <p></p>
-                                    {/* <p className="text-xs text-muted-foreground mt-2">
-                                        Please save this ID and your password for future logins.
-                                    </p> */}
-                                </div>
-                            )}
-                        </div>
-                        
-                        {/* WhatsApp Group Section */}
-                        <div className="bg-green-50/50 border border-green-200/50 rounded-xl p-6 mb-6">
-                            <h4 className="text-lg font-semibold text-green-800 mb-3 flex items-center justify-center gap-2">
-                                <MessageCircle className="h-5 w-5" />
-                                Join our WhatsApp Group
-                            </h4>
-                            <p className="text-sm text-green-700 mb-4">
-                                Stay updated with the latest announcements, important updates, and connect with other participants!
-                            </p>
-                            
-                            {!showWhatsAppQR ? (
-                                <div className="space-y-3">
-                                    <Button
-                                        onClick={() => window.open('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy', '_blank')}
-                                        className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
-                                    >
-                                        <MessageCircle className="h-4 w-4" />
-                                        Join WhatsApp Group
-                                    </Button>
-                                    <Button
-                                        onClick={() => setShowWhatsAppQR(true)}
-                                        variant="outline"
-                                        className="w-full px-4 py-2 border-green-300 text-green-700 hover:bg-green-50 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
-                                    >
-                                        <QrCode className="h-4 w-4" />
-                                        Show QR Code
-                                    </Button>
-                                </div>
-                            ) : (
-                                <div className="space-y-4">
-                                    <div className="w-48 h-48 bg-white border-2 border-green-300 rounded-xl mx-auto p-2 flex flex-col items-center justify-center">
-                                        {/* Using QR Server API to generate QR code */}
-                                        <img 
-                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy')}`}
-                                            alt="WhatsApp Group QR Code"
-                                            className="w-full h-auto rounded-lg"
-                                            onError={(e) => {
-                                                // Fallback if QR service fails
-                                                e.currentTarget.style.display = 'none';
-                                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                                                if (fallback) {
-                                                    fallback.style.display = 'flex';
-                                                }
-                                            }}
-                                        />
-                                        <div className="hidden flex-col items-center justify-center w-full h-full">
-                                            <QrCode className="h-16 w-16 text-green-600 mb-2" />
-                                            <p className="text-xs text-green-700 text-center">
-                                                QR Code unavailable
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-green-700 text-center">
-                                        Scan this QR code with your WhatsApp camera to join the group
-                                    </p>
-                                    <Button
-                                        onClick={() => setShowWhatsAppQR(false)}
-                                        variant="outline"
-                                        className="w-full px-4 py-2 border-green-300 text-green-700 hover:bg-green-50 rounded-lg font-medium transition-all duration-300"
-                                    >
-                                        Hide QR Code
-                                    </Button>
-                                    <Button
-                                        onClick={() => window.open('https://chat.whatsapp.com/GUg1kFD0let90x7LCA3amy', '_blank')}
-                                        className="w-full px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2"
-                                    >
-                                        <MessageCircle className="h-4 w-4" />
-                                        Or Click to Join
-                                    </Button>
-                                </div>
-                            )}
-                        </div>
-
-                        <Button
-                            onClick={() => navigate("/", { replace: true })}
-                            className="w-full px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg"
-                        >
-                            Back to Home
-                        </Button>
-                    </div>
-                </div>
-            )}
         </main>
     )
 }
