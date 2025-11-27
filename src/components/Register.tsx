@@ -32,8 +32,10 @@ type ProblemStatement = {
 export default function RegisterPage() {
     const navigate = useNavigate()
     
+    const registrationStartDate = new Date('2025-11-28T00:00:00')
     const registrationDeadline = new Date('2025-12-13T00:00:00')
-    const isRegistrationOpen = new Date() < registrationDeadline
+    const currentDate = new Date()
+    const isRegistrationOpen = currentDate >= registrationStartDate && currentDate < registrationDeadline
     
     const [currentStep, setCurrentStep] = useState(1)
     const [submitting, setSubmitting] = useState(false)
@@ -1047,21 +1049,44 @@ export default function RegisterPage() {
                         <div className="inline-flex p-6 bg-amber-100 rounded-full mb-8">
                             <Clock className="h-16 w-16 text-amber-600" />
                         </div>
-                        <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-                            <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                                Registration Closed
-                            </span>
-                        </h1>
-                        <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-8 rounded-full"></div>
-                        <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                            The registration period for HACKOVERFLOW-2K25 has ended. 
-                            We appreciate your interest in participating in our national-level hackathon.
-                        </p>
-                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8">
-                            <p className="text-amber-800 font-medium">
-                                Registration was open until <strong>December 13th, 2025 at 12:00 AM</strong>.
-                            </p>
-                        </div>
+                        {currentDate < registrationStartDate && (
+                            <>
+                                <h1 className="text-4xl lg:text-5xl font-bold mb-6">
+                                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                        Registration Opens Soon
+                                    </span>
+                                </h1>
+                                <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mb-8 rounded-full"></div>
+                                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                                    Get ready! Registration for HACKOVERFLOW-2K25 will open soon. 
+                                    Stay tuned for the most exciting national-level hackathon.
+                                </p>
+                                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-6 mb-8">
+                                    <p className="text-blue-800 font-medium">
+                                        Registration opens on <strong>November 28th, 2025 at 12:00 AM</strong>.
+                                    </p>
+                                </div>
+                            </>
+                        )} 
+                        { currentDate > registrationDeadline && (
+                            <>
+                                <h1 className="text-4xl lg:text-5xl font-bold mb-6">
+                                    <span className="bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
+                                        Registration Closed
+                                    </span>
+                                </h1>
+                                <div className="w-24 h-1 bg-gradient-to-r from-amber-600 to-orange-600 mx-auto mb-8 rounded-full"></div>
+                                <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                                    The registration period for HACKOVERFLOW-2K25 has ended. 
+                                    We appreciate your interest in participating in our national-level hackathon.
+                                </p>
+                                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8">
+                                    <p className="text-amber-800 font-medium">
+                                        Registration was open until <strong>December 13th, 2025 at 12:00 AM</strong>.
+                                    </p>
+                                </div>
+                            </>
+                        )}
                         <div className="space-y-4">
                             <p className="text-muted-foreground">
                                 Stay tuned for future announcements and events from SRKR Coding Club!
