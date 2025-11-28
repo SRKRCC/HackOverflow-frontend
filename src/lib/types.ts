@@ -33,6 +33,7 @@ export interface Team {
   problem_statement?: ProblemStatement;
   team_members?: Member[];  // For backward compatibility
   members: Member[];       // Backend returns this field name in getAllTeams
+  paymentVerified?: boolean; // Payment status, optional for compatibility
   tasks?: Task[];
 }
 
@@ -44,7 +45,10 @@ export interface Member {
   department?: string;
   college_name: string;
   year_of_study?: number;
+  location?: string;
   attendance: number;
+  tShirtSize?: string;
+  teamId?: number;
 }
 
 export interface ProblemStatement {

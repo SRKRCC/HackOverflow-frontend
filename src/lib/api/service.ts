@@ -68,6 +68,11 @@ export class ApiService {
       const response = await apiClient.get(`/admin/teams/${id}`);
       return response.data;
     },
+    // Verify/unverify team payment
+    verifyTeamPayment: async (teamId: number, verified: boolean): Promise<{ message: string; team: Team }> => {
+      const response = await apiClient.patch(`/admin/teams/${teamId}/verify-payment`, { verified });
+      return response.data;
+    },
 
     getLeaderboard: async (): Promise<LeaderboardEntry[]> => {
       const response = await apiClient.get('/admin/leaderboards');
