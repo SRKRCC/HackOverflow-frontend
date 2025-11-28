@@ -37,7 +37,7 @@ export default function RegisterPage() {
     const currentDate = new Date()
     const isRegistrationOpen = currentDate >= registrationStartDate && currentDate < registrationDeadline
     
-    const [currentStep, setCurrentStep] = useState(1)
+    const [currentStep, setCurrentStep] = useState(0)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
@@ -201,6 +201,104 @@ export default function RegisterPage() {
         }
 
         setCurrentStep((prev) => prev + 1)
+    }
+
+    function renderStep0() {
+        return (
+            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
+                <div className="text-center mb-10">
+                    <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            Welcome to
+                        </span>
+                        <span className="text-foreground"> HACKOVERFLOW-2K25</span>
+                    </h1>
+                    <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6 rounded-full"></div>
+                    <p className="text-xl text-muted-foreground font-medium">
+                        Choose your registration path
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    {/* New Registration */}
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                         onClick={() => setCurrentStep(1)}>
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-blue-800 dark:text-blue-200 mb-4">
+                                New Registration
+                            </h3>
+                            <p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
+                                First time participating? Create a new team registration with member details and problem statement selection.
+                            </p>
+                            <div className="space-y-2 text-sm text-blue-600 dark:text-blue-400">
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>Team formation & details</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>Problem statement selection</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>Payment processing</span>
+                                </div>
+                            </div>
+                            <Button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold transition-all duration-300 group-hover:scale-105">
+                                Start New Registration
+                                <ArrowRight className="h-4 w-4 ml-2" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Existing Team Payment */}
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-8 border border-orange-200 dark:border-orange-800 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                         onClick={() => {
+                            const paymentUrl = `https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?saralID=-924485972&categoryName=SRKREC-CODING%20CLUB`
+                            window.location.href = paymentUrl
+                         }}>
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/40 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                                <CreditCard className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-orange-800 dark:text-orange-200 mb-4">
+                                Complete Payment
+                            </h3>
+                            <p className="text-orange-700 dark:text-orange-300 mb-6 leading-relaxed">
+                                Already registered but payment is pending? Complete your payment to confirm your team's participation.
+                            </p>
+                            <div className="space-y-2 text-sm text-orange-600 dark:text-orange-400">
+                                <div className="flex items-center justify-center gap-2">
+                                    <Clock className="h-4 w-4" />
+                                    <span>Quick payment process</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>Secure SBI Collect gateway</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckCircle className="h-4 w-4" />
+                                    <span>Instant confirmation</span>
+                                </div>
+                            </div>
+                            <Button className="mt-6 w-full bg-orange-600 hover:bg-orange-700 text-white rounded-xl py-3 font-semibold transition-all duration-300 group-hover:scale-105">
+                                Go to Payment
+                                <CreditCard className="h-4 w-4 ml-2" />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 text-center">
+                    <p className="text-muted-foreground text-sm">
+                        Need help? Contact us at <a href="mailto:srkrcodingclubofficial@gmail.com" className="text-primary hover:underline">srkrcodingclubofficial@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+        )
     }
 
     function handlePrevStep() {
@@ -1107,7 +1205,8 @@ export default function RegisterPage() {
                 <div className="mb-12">
                     <div className="flex items-center justify-center space-x-4 mb-6">
                         {[
-                            { step: 1, icon: Sparkles, label: "Welcome" },
+                            { step: 0, icon: Home, label: "Welcome" },
+                            { step: 1, icon: Sparkles, label: "Overview" },
                             { step: 2, icon: Users, label: "Team Details" },
                             { step: 3, icon: CreditCard, label: "Payment" },
                         ].map(({ step, icon: Icon }) => (
@@ -1135,21 +1234,24 @@ export default function RegisterPage() {
                         <p className="text-muted-foreground">
                             Step {currentStep} of 3:{" "}
                             <span className="font-medium text-foreground">
-                                {currentStep === 1
+                                {currentStep === 0
                                     ? "Welcome"
-                                    : currentStep === 2
-                                        ? "Team Details"
-                                        : "Payment"}
+                                    : currentStep === 1
+                                        ? "Overview"
+                                        : currentStep === 2
+                                            ? "Team Details"
+                                            : "Payment"}
                             </span>
                         </p>
                     </div>
                 </div>
 
+                {currentStep === 0 && renderStep0()}
                 {currentStep === 1 && renderStep1()}
                 {currentStep === 2 && renderStep2()}
                 {currentStep === 3 && renderStep4()}
 
-                {currentStep > 1 && currentStep < 3 && (
+                {currentStep > 0 && currentStep < 3 && (
                     <div className="mt-10 flex items-center justify-between gap-4">
                         <Button
                             onClick={handlePrevStep}
@@ -1184,6 +1286,14 @@ export default function RegisterPage() {
                             <ArrowLeft className="h-4 w-4" />
                             Previous
                         </Button>
+                    </div>
+                )}
+
+                {currentStep === 0 && (
+                    <div className="mt-8 text-center">
+                        <Link to="/" className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+                            Back to Home
+                        </Link>
                     </div>
                 )}
 
