@@ -205,32 +205,50 @@ export default function RegisterPage() {
 
     function renderStep0() {
         return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
-                <div className="text-center mb-10">
-                    <h1 className="text-4xl lg:text-5xl font-bold mb-4">
-                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
+                <div className="text-center mb-10 sm:mb-12">
+                    <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 backdrop-blur-sm w-fit mx-auto mb-6">
+                        <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                        <span className="text-sm font-mono text-primary font-semibold tracking-widest">REGISTRATION PORTAL</span>
+                        <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight tracking-tight">
+                        <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient bg-300% font-black">
                             Welcome to
                         </span>
-                        <span className="text-foreground"> HACKOVERFLOW-2K25</span>
+                        <br />
+                        <span className="font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-2 block bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                            HACKOVERFLOW
+                        </span>
+                        <span className="text-primary font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl block mt-1">
+                            2K25
+                        </span>
                     </h1>
-                    <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6 rounded-full"></div>
-                    <p className="text-xl text-muted-foreground font-medium">
-                        Choose your registration path
+                    <div className="flex justify-center items-center gap-2 mb-6">
+                        <div className="w-8 sm:w-12 h-1 bg-gradient-to-r from-transparent to-primary rounded-full"></div>
+                        <div className="w-12 sm:w-16 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+                        <div className="w-8 sm:w-12 h-1 bg-gradient-to-r from-secondary to-transparent rounded-full"></div>
+                    </div>
+                    <p className="text-lg sm:text-xl text-muted-foreground font-medium leading-relaxed max-w-2xl mx-auto">
+                        Choose your registration path to join India's most exciting national-level hackathon
                     </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 max-w-5xl mx-auto">
                     {/* New Registration */}
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                    <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-blue-200 dark:border-blue-800 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 cursor-pointer group overflow-hidden"
                          onClick={() => setCurrentStep(1)}>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                                <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                        {/* Animated background gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="relative text-center">
+                            <div className="relative w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg">
+                                <Users className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 text-white" />
+                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse shadow-lg"></div>
                             </div>
-                            <h3 className="text-2xl font-bold text-blue-800 dark:text-blue-200 mb-4">
+                            <h3 className="text-2xl sm:text-3xl font-black text-blue-900 dark:text-blue-100 mb-4 tracking-tight">
                                 New Registration
                             </h3>
-                            <p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
+                            <p className="text-base sm:text-lg text-blue-700 dark:text-blue-300 mb-6 leading-relaxed font-medium">
                                 First time participating? Create a new team registration with member details and problem statement selection.
                             </p>
                             <div className="space-y-2 text-sm text-blue-600 dark:text-blue-400">
@@ -247,27 +265,30 @@ export default function RegisterPage() {
                                     <span>Payment processing</span>
                                 </div>
                             </div>
-                            <Button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold transition-all duration-300 group-hover:scale-105">
+                            <Button className="mt-8 w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-2xl py-4 px-6 font-bold text-lg transition-all duration-300 group-hover:scale-105 shadow-xl hover:shadow-2xl">
                                 Start New Registration
-                                <ArrowRight className="h-4 w-4 ml-2" />
+                                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                             </Button>
                         </div>
                     </div>
 
                     {/* Existing Team Payment */}
-                    <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-8 border border-orange-200 dark:border-orange-800 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                    <div className="relative bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 border border-orange-200 dark:border-orange-800 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 cursor-pointer group overflow-hidden"
                          onClick={() => {
                             const paymentUrl = `https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?saralID=-924485972&categoryName=SRKREC-CODING%20CLUB`
                             window.location.href = paymentUrl
                          }}>
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/40 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                                <CreditCard className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+                        {/* Animated background gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/5 via-transparent to-red-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="relative text-center">
+                            <div className="relative w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg">
+                                <CreditCard className="h-8 w-8 sm:h-9 sm:w-9 lg:h-10 lg:w-10 text-white" />
+                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full animate-pulse shadow-lg"></div>
                             </div>
-                            <h3 className="text-2xl font-bold text-orange-800 dark:text-orange-200 mb-4">
+                            <h3 className="text-2xl sm:text-3xl font-black text-orange-900 dark:text-orange-100 mb-4 tracking-tight">
                                 Complete Payment
                             </h3>
-                            <p className="text-orange-700 dark:text-orange-300 mb-6 leading-relaxed">
+                            <p className="text-base sm:text-lg text-orange-700 dark:text-orange-300 mb-6 leading-relaxed font-medium">
                                 Already registered but payment is pending? Complete your payment to confirm your team's participation.
                             </p>
                             <div className="space-y-2 text-sm text-orange-600 dark:text-orange-400">
@@ -284,18 +305,27 @@ export default function RegisterPage() {
                                     <span>Instant confirmation</span>
                                 </div>
                             </div>
-                            <Button className="mt-6 w-full bg-orange-600 hover:bg-orange-700 text-white rounded-xl py-3 font-semibold transition-all duration-300 group-hover:scale-105">
+                            <Button className="mt-8 w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-2xl py-4 px-6 font-bold text-lg transition-all duration-300 group-hover:scale-105 shadow-xl hover:shadow-2xl">
                                 Go to Payment
-                                <CreditCard className="h-4 w-4 ml-2" />
+                                <CreditCard className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                             </Button>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-10 text-center">
-                    <p className="text-muted-foreground text-sm">
-                        Need help? Contact us at <a href="mailto:srkrcodingclubofficial@gmail.com" className="text-primary hover:underline">srkrcodingclubofficial@gmail.com</a>
-                    </p>
+                <div className="mt-12 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/50 rounded-full border border-border/50">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <p className="text-muted-foreground text-sm font-medium">
+                            Need help? Contact us at{" "}
+                            <a 
+                                href="mailto:srkrcodingclubofficial@gmail.com" 
+                                className="text-primary hover:text-primary/80 transition-colors font-semibold hover:underline"
+                            >
+                                srkrcodingclubofficial@gmail.com
+                            </a>
+                        </p>
+                    </div>
                 </div>
             </div>
         )
@@ -394,30 +424,30 @@ export default function RegisterPage() {
 
     function renderStep1() {
         return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
-                <div className="text-center mb-10">
+            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
+                <div className="text-center mb-8 sm:mb-10">
                     {/* <div className="inline-flex p-4 bg-primary/10 rounded-3xl mb-6">
                         <Sparkles className="h-12 w-12 text-primary" />
                     </div> */}
-                    <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
                         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             HACKOVERFLOW
                         </span>
                         <span className="text-foreground">-2K25</span>
                     </h1>
-                    <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-6 rounded-full"></div>
-                    <p className="text-xl text-muted-foreground font-medium">National-Level Hackathon by SRKR Coding Club</p>
+                    <div className="w-16 sm:w-20 lg:w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-4 sm:mb-6 rounded-full"></div>
+                    <p className="text-lg sm:text-xl text-muted-foreground font-medium">National-Level Hackathon by SRKR Coding Club</p>
                 </div>
 
-                <div className="space-y-8 text-foreground">
-                    <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 rounded-2xl p-8 border border-border/50">
-                        <p className="text-muted-foreground leading-relaxed text-lg">
+                <div className="space-y-6 sm:space-y-8 text-foreground">
+                    <div className="bg-gradient-to-r from-primary/10 via-secondary/5 to-primary/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 border border-border/50">
+                        <p className="text-muted-foreground leading-relaxed text-sm sm:text-base lg:text-lg">
                             Join HACKOVERFLOW-2K25, SRKR Coding Club's national-level hackathon on{" "}
                             <strong className="text-primary">December 19th-20th, 2025</strong>. A 24-hour innovation challenge for engineering students nationwide to showcase coding skills and creative solutions.
                         </p>
                     </div>
 
-                    <div className="grid lg:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
                         <div className="bg-card/50 rounded-2xl p-6 border border-border/50">
                             <h3 className="text-xl font-semibold mb-4 text-primary flex items-center gap-2">
                                 <CheckCircle className="h-5 w-5" />
@@ -456,7 +486,7 @@ export default function RegisterPage() {
                                 <Sparkles className="h-5 w-5" />
                                 Themes
                             </h3>
-                            <div className="grid grid-cols-2 gap-3 text-muted-foreground">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-muted-foreground text-sm sm:text-base">
                                 <div className="flex items-center justify-center p-3 bg-background/50 rounded-lg">
                                     <span className="text-foreground font-medium">AI & ML</span>
                                 </div>
@@ -485,9 +515,9 @@ export default function RegisterPage() {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-r from-secondary/10 to-primary/10 rounded-2xl p-6 border border-border/50">
-                        <h3 className="text-xl font-semibold mb-4 text-foreground">Why Participate?</h3>
-                        <div className="grid md:grid-cols-3 gap-6 text-muted-foreground">
+                    <div className="bg-gradient-to-r from-secondary/10 to-primary/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/50">
+                        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-foreground">Why Participate?</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 text-muted-foreground">
                             <div className="text-center p-4 bg-background/50 rounded-xl">
                                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <Sparkles className="h-6 w-6 text-primary" />
@@ -534,15 +564,15 @@ export default function RegisterPage() {
 
     function renderStep2() {
         return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
-                <header className="mb-8">
-                    <div className="flex items-center gap-3 mb-4">
+            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm">
+                <header className="mb-6 sm:mb-8">
+                    <div className="flex items-center gap-3 mb-3 sm:mb-4">
                         {/* <div className="p-2 bg-primary/10 rounded-xl">
                             <Users className="h-6 w-6 text-primary" />
                         </div> */}
-                        <h2 className="text-3xl font-bold text-foreground">Team Registration</h2>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Team Registration</h2>
                     </div>
-                    <p className="text-muted-foreground">
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Enter the Team Lead details and add team members. Minimum 4 members total (including team lead), maximum 6 members total.
                     </p>
                 </header>
@@ -585,7 +615,7 @@ export default function RegisterPage() {
                         <CheckCircle className="h-5 w-5" />
                         Team Lead
                     </legend>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-background/50 rounded-xl border border-border/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 bg-background/50 rounded-xl border border-border/50">
                         <div className="flex flex-col gap-2">
                             <label htmlFor="leadName" className="text-sm font-medium text-foreground">
                                 Team Lead Name *
@@ -754,7 +784,7 @@ export default function RegisterPage() {
                                     </p>
                                 </div>
                             )}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                                 <div className="flex flex-col gap-2">
                                     <label htmlFor={`m${i}-name`} className="text-sm font-medium text-foreground">
                                         Name *
@@ -1048,10 +1078,10 @@ export default function RegisterPage() {
         const totalAmount = totalMembers * amountPerHead
 
         return (
-            <div className="bg-card/80 border border-border/50 rounded-2xl p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
-                <header className="mb-8 text-center">
-                    <h2 className="text-3xl font-bold text-foreground mb-2">Complete Payment</h2>
-                    <p className="text-muted-foreground">
+            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
+                <header className="mb-6 sm:mb-8 text-center">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Complete Payment</h2>
+                    <p className="text-sm sm:text-base text-muted-foreground">
                         Finalize your registration with a secure payment of ₹{amountPerHead} per member
                     </p>
                 </header>
@@ -1136,7 +1166,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <main className="min-h-screen pt-4 bg-background text-foreground relative overflow-hidden">
+        <main className="min-h-screen pt-2 sm:pt-4 bg-background text-foreground relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5 animate-gradient" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(190,18,60,0.08),transparent_50%)] opacity-60" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(236,72,153,0.06),transparent_50%)] opacity-40" />
@@ -1201,9 +1231,9 @@ export default function RegisterPage() {
                 </section>
             ) : (
 
-            <section className="relative z-10 max-w-6xl mx-auto px-4 py-12">
-                <div className="mb-12">
-                    <div className="flex items-center justify-center space-x-4 mb-6">
+            <section className="relative z-10 max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-8 lg:py-12">
+                <div className="mb-8 sm:mb-12">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-6 overflow-x-auto sm:overflow-x-visible">
                         {[
                             { step: 0, icon: Home, label: "Welcome" },
                             { step: 1, icon: Sparkles, label: "Overview" },
@@ -1223,7 +1253,7 @@ export default function RegisterPage() {
                                 </div>
                                 {step < 3 && (
                                     <div
-                                        className={`w-16 h-1 mx-3 rounded-full transition-all duration-300 ${step < currentStep ? "bg-primary" : "bg-muted"
+                                        className={`w-8 sm:w-12 lg:w-16 h-1 mx-1 sm:mx-2 lg:mx-3 rounded-full transition-all duration-300 ${step < currentStep ? "bg-primary" : "bg-muted"
                                             }`}
                                     />
                                 )}
@@ -1252,22 +1282,22 @@ export default function RegisterPage() {
                 {currentStep === 3 && renderStep4()}
 
                 {currentStep > 0 && currentStep < 3 && (
-                    <div className="mt-10 flex items-center justify-between gap-4">
+                    <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
                         <Button
                             onClick={handlePrevStep}
                             variant="outline"
-                            className="px-6 py-3 bg-transparent border-border hover:bg-card rounded-xl flex items-center gap-2"
+                            className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-transparent border-border hover:bg-card rounded-xl flex items-center justify-center gap-2"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             Previous
                         </Button>
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                             <Link to="/" className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
                                 Back to Home
                             </Link>
                             <Button
                                 onClick={handleNextStep}
-                                className="px-6 py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center gap-2"
+                                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-semibold transition-all duration-300 hover:scale-[1.02] shadow-lg flex items-center justify-center gap-2"
                             >
                                 Next
                                 <ArrowRight className="h-4 w-4" />

@@ -96,11 +96,11 @@ const Navbar = ({ className = "" }) => {
                             </Button>
                         ) : (
                             <div className="flex items-center space-x-3">
-                                <Link to="/login">
+                                {/* <Link to="/login">
                                     <Button variant="outline" className="text-white bg-primary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
                                         Login
                                     </Button>
-                                </Link>
+                                </Link> */}
                                 <Link to="/register">
                                     <Button className="bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
                                         Register
@@ -156,11 +156,11 @@ const Navbar = ({ className = "" }) => {
                                 </Button>
                             ) : (
                                 <>
-                                    <Link to="/login">
+                                    {/* <Link to="/login">
                                         <Button variant="outline" className="w-full bg-transparent">
                                             Login
                                         </Button>
-                                    </Link>
+                                    </Link> */}
                                     <Link to="/register">
                                         <Button className="w-full bg-gradient-to-r from-primary to-secondary">Register Now</Button>
                                     </Link>

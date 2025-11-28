@@ -80,30 +80,42 @@ const ProblemStatements: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background/50 via-muted/30 to-muted/30 px-6 lg:px-12 py-10">
       {/* Header */}
-      <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-fade-in">
-        PROBLEM STATEMENTS
-      </h1>
+      <div className="text-center mb-12">
+        <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-fade-in">
+          Problem Statements
+        </h1>
+        <p className="text-lg text-muted-foreground font-medium max-w-2xl mx-auto">
+          Discover innovative challenges designed to test your skills and creativity
+        </p>
+      </div>
 
       {/* Search and Filters */}
       <div className="flex flex-col lg:flex-row gap-4 justify-center mb-8">
         <div className="flex flex-col sm:flex-row gap-4 flex-1 max-w-4xl">
           {/* Search Input */}
           <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
               type="text"
               placeholder="Search by ID, Title, Description, or Tags"
-              className="pl-10 pr-4 py-3 border border-border rounded-lg w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/50 backdrop-blur-sm shadow-sm"
+              className="pl-11 pr-4 py-3 border border-border rounded-xl w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/80 backdrop-blur-md shadow-sm hover:shadow-md"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           
           {/* Category Filter */}
-          <div className="relative min-w-[180px]">
+          <div className="relative min-w-[200px]">
+            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+            </svg>
+            <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="pl-10 pr-10 py-3 border border-border rounded-lg w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/50 backdrop-blur-sm shadow-sm appearance-none"
+              className="pl-11 pr-10 py-3 border border-border rounded-xl w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/80 backdrop-blur-md shadow-sm appearance-none hover:shadow-md cursor-pointer"
             >
             <option value="">All Categories</option>
             {availableCategories.map((category) => (
@@ -115,11 +127,17 @@ const ProblemStatements: React.FC = () => {
           </div>
           
           {/* Sort By */}
-          <div className="relative min-w-[150px]">
+          <div className="relative min-w-[180px]">
+            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+            </svg>
+            <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as "id" | "title" | "category")}
-              className="pl-10 pr-10 py-3 border border-border rounded-lg w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/50 backdrop-blur-sm shadow-sm appearance-none"
+              className="pl-11 pr-10 py-3 border border-border rounded-xl w-full focus:ring-2 focus:ring-primary focus:border-primary transition-all bg-card/80 backdrop-blur-md shadow-sm appearance-none hover:shadow-md cursor-pointer"
             >
             <option value="id">Sort by ID</option>
             <option value="title">Sort by Title</option>
@@ -127,7 +145,7 @@ const ProblemStatements: React.FC = () => {
             </select>
           </div>
         </div>        {/* Action Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {/* Clear Filters */}
           {(searchQuery || categoryFilter) && (
             <button
@@ -135,7 +153,7 @@ const ProblemStatements: React.FC = () => {
                 setSearchQuery("")
                 setCategoryFilter("")
               }}
-              className="px-4 py-3 bg-secondary/20 text-secondary border border-secondary/30 rounded-lg hover:bg-secondary/30 transition-colors shadow-sm"
+              className="px-5 py-3 bg-gradient-to-r from-red-500/10 to-orange-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl hover:from-red-500/20 hover:to-orange-500/20 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
             >
               Clear Filters
             </button>
@@ -144,7 +162,7 @@ const ProblemStatements: React.FC = () => {
           {/* Refresh Button */}
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-3 bg-primary/10 text-primary border border-primary/30 rounded-lg hover:bg-primary/20 transition-colors shadow-sm flex items-center gap-2"
+            className="px-5 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20 rounded-xl hover:from-primary/20 hover:to-secondary/20 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2 font-medium"
             title="Refresh problem statements"
           >
             <RefreshCw className="w-4 h-4" />
@@ -152,15 +170,6 @@ const ProblemStatements: React.FC = () => {
           </button>
         </div>
       </div>
-      
-      {/* Results Count */}
-      {!loading && !error && (
-        <div className="text-center mb-4">
-          <span className="text-sm text-muted-foreground">
-            Showing {filteredData.length} of {problemStatements.length} problem statements
-          </span>
-        </div>
-      )}
 
       {/* Loading State */}
       {loading && (
@@ -189,57 +198,74 @@ const ProblemStatements: React.FC = () => {
 
       {/* Main Table */}
       {!loading && !error && filteredData.length > 0 && (
-        <div className="overflow-x-auto bg-card/80 backdrop-blur-md shadow-xl rounded-2xl border border-border animate-fade-in">
-          <table className="w-full min-w-[600px] border-collapse">
-            <thead className="sticky top-0 bg-gradient-to-r from-primary to-secondary text-primary-foreground">
-              <tr className="uppercase tracking-wide text-left text-sm">
-                <th className="py-4 px-5 rounded-tl-2xl">ID</th>
-                <th className="py-4 px-5">Title</th>
-                <th className="py-4 px-5">Description</th>
-                <th className="py-4 px-5">Category</th>
-                <th className="py-4 px-5 rounded-tr-2xl">Tags</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.map((ps, idx) => (
-                <tr
-                  key={ps.psId}
-                  onClick={() => setSelectedPS(ps)}
-                  className={`cursor-pointer transition-all hover:bg-primary/10 hover:scale-[1.001] ${
-                    idx % 2 === 0 ? "bg-muted/50" : "bg-card"
-                  }`}
-                >
-                  <td className="py-4 px-5 text-sm font-mono">{ps.psId}</td>
-                  <td className="py-4 px-5 font-medium text-sm">{ps.title}</td>
-                  <td className="py-4 px-5 text-sm max-w-[250px] truncate">
-                    {ps.description}
-                  </td>
-                  <td className="py-4 px-5 text-sm">
-                    <span className="px-3 py-1 rounded-full bg-secondary/20 text-secondary text-xs font-medium">
-                      {ps.category}
-                    </span>
-                  </td>
-                  <td className="py-4 px-5 text-sm">
-                    <div className="flex gap-2 flex-wrap">
-                      {ps.tags.slice(0, 3).map((tag, tagIdx) => (
-                        <span
-                          key={`${ps.psId}-tag-${tagIdx}`}
-                          className="px-2 py-1 text-xs rounded-full bg-primary/20 text-primary"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {ps.tags.length > 3 && (
-                        <span className="px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground">
-                          +{ps.tags.length - 3} more
-                        </span>
-                      )}
+        <div className="overflow-hidden bg-card/90 backdrop-blur-md shadow-2xl rounded-2xl border border-border/50 animate-fade-in">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead className="bg-gradient-to-r from-primary via-primary/90 to-secondary">
+                <tr>
+                  <th className="py-5 px-6 text-left text-xs font-bold text-primary-foreground uppercase tracking-wider border-r border-primary-foreground/10 last:border-r-0">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-primary-foreground/60 rounded-full"></span>
+                      Problem ID
                     </div>
-                  </td>
+                  </th>
+                  <th className="py-5 px-6 text-left text-xs font-bold text-primary-foreground uppercase tracking-wider border-r border-primary-foreground/10 last:border-r-0">Title</th>
+                  <th className="py-5 px-6 text-left text-xs font-bold text-primary-foreground uppercase tracking-wider border-r border-primary-foreground/10 last:border-r-0">Description</th>
+                  <th className="py-5 px-6 text-left text-xs font-bold text-primary-foreground uppercase tracking-wider border-r border-primary-foreground/10 last:border-r-0">Category</th>
+                  <th className="py-5 px-6 text-left text-xs font-bold text-primary-foreground uppercase tracking-wider">Tags</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {filteredData.map((ps, idx) => (
+                  <tr
+                    key={ps.psId}
+                    onClick={() => setSelectedPS(ps)}
+                    className={`group cursor-pointer transition-all duration-200 hover:bg-gradient-to-r hover:from-primary/5 hover:to-secondary/5 hover:shadow-lg hover:scale-[1.002] ${
+                      idx % 2 === 0 ? "bg-muted/30" : "bg-card/50"
+                    }`}
+                  >
+                    <td className="py-5 px-6 border-r border-border/20 last:border-r-0">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-gradient-to-br from-primary/20 p-2 to-secondary/20 rounded-lg flex items-center justify-center group-hover:from-primary/30 group-hover:to-secondary/30 transition-colors">
+                          <span className="text-xs font-bold text-primary">{ps.psId}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-5 px-6 border-r border-border/20 last:border-r-0">
+                      <div className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">{ps.title}</div>
+                    </td>
+                    <td className="py-5 px-6 border-r border-border/20 last:border-r-0">
+                      <p className="text-sm text-muted-foreground max-w-[300px] truncate leading-relaxed">
+                        {ps.description}
+                      </p>
+                    </td>
+                    <td className="py-5 px-6 border-r border-border/20 last:border-r-0">
+                      <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-secondary/20 to-secondary/30 text-secondary border border-secondary/30">
+                        {ps.category}
+                      </span>
+                    </td>
+                    <td className="py-5 px-6">
+                      <div className="flex gap-1.5 flex-wrap">
+                        {ps.tags.slice(0, 2).map((tag, tagIdx) => (
+                          <span
+                            key={`${ps.psId}-tag-${tagIdx}`}
+                            className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md bg-gradient-to-r from-primary/15 to-primary/25 text-primary border border-primary/20"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {ps.tags.length > 2 && (
+                          <span className="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md bg-muted/50 text-muted-foreground border border-border">
+                            +{ps.tags.length - 2}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -291,14 +317,14 @@ const ProblemStatements: React.FC = () => {
         >
           <div className="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in">
             {/* Header */}
-            <div className="flex justify-between items-center px-6 py-4 rounded-t-2xl bg-gradient-to-r from-primary to-secondary text-primary-foreground">
+            <div className="flex justify-between items-center px-6 py-4 rounded-t-2xl bg-primary text-primary-foreground">
               <div>
                 <h2 className="text-xl font-bold">Problem Statement Details</h2>
                 <p className="text-primary-foreground/80 text-sm">{selectedPS.psId}</p>
               </div>
               <button
                 onClick={() => setSelectedPS(null)}
-                className="hover:text-primary-foreground/80 transition-colors p-1"
+                className="hover:text-primary-foreground/80 transition-colors p-1 cursor-pointer"
                 aria-label="Close modal"
               >
                 <X className="w-6 h-6" />
@@ -348,16 +374,6 @@ const ProblemStatements: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Footer */}
-            <div className="px-6 py-4 border-t border-border bg-muted/30">
-              <button
-                onClick={() => setSelectedPS(null)}
-                className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>
