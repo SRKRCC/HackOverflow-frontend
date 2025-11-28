@@ -1027,24 +1027,24 @@ export default function RegisterPage() {
 
                                 {/* Category */}
                                 <div className="flex flex-col gap-2">
-                                    <label htmlFor="customProblemCategory" className="text-sm font-medium text-foreground">
-                                        Category *
+                                    <label htmlFor="customProblemCategory" className="text-sm font-semibold text-amber-900 dark:text-amber-100 flex items-center gap-2">
+                                        <span>Hackathon Theme *</span>
+                                        <div className="w-1 h-1 bg-amber-600 rounded-full"></div>
                                     </label>
                                     <Select
                                         id="customProblemCategory"
                                         value={problemStatement.category}
                                         onChange={(e) => setProblemStatement(prev => ({ ...prev, category: e.target.value }))}
-                                        placeholder="Select a category"
+                                        placeholder="Choose from HACKOVERFLOW-2K25 official themes"
                                         options={[
-                                            { value: "healthcare", label: "Healthcare" },
-                                            { value: "education", label: "Education" },
-                                            { value: "environment", label: "Environment" },
-                                            { value: "transportation", label: "Transportation" },
-                                            { value: "agriculture", label: "Agriculture" },
-                                            { value: "finance", label: "Finance" },
-                                            { value: "social", label: "Social Impact" },
-                                            { value: "technology", label: "Technology" },
-                                            { value: "other", label: "Other" }
+                                            { value: "AI & Machine Learning", label: "AI & Machine Learning" },
+                                            { value: "Web3 & Blockchain", label: "Web3 & Blockchain" },
+                                            { value: "Healthcare Technology", label: "Healthcare Technology" },
+                                            { value: "Sustainable Development", label: "Sustainable Development" },
+                                            { value: "FinTech Innovation", label: "FinTech Innovation" },
+                                            { value: "Education Technology", label: "Education Technology" },
+                                            { value: "IoT & Smart Devices", label: "IoT & Smart Devices" },
+                                            { value: "Open Innovation", label: "Open Innovation" }
                                         ]}
                                     />
                                 </div>
