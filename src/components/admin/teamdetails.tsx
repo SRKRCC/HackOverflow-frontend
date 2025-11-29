@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ApiService } from "@/lib/api";
-import type { Team } from "@/lib/types";
+import type { Team, Member } from "@/lib/types";
+import EditTeamModal from "./EditTeamModal";
+import EditMemberModal from "./EditMemberModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import TeamDetailsSkeleton from "./skeletons/TeamDetailsSkeleton";
 
 export default function TeamsTable() {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -12,9 +16,16 @@ export default function TeamsTable() {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelError, setPanelError] = useState<string | null>(null);
+  const [panelLoading, setPanelLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [pendingPaymentStatus, setPendingPaymentStatus] = useState<boolean | null>(null);
+
+  // Edit modal states
+  const [editTeamModalOpen, setEditTeamModalOpen] = useState(false);
+  const [editMemberModalOpen, setEditMemberModalOpen] = useState(false);
+  const [selectedMemberToEdit, setSelectedMemberToEdit] = useState<Member | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const rowsPerPage = 10; // Number of rows per page
 
@@ -36,6 +47,62 @@ export default function TeamsTable() {
   useEffect(() => {
     loadTeams();
   }, []);
+
+  const loadTeamDetails = async (teamId: number) => {
+    try {
+      setPanelLoading(true);
+      setPanelError(null);
+      const teamData = await ApiService.admin.getTeamById(teamId);
+      setSelectedTeam(teamData);
+      setPendingPaymentStatus(teamData.paymentVerified ?? false);
+    } catch (err) {
+      console.error("Error loading team details:", err);
+      setPanelError("Failed to load team details. Please try again.");
+      setSelectedTeam(null);
+    } finally {
+      setPanelLoading(false);
+    }
+  };
+
+  // Handler for updating team after edit
+  const handleTeamUpdate = (updatedTeam: Team) => {
+    if (!selectedTeam) return;
+    
+    setSelectedTeam(updatedTeam);
+    setTeams((prev) => prev.map((t) => 
+      t.teamId === updatedTeam.teamId ? updatedTeam : t
+    ));
+  };
+
+  const handleMemberUpdate = (updatedMember: Member) => {
+    if (!selectedTeam) return;
+
+    const updatedTeam = {
+      ...selectedTeam,
+      members: (selectedTeam.members || []).map((m) =>
+        m.id === updatedMember.id ? updatedMember : m
+      ),
+    };
+
+    setSelectedTeam(updatedTeam);
+    setTeams((prev) => prev.map((t) => 
+      t.teamId === updatedTeam.teamId ? updatedTeam : t
+    ));
+  };
+
+  // Handler for deleting team
+  const handleTeamDelete = (deletedTeamId: number) => {
+    // Remove team from the list
+    setTeams((prev) => prev.filter((t) => t.teamId !== deletedTeamId));
+    
+    // Close the panel
+    setPanelOpen(false);
+    setSelectedTeam(null);
+    setPanelError(null);
+    setPanelLoading(false);
+    setHasChanges(false);
+    setPendingPaymentStatus(null);
+  };
 
   // Filter teams by ID or Title
   const filteredTeams = teams.filter((team) =>
@@ -89,6 +156,7 @@ export default function TeamsTable() {
                 setPanelOpen(false);
                 setSelectedTeam(null);
                 setPanelError(null);
+                setPanelLoading(false);
                 setHasChanges(false);
                 setPendingPaymentStatus(null);
               }}
@@ -104,22 +172,50 @@ export default function TeamsTable() {
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-white">Team Details</h2>
-                <button
-                  onClick={() => {
-                    setPanelOpen(false);
-                    setSelectedTeam(null);
-                    setPanelError(null);
-                    setHasChanges(false);
-                    setPendingPaymentStatus(null);
-                  }}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900"
-                >
-                  Close
-                </button>
+                <div className="flex items-center gap-2">
+                  {/* Edit Team Button */}
+                  <button
+                    onClick={() => setEditTeamModalOpen(true)}
+                    className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 rounded-lg transition-colors group"
+                    title="Edit Team Details"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  
+                  {/* Delete Team Button */}
+                  <button
+                    onClick={() => setDeleteModalOpen(true)}
+                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 rounded-lg transition-colors group"
+                    title="Delete Team"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                  
+                  {/* Close Button */}
+                  <button
+                    onClick={() => {
+                      setPanelOpen(false);
+                      setSelectedTeam(null);
+                      setPanelError(null);
+                      setPanelLoading(false);
+                      setHasChanges(false);
+                      setPendingPaymentStatus(null);
+                    }}
+                    className="text-gray-600 dark:text-gray-300 hover:text-gray-900"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
 
               {panelError ? (
                 <div className="text-sm text-red-500">{panelError}</div>
+              ) : panelLoading ? (
+                <TeamDetailsSkeleton />
               ) : selectedTeam ? (
                 <div className="space-y-4">
                   {/* Team Basic Info */}
@@ -134,9 +230,13 @@ export default function TeamsTable() {
                         <span className="font-medium text-gray-600 dark:text-gray-400">SCC ID:</span>
                         <div className="text-gray-800 dark:text-gray-200">{selectedTeam.scc_id}</div>
                       </div>
-                      <div className="col-span-2">
+                      <div>
                         <span className="font-medium text-gray-600 dark:text-gray-400">Team Name:</span>
                         <div className="text-gray-800 dark:text-gray-200 font-medium">{selectedTeam.title}</div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600 dark:text-gray-400">Problem Statement:</span>
+                        <div className="text-gray-800 dark:text-gray-200 font-medium">{selectedTeam.problem_statement?.psId}</div>
                       </div>
                     </div>
                   </div>
@@ -144,19 +244,36 @@ export default function TeamsTable() {
                   {/* Team Members */}
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
                     <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                      Team Members ({selectedTeam.members.length})
+                      Team Members ({selectedTeam.members?.length || 0})
                     </h3>
                     <div className="space-y-4">
-                      {selectedTeam.members.map((member, index) => (
+                      {(selectedTeam.members || []).map((member, index) => (
                         <div key={member.id} className="bg-white dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-medium text-gray-800 dark:text-gray-200">
-                              {member.name}
-                              {index === 0 && <span className="ml-2 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded-full">Leader</span>}
-                            </h4>
-                            <span className="text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
-                              Year {member.year_of_study}
-                            </span>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-800 dark:text-gray-200">
+                                {member.name}
+                                {index === 0 && <span className="ml-2 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded-full">Leader</span>}
+                              </h4>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
+                                Year {member.year_of_study}
+                              </span>
+                              {/* Edit Member Button */}
+                              <button
+                                onClick={() => {
+                                  setSelectedMemberToEdit(member);
+                                  setEditMemberModalOpen(true);
+                                }}
+                                className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 rounded transition-colors"
+                                title="Edit Member"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600 dark:text-gray-400">
@@ -279,7 +396,6 @@ export default function TeamsTable() {
 
       {/* Main Content */}
       <div className="max-w-5xl mx-auto">
-        {/* Loading State */}
         {loading ? (
           <div className="text-center py-10 text-sm sm:text-base text-gray-500 dark:text-gray-400">
             Loading teams...
@@ -290,10 +406,9 @@ export default function TeamsTable() {
           <table className="bg-white dark:bg-gray-900 shadow-lg border border-orange-200 dark:border-gray-700 w-full rounded-lg overflow-hidden">
             <thead className="bg-orange-100 dark:bg-gray-800 text-orange-700 dark:text-orange-300">
               <tr>
-                <th className="px-4 py-3 text-left">Team ID</th>
                 <th className="px-4 py-3 text-left">SCC ID</th>
                 <th className="px-4 py-3 text-left">Team Name</th>
-                <th className="px-4 py-3 text-left">Team Leader</th>
+                <th className="px-4 py-3 text-left">Problem Stmt</th>
                 <th className="px-4 py-3 text-left">Member Count</th>
               </tr>
             </thead>
@@ -304,21 +419,18 @@ export default function TeamsTable() {
                     key={team.teamId}
                     className="border-b border-gray-200 dark:border-gray-700 hover:bg-orange-50 dark:hover:bg-orange-600/20 transition cursor-pointer"
                     onClick={() => {
-                      setSelectedTeam(team);
                       setPanelOpen(true);
                       setPanelError(null);
                       setHasChanges(false);
-                      setPendingPaymentStatus(team.paymentVerified ?? false);
+                      setSelectedTeam(null); // Clear previous team
+                      loadTeamDetails(team.teamId);
                     }}
                   >
-                    <td className="px-4 py-3 text-gray-800 dark:text-white">{team.teamId}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.scc_id}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.title}</td>
+                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.ps_id}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                      {team.members?.[0]?.name || "N/A"}
-                    </td>
-                    <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
-                      {team.members?.length || 0}
+                      {team.member_count || 0}
                     </td>
                   </tr>
                 ))
@@ -367,6 +479,38 @@ export default function TeamsTable() {
           </div>
         )}
       </div>
+
+      {/* Edit Modals */}
+      {selectedTeam && (
+        <EditTeamModal
+          team={selectedTeam}
+          isOpen={editTeamModalOpen}
+          onClose={() => setEditTeamModalOpen(false)}
+          onUpdate={handleTeamUpdate}
+        />
+      )}
+
+      {selectedTeam && selectedMemberToEdit && (
+        <EditMemberModal
+          team={selectedTeam}
+          member={selectedMemberToEdit}
+          isOpen={editMemberModalOpen}
+          onClose={() => {
+            setEditMemberModalOpen(false);
+            setSelectedMemberToEdit(null);
+          }}
+          onUpdate={handleMemberUpdate}
+        />
+      )}
+
+      {selectedTeam && (
+        <DeleteConfirmationModal
+          team={selectedTeam}
+          isOpen={deleteModalOpen}
+          onClose={() => setDeleteModalOpen(false)}
+          onDelete={handleTeamDelete}
+        />
+      )}
     </div>
   );
 }

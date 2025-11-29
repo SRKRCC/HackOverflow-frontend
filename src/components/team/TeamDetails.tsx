@@ -6,7 +6,7 @@ interface TeamDetails {
   teamId: number;
   scc_id: string;
   title: string;
-  team_members: Member[];
+  members: Member[];
 }
 
 export default function TeamDetails() {
@@ -42,8 +42,8 @@ export default function TeamDetails() {
 
   if (
     !teamDetails ||
-    !teamDetails.team_members ||
-    teamDetails.team_members.length === 0
+    !teamDetails.members ||
+    teamDetails.members.length === 0
   ) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -80,7 +80,7 @@ export default function TeamDetails() {
                 <div className="text-sm text-muted-foreground">Team ID</div>
               </div>
               <div className="bg-card/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border/40 shadow-sm">
-                <div className="text-2xl font-bold text-secondary">{teamDetails.team_members.length}</div>
+                <div className="text-2xl font-bold text-secondary">{teamDetails.members.length}</div>
                 <div className="text-sm text-muted-foreground">Members</div>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function TeamDetails() {
 
         {/* Responsive grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-          {teamDetails.team_members.map((member) => {
+          {teamDetails.members.map((member) => {
             // Single theme color per user's request — use primary with subtle opacities
 
             return (
@@ -185,7 +185,7 @@ export default function TeamDetails() {
         </div>
 
         {/* Empty state for smaller teams */}
-        {teamDetails.team_members.length === 0 && (
+        {teamDetails.members.length === 0 && (
           <div className="text-center py-16">
             <div className="w-28 h-28 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-border/30 shadow-sm">
               <div className="w-20 h-20 rounded-xl bg-card/40 flex items-center justify-center text-foreground/70"> 

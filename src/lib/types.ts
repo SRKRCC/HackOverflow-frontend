@@ -26,15 +26,15 @@ export interface User {
 export interface Team {
   id: number;
   teamId : number ;
-  scc_id: string;           // Team's SCC ID (e.g., "SCC001")
-  title: string;            // Team name (e.g., "Green Farmers")
-  ps_id?: number;           // Problem statement ID
-  gallery_images?: string[]; // Array of image URLs
+  scc_id: string;
+  title: string;
+  ps_id?: number;
+  gallery_images?: string[];
   problem_statement?: ProblemStatement;
-  team_members?: Member[];  // For backward compatibility
-  members: Member[];       // Backend returns this field name in getAllTeams
-  paymentVerified?: boolean; // Payment status, optional for compatibility
+  members: Member[];
+  paymentVerified?: boolean;
   tasks?: Task[];
+  member_count?: number;
 }
 
 export interface Member {
@@ -124,3 +124,21 @@ export type Announcement = {
   startTime: string;
   endTime: string;
 };
+
+// API Response types for PATCH operations
+export interface UpdateTeamResponse {
+  success: boolean;
+  message: string;
+  data: Team;
+}
+
+export interface UpdateMemberResponse {
+  success: boolean;
+  message: string;
+  data: Member;
+}
+
+export interface DeleteTeamResponse {
+  success: boolean;
+  message: string;
+}

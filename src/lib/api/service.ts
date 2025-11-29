@@ -8,7 +8,10 @@ import type {
   ProblemStatement,
   CreateTaskRequest,
   TaskSubmissionRequest,
-  RegistrationResponse
+  RegistrationResponse,
+  UpdateTeamResponse,
+  UpdateMemberResponse,
+  DeleteTeamResponse
 } from '../types';
 
 /**
@@ -68,6 +71,35 @@ export class ApiService {
       const response = await apiClient.get(`/admin/teams/${id}`);
       return response.data;
     },
+
+    // Update team details (title, ps_id)
+    updateTeam: async (teamId: number, updates: { title?: string; ps_id?: number }): Promise<UpdateTeamResponse> => {
+      const response = await apiClient.patch(`/admin/teams/${teamId}`, updates);
+      return response.data;
+    },
+
+    // Update team member details
+    updateMember: async (teamId: number, memberId: number, updates: {
+      name?: string;
+      email?: string;
+      phone_number?: string;
+      department?: string;
+      college_name?: string;
+      year_of_study?: number;
+      location?: string;
+      tShirtSize?: string;
+      attendance?: number;
+    }): Promise<UpdateMemberResponse> => {
+      const response = await apiClient.patch(`/admin/teams/${teamId}/members/${memberId}`, updates);
+      return response.data;
+    },
+
+    // Delete team
+    deleteTeam: async (teamId: number): Promise<DeleteTeamResponse> => {
+      const response = await apiClient.delete(`/admin/teams/${teamId}`);
+      return response.data;
+    },
+
     // Verify/unverify team payment
     verifyTeamPayment: async (teamId: number, verified: boolean): Promise<{ message: string; team: Team }> => {
       const response = await apiClient.patch(`/admin/teams/${teamId}/verify-payment`, { verified });
