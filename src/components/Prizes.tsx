@@ -35,7 +35,7 @@ const Prizes: React.FC = () => {
     },
     {
       position: "4th & 5th Place",
-      amount: "Consolidated Prizes (TBA)",
+      amount: "(TBA)",
       icon: Star,
       color: "from-blue-400 to-blue-600",
       bgColor: "from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20",
@@ -82,7 +82,7 @@ const Prizes: React.FC = () => {
       </div>
 
       {/* Main Prize Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {prizes.map((prize, index) => {
           const IconComponent = prize.icon
           return (

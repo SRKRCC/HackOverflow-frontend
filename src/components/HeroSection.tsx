@@ -87,7 +87,7 @@ const HeroSection = () => {
         </div>
 
         <div className="animate-slide-up mt-8 sm:mt-10 lg:mt-12" style={{ animationDelay: "0.4s" }}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-lg sm:max-w-none mx-auto lg:mx-0">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-lg sm:max-w-none mx-auto lg:mx-0">
             {[
               { icon: Calendar, label: "Duration", value: "24H" },
               { icon: Users, label: "Hackers", value: "500+" },
@@ -151,7 +151,7 @@ const HeroSection = () => {
         </div>
 
         {/* Enhanced button section with improved interactions */}
-        <div className="animate-slide-up flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8 sm:mt-10 lg:mt-12 justify-center lg:justify-start" style={{ animationDelay: "0.8s" }}>
+        <div className="animate-slide-up flex flex-row gap-3 sm:gap-4 mt-8 sm:mt-10 lg:mt-12 justify-center lg:justify-start" style={{ animationDelay: "0.8s" }}>
           <button
             onMouseEnter={() => setIsHovering("register")}
             onMouseLeave={() => setIsHovering(null)}
