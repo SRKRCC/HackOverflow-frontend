@@ -14,7 +14,8 @@
 **Registration Link:** [srkrcodingclub.in](https://srkrcodingclub.in)  
 **Contact:** srkrcodingclub@gmail.com
 
-## Description
+<details>
+<summary> <strong style=\"font-size: x-large;\">Description</strong> </summary>
 
 Welcome to HackOverflow, a prestigious platform for innovation, creativity, and collaboration. This event provides participants with a unique opportunity to demonstrate their skills, acquire new knowledge, and collaborate with peers to develop impactful solutions to real-world challenges.
 
@@ -23,17 +24,11 @@ HackOverflow is a competitive event where teams consisting of designers, develop
 Over the course of 24 hours, participants will engage in focused coding sessions aimed at developing functional prototypes that address critical business problems. Upon completion, each team will present their solutions to an esteemed panel of judges who will evaluate the prototypes based on creativity, functionality, and overall impact. This event provides a valuable platform for participants to showcase their abilities and demonstrate how their unique solutions can create real-world value.
 
 In addition to competition, HackOverflow offers an enriching environment for learning, networking, and professional growth. Participants will have the opportunity to interact with industry experts, mentors, and fellow participants, fostering connections that extend beyond the event. This is an opportunity to gain insights, exchange knowledge, and enhance professional development.
+</details>
 
-## Prizes
+<details> 
 
-1. Rs. 15,000/-  
-2. Rs. 12,000/-  
-3. Rs. 8,000/-  
-4. & 5. TBA  
-
-**Additional Benefits:** Certificates for all participants, Internship opportunities for top 3 teams (after screening)
-
-## Guidelines
+<summary>  <strong style=\"font-size: x-large;\">Guidelines</strong> </summary>
 
 **Accommodation:** Participants from distant locations will be provided accommodation for one night, prior to the hackathon.
 
@@ -44,8 +39,11 @@ In addition to competition, HackOverflow offers an enriching environment for lea
 **Hardware:** Participants are encouraged to bring their own laptops and accessories. Computers will be available, but personal equipment is preferred to avoid technical issues.
 
 **Internet Access:** Internet will be provided at the venue for participants during the event.
+</details>
 
-## Rules and Regulations
+<details> 
+
+<summary>  <strong style=\"font-size: x-large;\">Rules and Regulations</strong> </summary>
 
 **Eligibility:** HackOverflow is open to students from engineering colleges, with teams formed from the same or different colleges.
 
@@ -70,8 +68,10 @@ In addition to competition, HackOverflow offers an enriching environment for lea
 **Code of Conduct:** Teams must adhere to the event's code of conduct. Any violation may result in disqualification.
 
 **Rule Modifications:** The organizing committee reserves the right to modify any rules. Participants will be notified of changes in advance.
+</details>
 
-## Judging Criteria
+<details>
+<summary> <strong style=\"font-size: larger;\">Judging Criteria</strong> </summary>
 
 Projects will be evaluated based on the following criteria:
 
@@ -80,6 +80,24 @@ Projects will be evaluated based on the following criteria:
 - **Impact:** Potential real-world value, scalability, social or environmental benefits, and overall contribution to the problem domain.
 
 The jury's decisions are final and binding.
+</details>
+
+<details> 
+
+<summary>  <strong style=\"font-size: x-large;\">Themes</strong> </summary>
+
+HackOverflow 2K25 features the following themes for project submissions:
+
+- AI & Machine Learning
+- Web3 & Blockchain
+- Healthcare Technology
+- Sustainable Development
+- FinTech Innovation
+- Education Technology
+- IoT & Smart Devices
+- Open Innovation
+
+</details>
 
 ## Event Schedule
 
@@ -98,19 +116,6 @@ timeline
     section Hackathon
         20th Dec : Day 2 - Hacking Ends, Presentations
 ```
-
-## Themes
-
-HackOverflow 2K25 features the following themes for project submissions:
-
-- AI & Machine Learning
-- Web3 & Blockchain
-- Healthcare Technology
-- Sustainable Development
-- FinTech Innovation
-- Education Technology
-- IoT & Smart Devices
-- Open Innovation
 
 ## Sponsors and Partners
 
