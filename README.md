@@ -88,14 +88,15 @@ timeline
     title HackOverflow 2K25 Timeline
     section Registration
         13th Dec : Registration Deadline
-    section Hackathon
+    section Hackathon 
         19th Dec : Day 1 - Hacking Starts
-        20th Dec : Day 2 - Hacking Ends, Presentations
     section Reviews
         Phase 1 : Initial Screening
         Phase 2 : Technical Evaluation
         Phase 3 : Presentation Review
         Phase 4 : Final Judging
+    section Hackathon
+        20th Dec : Day 2 - Hacking Ends, Presentations
 ```
 
 ## Themes
