@@ -1,5 +1,5 @@
 import React from "react"
-import { Trophy, Medal, Award, Gift, FileText, Star } from "lucide-react"
+import { Trophy, Medal, Award, Gift, Star } from "lucide-react"
 
 const Prizes: React.FC = () => {
   const prizes = [
@@ -59,23 +59,23 @@ const Prizes: React.FC = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background/50 via-muted/30 to-muted/30 px-6 lg:px-12 py-10">
+    <div className="min-h-screen bg-gradient-to-b from-background/50 via-muted/30 to-muted/30 px-6 lg:px-12 py-10 pb-0">
       {/* Header */}
       <div className="text-center mb-12">
-        {/* <div className="inline-block mb-6">
+        <div className="inline-block mb-6">
           <div className="relative">
             <Trophy className="h-16 w-16 text-primary animate-bounce" />
             <div className="absolute inset-0 h-16 w-16 text-primary animate-ping opacity-20" />
           </div>
-        </div> */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-fade-in">
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-fade-in">
           PRIZES & REWARDS
         </h1>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: "0.2s" }}>
           Compete for glory and recognition in HackOverflow hackathon
         </p>
         <div className="mt-6 inline-block px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border border-primary/20 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Total Prize Pool: ₹35,000
           </span>
         </div>
@@ -106,13 +106,13 @@ const Prizes: React.FC = () => {
                 </div>
 
                 {/* Position */}
-                <h3 className="text-xl font-bold mb-2 text-foreground">
+                <h3 className="text-lg font-bold mb-2 text-foreground">
                   {prize.position}
                 </h3>
 
                 {/* Amount */}
                 <div className="mb-3">
-                  <span className={`text-2xl font-black bg-gradient-to-r ${prize.color} bg-clip-text text-transparent`}>
+                  <span className={`text-xl font-black bg-gradient-to-r ${prize.color} bg-clip-text text-transparent`}>
                     {prize.amount}
                   </span>
                 </div>
@@ -144,7 +144,7 @@ const Prizes: React.FC = () => {
                 <div className="p-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl mr-4">
                   <IconComponent size={24} className="text-primary" />
                 </div>
-                <h3 className="text-xl font-bold text-foreground">{reward.title}</h3>
+                <h3 className="text-lg font-bold text-foreground">{reward.title}</h3>
               </div>
 
               <div className="space-y-3">
@@ -159,33 +159,7 @@ const Prizes: React.FC = () => {
           )
         })}
       </div>
-
-      {/* Footer Message */}
-      <div className="text-center bg-gradient-to-r from-primary/5 to-secondary/5 rounded-2xl p-8 border border-primary/10 animate-fade-in" style={{ animationDelay: "1s" }}>
-        <div className="max-w-3xl mx-auto">
-          <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Join the Innovation Journey
-          </h3>
-          <p className="text-muted-foreground mb-6">
-            Whether you win big or learn along the way, every participant contributes to building India's tech future.
-            Network with like-minded innovators, showcase your skills, and be part of something extraordinary.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center">
-              <FileText size={16} className="mr-2 text-primary" />
-              <span>Certificates for All</span>
-            </div>
-            <div className="flex items-center">
-              <Gift size={16} className="mr-2 text-primary" />
-              <span>Exclusive Goodies</span>
-            </div>
-            <div className="flex items-center">
-              <Star size={16} className="mr-2 text-primary" />
-              <span>Recognition & Networking</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
   )
 }

@@ -14,6 +14,13 @@ const HeroSection = () => {
   const [isHovering, setIsHovering] = useState<string | null>(null)
   const navigate = useNavigate();
 
+  const scrollToAbout = () => {
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   useEffect(() => {
     const targetDate = new Date("2025-12-19T00:00:00").getTime()
 
@@ -165,6 +172,7 @@ const HeroSection = () => {
           <button
             onMouseEnter={() => setIsHovering("learn")}
             onMouseLeave={() => setIsHovering(null)}
+            onClick={scrollToAbout}
             className="group relative overflow-hidden rounded-lg px-6 sm:px-8 py-3 sm:py-4 border-2 border-primary/50 text-primary hover:border-primary/100 font-semibold text-base sm:text-lg bg-transparent backdrop-blur-sm transition-all duration-300 hover:bg-primary/10 hover:shadow-xl hover:shadow-primary/20 active:scale-95"
           >
             {/* Animated border glow */}

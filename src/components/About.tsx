@@ -18,7 +18,7 @@ const About: FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden px-4 md:px-24">
+    <div id="about" className="min-h-screen bg-background relative overflow-hidden px-4 md:px-24">
       {/* Animated background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#7715e8]/5 via-background to-[#b35605]/5" />
 
@@ -36,8 +36,8 @@ const About: FC = () => {
         {/* Header Section */}
         <div className="text-center mb-16">
           <div className={`flex justify-center mb-6 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <div className="bg-[#7715e8] p-3 rounded-lg">
-              <Code size={36} className="text-white" />
+            <div className="p-3 rounded-lg">
+              <Code size={36} className="text-gray-900 dark:text-white animate-bounce" />
             </div>
           </div>
           <h1 className={`text-4xl md:text-5xl font-bold mb-6 text-foreground ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.1s" }}>
@@ -108,7 +108,7 @@ const About: FC = () => {
         {/* Themes Section */}
         <div className={`mb-16 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.5s" }}>
           <h2 className="text-xl md:text-2xl font-bold mb-8 text-center text-foreground">Hackathon Themes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
             {[
               { theme: "AI & Machine Learning", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300" },
               { theme: "Web3 & Blockchain", color: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300" },

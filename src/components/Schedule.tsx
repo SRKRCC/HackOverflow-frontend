@@ -179,10 +179,10 @@ const Schedule: React.FC = () => {
 
         {/* Header */}
         <div className="text-center pt-12 pb-8 px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent animate-fade-in">
             Hackathon Journey
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto text-muted-foreground">
+          <p className="text-lg md:text-xl max-w-2xl mx-auto text-muted-foreground animate-fade-in" style={{ animationDelay: "0.2s" }}>
             Navigate through your path to innovation and success
           </p>
         </div>

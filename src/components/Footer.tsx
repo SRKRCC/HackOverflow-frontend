@@ -145,12 +145,12 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
                   className="text-blue-400 mt-1 mr-3 flex-shrink-0"
                 />
                 <span className="text-gray-300">
-                  Sagi Ramakrishnam Raju Engineering College, Bhimavaram
+                  SRKREC, Bhimavaram
                 </span>
               </div>
               <div className="flex items-center">
                 <Phone size={18} className="text-blue-400 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">+91 9100579797</span>
+                <span className="text-gray-300">Ankit: +91 9100579797</span>
               </div>
               <div className="flex items-center">
                 <Mail size={18} className="text-blue-400 mr-3 flex-shrink-0" />
@@ -164,14 +164,15 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
             </div>
 
             {/* Emergency Contact */}
-            <div className="bg-gray-800 p-3 rounded-lg mt-4">
-              <h4 className="text-blue-400 font-semibold text-sm mb-1">
-                Emergency Contact
+            <div className="bg-gray-800 p-2 rounded-lg mt-4">
+              <h4 className="text-blue-400 font-semibold text-xs mb-1">
+                Emergency Contacts
               </h4>
-              <p className="text-gray-300 text-sm">
-                For urgent issues during the event
+              <p className="text-gray-300 text-xs">
+                For any technical issues during the event
               </p>
-              <p className="text-gray-300 text-sm mt-1">+91 90321 49776</p>
+              <p className="text-gray-300 text-xs mt-1">Ramtej: +91 90321 49776</p>
+              <p className="text-gray-300 text-xs mt-1">William: +91 99665 42463</p>
             </div>
           </div>
         </div>
