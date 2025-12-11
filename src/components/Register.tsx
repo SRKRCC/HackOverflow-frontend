@@ -686,6 +686,8 @@ export default function RegisterPage() {
                                 options={[
                                     { value: "CSE", label: "Computer Science & Engineering" },
                                     { value: "IT", label: "Information Technology" },
+                                    { value: 'AI&DS', label: "Artificial Intelligence & Data Science" },
+                                    { value: 'AI&ML', label: "Artificial Intelligence & Machine Learning" },
                                     { value: "ECE", label: "Electronics & Communication Engineering" },
                                     { value: "EEE", label: "Electrical & Electronics Engineering" },
                                     { value: "MECH", label: "Mechanical Engineering" },
