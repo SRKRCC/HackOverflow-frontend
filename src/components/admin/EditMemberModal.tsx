@@ -11,7 +11,24 @@ interface EditMemberModalProps {
   onUpdate: (updatedMember: Member) => void;
 }
 
-const T_SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const T_SHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+const DEPARTMENT_OPTIONS = [
+  { value: "", label: "Select department" },
+  { value: "CSE", label: "Computer Science & Engineering" },
+  { value: "CSBS", label: "Computer Science & Business Systems" },
+  { value: "CSD", label: "Computer Science & Design" },
+  { value: "CSIT", label: "Computer Science & Information Technology" },
+  { value: "IT", label: "Information Technology" },
+  { value: "AI&DS", label: "Artificial Intelligence & Data Science" },
+  { value: "AI&ML", label: "Artificial Intelligence & Machine Learning" },
+  { value: "ECE", label: "Electronics & Communication Engineering" },
+  { value: "EEE", label: "Electrical & Electronics Engineering" },
+  { value: "MECH", label: "Mechanical Engineering" },
+  { value: "CIVIL", label: "Civil Engineering" },
+  { value: "CHEM", label: "Chemical Engineering" },
+  { value: "BIO", label: "Biotechnology" },
+  { value: "OTHER", label: "Other" },
+];
 
 export default function EditMemberModal({ team, member, isOpen, onClose, onUpdate }: EditMemberModalProps) {
   const [formData, setFormData] = useState({
@@ -237,8 +254,7 @@ export default function EditMemberModal({ team, member, isOpen, onClose, onUpdat
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Department
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.department}
                 onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 ${
@@ -246,9 +262,14 @@ export default function EditMemberModal({ team, member, isOpen, onClose, onUpdat
                     ? "border-red-300 focus:ring-red-500"
                     : "border-gray-300 dark:border-gray-600 focus:ring-orange-500"
                 }`}
-                placeholder="Enter department"
                 disabled={isSubmitting}
-              />
+              >
+                {DEPARTMENT_OPTIONS.map((dept) => (
+                  <option key={dept.value} value={dept.value}>
+                    {dept.label}
+                  </option>
+                ))}
+              </select>
               {getFieldError("department") && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
                   {getFieldError("department")}

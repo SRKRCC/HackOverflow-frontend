@@ -685,6 +685,9 @@ export default function RegisterPage() {
                                 placeholder="Select department"
                                 options={[
                                     { value: "CSE", label: "Computer Science & Engineering" },
+                                    { value: "CSBS", label: "Computer Science & Business Systems" },
+                                    { value: "CSD", label: "Computer Science & Design" },
+                                    { value: "CSIT", label: "Computer Science & Information Technology" },
                                     { value: "IT", label: "Information Technology" },
                                     { value: 'AI&DS', label: "Artificial Intelligence & Data Science" },
                                     { value: 'AI&ML', label: "Artificial Intelligence & Machine Learning" },
