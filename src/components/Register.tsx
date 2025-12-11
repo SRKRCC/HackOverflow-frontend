@@ -49,7 +49,7 @@ export default function RegisterPage() {
         photo: null as File | null,
         department: "",
         collegeName: "",
-        yearOfStudy: 0,
+        yearOfStudy: 1,
         location: "",
         tShirtSize: ""
     })
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                 photo: null,
                 department: "",
                 collegeName: "",
-                yearOfStudy: 0,
+                yearOfStudy: 1,
                 location: "",
                 tShirtSize: ""
             }])
@@ -703,7 +703,7 @@ export default function RegisterPage() {
                             <Select
                                 id="leadYear"
                                 value={lead.yearOfStudy}
-                                onChange={(e) => setLead((p) => ({ ...p, yearOfStudy: parseInt(e.target.value) || 0 }))}
+                                onChange={(e) => setLead((p) => ({ ...p, yearOfStudy: parseInt(e.target.value) }))}
                                 placeholder="Select year"
                                 options={[
                                     { value: 1, label: "1st Year" },
@@ -872,7 +872,7 @@ export default function RegisterPage() {
                                     <Select
                                         id={`m${i}-year`}
                                         value={m.yearOfStudy}
-                                        onChange={(e) => onMemberChange(i, "yearOfStudy", parseInt(e.target.value) || 0)}
+                                        onChange={(e) => onMemberChange(i, "yearOfStudy", parseInt(e.target.value))}
                                         placeholder="Select year"
                                         options={[
                                             { value: 1, label: "1st Year" },
