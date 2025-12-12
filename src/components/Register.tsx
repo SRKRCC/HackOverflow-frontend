@@ -34,7 +34,7 @@ export default function RegisterPage() {
     const navigate = useNavigate()
     
     const registrationStartDate = new Date('2025-11-28T00:00:00')
-    const registrationDeadline = new Date('2025-12-13T00:00:00')
+    const registrationDeadline = new Date('2025-12-14T00:00:00')
     const currentDate = new Date()
     const isRegistrationOpen = currentDate >= registrationStartDate && currentDate < registrationDeadline
     
@@ -1276,7 +1276,7 @@ export default function RegisterPage() {
                                 </p>
                                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 mb-8">
                                     <p className="text-amber-800 font-medium">
-                                        Registration was open until <strong>December 13th, 2025 at 12:00 AM</strong>.
+                                        Registration was open until <strong>December 13th, 2025 at 12:00 PM</strong>.
                                     </p>
                                 </div>
                             </>
