@@ -917,7 +917,7 @@ export default function RegisterPage() {
                         </fieldset>
                     ))}
 
-                    {members.length < 5 && (
+                    {members.length < 6 && (
                         <div className="flex justify-center">
                             <Button
                                 type="button"
@@ -935,7 +935,7 @@ export default function RegisterPage() {
                         <div className="text-center">
                             <p className="text-sm text-green-600 font-medium">
                                 ✅ {members.length} members total.
-                                {members.length >= 4 && members.length < 5 && " You can add more members or proceed to the next step."}
+                                {members.length >= 4 && members.length < 6 && " You can add more members or proceed to the next step."}
                                 {members.length === 6 && " Maximum team size reached."}
                             </p>
                         </div>
