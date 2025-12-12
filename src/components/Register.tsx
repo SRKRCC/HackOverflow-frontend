@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom"
+import toast from 'react-hot-toast'
 import Button from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock } from "lucide-react"
@@ -39,7 +40,6 @@ export default function RegisterPage() {
     
     const [currentStep, setCurrentStep] = useState(0)
     const [submitting, setSubmitting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
 
     const [teamName, setTeamName] = useState("")
     const [members, setMembers] = useState<Member[]>([
@@ -82,7 +82,7 @@ export default function RegisterPage() {
                 setAvailableProblemStatements(data)
             } catch (err) {
                 console.error("Failed to fetch problem statements:", err)
-                setError("Failed to load problem statements. Please try again later.")
+                toast.error("Failed to load problem statements. Please try again")
             } finally {
                 setLoadingProblemStatements(false)
             }
@@ -166,46 +166,45 @@ export default function RegisterPage() {
     }
 
     function handleNextStep() {
-        setError(null)
         setValidationErrors([])
 
         if (currentStep === 2) {
             if (!teamName.trim()) {
-                setError("Please enter a team name.")
+                toast.error("Please enter a team name.")
                 return
             }
             
 
             const lead = members[0]
             if (!lead.name || !lead.email || !lead.phone || !lead.collegeName || !lead.department || !lead.tShirtSize) {
-                setError("Please complete all required Team Lead fields.")
+                toast.error("Please complete all required Team Lead fields.")
                 return
             }
             
             if (members.length < 4) {
-                setError("Please add at least 3 team members (minimum 4 members total including team lead).")
+                toast.error("Please add at least 3 team members (minimum 4 members total including team lead).")
                 return
             }
             if (members.length > 6) {
-                setError("Maximum 6 members total allowed (including team lead).")
+                toast.error("Maximum 6 members total allowed (including team lead).")
                 return
             }
             
             const incompleteMembers = members.some(member => !member.name || !member.email || !member.phone || !member.collegeName || !member.department || !member.tShirtSize)
             if (incompleteMembers) {
-                setError("Please complete all fields for all team members.")
+                toast.error("Please complete all fields for all team members.")
                 return
             }
 
             // Validate problem statement
             if (!selectedProblemStatementId) {
-                setError("Please select a problem statement.")
+                toast.error("Please select a problem statement.")
                 return
             }
             
             if (showCustomProblemStatement) {
                 if (!problemStatement.title || !problemStatement.description || !problemStatement.category) {
-                    setError("Please complete all custom problem statement fields.")
+                    toast.error("Please complete all custom problem statement fields.")
                     return
                 }
             }
@@ -343,14 +342,12 @@ export default function RegisterPage() {
     }
 
     function handlePrevStep() {
-        setError(null)
         setCurrentStep((prev) => prev - 1)
     }
 
     async function handleSubmit() {
         try {
             setSubmitting(true)
-            setError(null)
             setValidationErrors([])
             
             const totalMembers = members.length
@@ -393,16 +390,17 @@ export default function RegisterPage() {
                     teamId: response.teamId || 0
                 })
                 setShowSuccessModal(true)
+                toast.success("Registration successful! 🎉")
             } else if (response.errors && response.errors.length > 0) {
                 setValidationErrors(response.errors)
-                setError("Please fix the validation errors and try again.")
+                toast.error("Please fix the validation errors and try again.")
             } else {
-                setError(response.message || "Registration failed. Please try again.")
+                toast.error(response.message || "Registration failed. Please try again.")
             }
             
         } catch (err: any) {
             console.error("Registration error:", err)
-            setError(err?.response?.data?.message || err?.message || "An error occurred during registration.")
+            toast.error(err?.response?.data?.message || err?.message || "An error occurred during registration.")
             
             if (err?.response?.data?.errors) {
                 setValidationErrors(err.response.data.errors)
@@ -579,15 +577,6 @@ export default function RegisterPage() {
                         Enter the Team Lead details and add team members. Minimum 4 members total (including team lead), maximum 6 members total.
                     </p>
                 </header>
-
-                {error && (
-                    <div
-                        role="alert"
-                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
-                    >
-                        {error}
-                    </div>
-                )}
 
                 {/* Team Name Section */}
                 <fieldset className="mb-8">
@@ -1093,15 +1082,6 @@ export default function RegisterPage() {
                         Please review your team details before submitting your registration
                     </p>
                 </header>
-
-                {error && (
-                    <div
-                        role="alert"
-                        className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-destructive text-sm"
-                    >
-                        {error}
-                    </div>
-                )}
 
                 {validationErrors.length > 0 && (
                     <div className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4">
