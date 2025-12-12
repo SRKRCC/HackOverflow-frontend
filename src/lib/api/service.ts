@@ -256,12 +256,8 @@ export class ApiService {
       return response.data.data;
     },
 
-    registerTeam: async (formData: FormData): Promise<RegistrationResponse> => {
-      const response = await apiClient.post('/teams/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+    registerTeam: async (registrationData: any): Promise<RegistrationResponse> => {
+      const response = await apiClient.post('/teams/register', registrationData);
       return response.data;
     },
 

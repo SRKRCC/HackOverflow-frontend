@@ -6,12 +6,12 @@ import { Select } from '@/components/ui/select'
 import { Users, CreditCard, CheckCircle, ArrowRight, ArrowLeft, Sparkles, Plus, Trash2, FileText, Home, Clock } from "lucide-react"
 import { ApiService } from '@/lib/api/service'
 import type { ProblemStatement as ApiProblemStatement } from '@/lib/types'
+import RegistrationSuccessModal from '@/components/RegistrationSuccessModal'
 
 type Member = {
     name: string
     email: string
     phone: string
-    photo: File | null
     department: string
     collegeName: string
     yearOfStudy: number
@@ -42,18 +42,18 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null)
 
     const [teamName, setTeamName] = useState("")
-    const [lead, setLead] = useState({ 
-        name: "", 
-        email: "", 
-        phone: "", 
-        photo: null as File | null,
-        department: "",
-        collegeName: "",
-        yearOfStudy: 1,
-        location: "",
-        tShirtSize: ""
-    })
-    const [members, setMembers] = useState<Member[]>([])
+    const [members, setMembers] = useState<Member[]>([
+        { 
+            name: "", 
+            email: "", 
+            phone: "", 
+            department: "",
+            collegeName: "",
+            yearOfStudy: 1,
+            location: "",
+            tShirtSize: ""
+        }
+    ])
     const [problemStatement, setProblemStatement] = useState<ProblemStatement>({
         id: "",
         title: "",
@@ -61,6 +61,11 @@ export default function RegisterPage() {
         category: "",
         tags: []
     })
+
+    // Registration response states
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
+    const [registrationResponse, setRegistrationResponse] = useState<{ sccId: string; teamId: number } | null>(null)
+    const [validationErrors, setValidationErrors] = useState<{ field: string; message: string }[]>([]);
 
     // Problem statement selection states
     const [availableProblemStatements, setAvailableProblemStatements] = useState<ApiProblemStatement[]>([])
@@ -117,7 +122,7 @@ export default function RegisterPage() {
         }
     }
 
-    function onMemberChange(index: number, key: keyof Member, value: string | File | null | number) {
+    function onMemberChange(index: number, key: keyof Member, value: string | number) {
         setMembers((prev) => {
             const next = [...prev]
             next[index] = { ...next[index], [key]: value }
@@ -126,6 +131,7 @@ export default function RegisterPage() {
     }
 
     function copyTeamLeadDetails(index: number) {
+        const lead = members[0]
         setMembers((prev) => {
             const next = [...prev]
             next[index] = { 
@@ -139,13 +145,12 @@ export default function RegisterPage() {
         })
     }
 
-    function addMember() {
-        if (members.length < 5) {
+    function addMember() {        // Maximum 6 members total (including lead at index 0)
+        if (members.length < 6) {
             setMembers(prev => [...prev, { 
                 name: "", 
                 email: "", 
                 phone: "", 
-                photo: null,
                 department: "",
                 collegeName: "",
                 yearOfStudy: 1,
@@ -156,30 +161,36 @@ export default function RegisterPage() {
     }
 
     function removeMember(index: number) {
+        if (index === 0) return
         setMembers(prev => prev.filter((_, i) => i !== index))
     }
 
     function handleNextStep() {
         setError(null)
+        setValidationErrors([])
 
         if (currentStep === 2) {
             if (!teamName.trim()) {
                 setError("Please enter a team name.")
                 return
             }
+            
+
+            const lead = members[0]
             if (!lead.name || !lead.email || !lead.phone || !lead.collegeName || !lead.department || !lead.tShirtSize) {
                 setError("Please complete all required Team Lead fields.")
                 return
             }
-            if (members.length < 3) {
+            
+            if (members.length < 4) {
                 setError("Please add at least 3 team members (minimum 4 members total including team lead).")
                 return
             }
-            if (members.length > 5) {
+            if (members.length > 6) {
                 setError("Maximum 6 members total allowed (including team lead).")
                 return
             }
-            // Check if all team members have required fields filled
+            
             const incompleteMembers = members.some(member => !member.name || !member.email || !member.phone || !member.collegeName || !member.department || !member.tShirtSize)
             if (incompleteMembers) {
                 setError("Please complete all fields for all team members.")
@@ -339,25 +350,15 @@ export default function RegisterPage() {
     async function handleSubmit() {
         try {
             setSubmitting(true)
+            setError(null)
+            setValidationErrors([])
             
-            const totalMembers = members.length + 1
+            const totalMembers = members.length
             const amountPerHead = 850
             const totalAmount = totalMembers * amountPerHead
             
-            // Prepare registration data object
             const registrationData = {
                 teamName,
-                lead: {
-                    name: lead.name,
-                    email: lead.email,
-                    phone: lead.phone,
-                    collegeName: lead.collegeName,
-                    department: lead.department,
-                    yearOfStudy: lead.yearOfStudy,
-                    location: lead.location,
-                    tShirtSize: lead.tShirtSize,
-                    photo: null // Will be handled separately
-                },
                 members: members.map(member => ({
                     name: member.name,
                     email: member.email,
@@ -366,8 +367,7 @@ export default function RegisterPage() {
                     department: member.department,
                     yearOfStudy: member.yearOfStudy,
                     location: member.location,
-                    tShirtSize: member.tShirtSize,
-                    photo: null // Will be handled separately
+                    tShirtSize: member.tShirtSize
                 })),
                 problemStatement: {
                     id: problemStatement.id,
@@ -384,42 +384,45 @@ export default function RegisterPage() {
                     totalAmount
                 }
             }
-
-            // Create FormData and append the data as JSON string
-            const formData = new FormData()
-            formData.append('data', JSON.stringify(registrationData))
             
-            // Append files separately
-            if (lead.photo) {
-                formData.append('leadPhoto', lead.photo)
+            const response = await ApiService.public.registerTeam(registrationData)
+
+            if (response.success && response.sccId) {
+                setRegistrationResponse({
+                    sccId: response.sccId,
+                    teamId: response.teamId || 0
+                })
+                setShowSuccessModal(true)
+            } else if (response.errors && response.errors.length > 0) {
+                setValidationErrors(response.errors)
+                setError("Please fix the validation errors and try again.")
+            } else {
+                setError(response.message || "Registration failed. Please try again.")
             }
-            
-            members.forEach((member, index) => {
-                if (member.photo) {
-                    formData.append(`memberPhoto_${index}`, member.photo)
-                }
-            })
-            
-            // Send registration data to backend and get team ID
-            const response = await ApiService.public.registerTeam(formData)
-
-            // Store registration response temporarily
-            sessionStorage.setItem('registrationData', JSON.stringify({
-                message: response.message,
-                sccId: response.sccId,
-                teamName: teamName,
-                totalAmount: totalAmount
-            }))
-
-            const paymentUrl = `https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?saralID=-924485972&categoryName=SRKREC-CODING%20CLUB`
-            
-            window.location.href = paymentUrl
             
         } catch (err: any) {
             console.error("Registration error:", err)
+            setError(err?.response?.data?.message || err?.message || "An error occurred during registration.")
+            
+            if (err?.response?.data?.errors) {
+                setValidationErrors(err.response.data.errors)
+            }
+        } finally {
             setSubmitting(false)
-            setError(err?.message)
         }
+    }
+
+    function handleContinueToPayment() {
+        if (!registrationResponse) return
+        
+        sessionStorage.setItem('registrationData', JSON.stringify({
+            sccId: registrationResponse.sccId,
+            teamName: teamName,
+            totalAmount: members.length * 850
+        }))
+
+        const paymentUrl = `https://onlinesbi.sbi.bank.in/sbicollect/icollecthome.htm?saralID=-924485972&categoryName=SRKREC-CODING%20CLUB`
+        window.location.href = paymentUrl
     }
 
     function renderStep1() {
@@ -624,8 +627,8 @@ export default function RegisterPage() {
                                 id="leadName"
                                 type="text"
                                 required
-                                value={lead.name}
-                                onChange={(e) => setLead((p) => ({ ...p, name: e.target.value }))}
+                                value={members[0]?.name || ""}
+                                onChange={(e) => onMemberChange(0, "name", e.target.value)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="Jane Doe"
                             />
@@ -638,8 +641,8 @@ export default function RegisterPage() {
                                 id="leadEmail"
                                 type="email"
                                 required
-                                value={lead.email}
-                                onChange={(e) => setLead((p) => ({ ...p, email: e.target.value }))}
+                                value={members[0]?.email || ""}
+                                onChange={(e) => onMemberChange(0, "email", e.target.value)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="jane@example.com"
                             />
@@ -653,8 +656,8 @@ export default function RegisterPage() {
                                 type="tel"
                                 required
                                 pattern="^[0-9+\-\s()]{7,}$"
-                                value={lead.phone}
-                                onChange={(e) => setLead((p) => ({ ...p, phone: e.target.value }))}
+                                value={members[0]?.phone || ""}
+                                onChange={(e) => onMemberChange(0, "phone", e.target.value)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="+1 555 555 1234"
                             />
@@ -667,8 +670,8 @@ export default function RegisterPage() {
                                 id="leadCollege"
                                 type="text"
                                 required
-                                value={lead.collegeName}
-                                onChange={(e) => setLead((p) => ({ ...p, collegeName: e.target.value }))}
+                                value={members[0]?.collegeName || ""}
+                                onChange={(e) => onMemberChange(0, "collegeName", e.target.value)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="SRKR Engineering College"
                             />
@@ -680,8 +683,8 @@ export default function RegisterPage() {
                             <Select
                                 id="leadDepartment"
                                 required
-                                value={lead.department}
-                                onChange={(e) => setLead((p) => ({ ...p, department: e.target.value }))}
+                                value={members[0]?.department || ""}
+                                onChange={(e) => onMemberChange(0, "department", e.target.value)}
                                 placeholder="Select department"
                                 options={[
                                     { value: "CSE", label: "Computer Science & Engineering" },
@@ -707,8 +710,8 @@ export default function RegisterPage() {
                             </label>
                             <Select
                                 id="leadYear"
-                                value={lead.yearOfStudy}
-                                onChange={(e) => setLead((p) => ({ ...p, yearOfStudy: parseInt(e.target.value) }))}
+                                value={members[0]?.yearOfStudy || 1}
+                                onChange={(e) => onMemberChange(0, "yearOfStudy", parseInt(e.target.value))}
                                 placeholder="Select year"
                                 options={[
                                     { value: 1, label: "1st Year" },
@@ -725,8 +728,8 @@ export default function RegisterPage() {
                             <input
                                 id="leadLocation"
                                 type="text"
-                                value={lead.location}
-                                onChange={(e) => setLead((p) => ({ ...p, location: e.target.value }))}
+                                value={members[0]?.location || ""}
+                                onChange={(e) => onMemberChange(0, "location", e.target.value)}
                                 className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                 placeholder="Bhimavaram, Andhra Pradesh"
                             />
@@ -738,8 +741,8 @@ export default function RegisterPage() {
                             <Select
                                 id="leadTShirtSize"
                                 required
-                                value={lead.tShirtSize}
-                                onChange={(e) => setLead((p) => ({ ...p, tShirtSize: e.target.value }))}
+                                value={members[0]?.tShirtSize || ""}
+                                onChange={(e) => onMemberChange(0, "tShirtSize", e.target.value)}
                                 placeholder="Select size"
                                 options={[
                                     { value: "XS", label: "XS" },
@@ -756,24 +759,24 @@ export default function RegisterPage() {
                 </fieldset>
 
                 <div className="space-y-6">
-                    {members.map((m, i) => (
-                        <fieldset key={i} className="border border-border/50 rounded-xl p-6 bg-background/30">
+                    {members.slice(1).map((m, i) => (
+                        <fieldset key={i + 1} className="border border-border/50 rounded-xl p-6 bg-background/30">
                             <div className="flex justify-between items-center mb-4">
-                                <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 1}</legend>
+                                <legend className="text-sm font-medium px-3 text-muted-foreground">Team Member {i + 2}</legend>
                                 <div className="flex items-center gap-2">
                                     <Button
                                         type="button"
-                                        onClick={() => copyTeamLeadDetails(i)}
+                                        onClick={() => copyTeamLeadDetails(i + 1)}
                                         variant="outline"
                                         className="h-8 px-3 text-xs text-primary hover:text-primary hover:bg-primary/10 border-primary/30 disabled:opacity-50"
                                         title="Copy Team Lead's college, department, year, and location"
-                                        disabled={!lead.collegeName || !lead.department}
+                                        disabled={!members[0]?.collegeName || !members[0]?.department}
                                     >
                                         Same as Team Lead
                                     </Button>
                                     <Button
                                         type="button"
-                                        onClick={() => removeMember(i)}
+                                        onClick={() => removeMember(i + 1)}
                                         variant="outline"
                                         className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                                     >
@@ -781,7 +784,7 @@ export default function RegisterPage() {
                                     </Button>
                                 </div>
                             </div>
-                            {(lead.collegeName || lead.department) && (
+                            {(members[0]?.collegeName || members[0]?.department) && (
                                 <div className="mb-4 p-3 bg-blue-50/50 rounded-lg border border-blue-200/50">
                                     <p className="text-xs text-blue-700 flex items-center gap-2">
                                         <CheckCircle className="h-3 w-3" />
@@ -799,7 +802,7 @@ export default function RegisterPage() {
                                         type="text"
                                         required
                                         value={m.name}
-                                        onChange={(e) => onMemberChange(i, "name", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "name", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="Full name"
                                     />
@@ -813,7 +816,7 @@ export default function RegisterPage() {
                                         type="email"
                                         required
                                         value={m.email}
-                                        onChange={(e) => onMemberChange(i, "email", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "email", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="user@example.com"
                                     />
@@ -828,7 +831,7 @@ export default function RegisterPage() {
                                         pattern="^[0-9+\-\s()]{7,}$"
                                         required
                                         value={m.phone}
-                                        onChange={(e) => onMemberChange(i, "phone", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "phone", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="+1 555 123 4567"
                                     />
@@ -842,7 +845,7 @@ export default function RegisterPage() {
                                         type="text"
                                         required
                                         value={m.collegeName}
-                                        onChange={(e) => onMemberChange(i, "collegeName", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "collegeName", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="SRKR Engineering College"
                                     />
@@ -855,7 +858,7 @@ export default function RegisterPage() {
                                         id={`m${i}-department`}
                                         required
                                         value={m.department}
-                                        onChange={(e) => onMemberChange(i, "department", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "department", e.target.value)}
                                         placeholder="Select department"
                                         options={[
                                             { value: "CSE", label: "Computer Science & Engineering" },
@@ -877,7 +880,7 @@ export default function RegisterPage() {
                                     <Select
                                         id={`m${i}-year`}
                                         value={m.yearOfStudy}
-                                        onChange={(e) => onMemberChange(i, "yearOfStudy", parseInt(e.target.value))}
+                                        onChange={(e) => onMemberChange(i + 1, "yearOfStudy", parseInt(e.target.value))}
                                         placeholder="Select year"
                                         options={[
                                             { value: 1, label: "1st Year" },
@@ -895,7 +898,7 @@ export default function RegisterPage() {
                                         id={`m${i}-location`}
                                         type="text"
                                         value={m.location}
-                                        onChange={(e) => onMemberChange(i, "location", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "location", e.target.value)}
                                         className="h-11 rounded-xl border border-border bg-input px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
                                         placeholder="Bhimavaram, Andhra Pradesh"
                                     />
@@ -908,7 +911,7 @@ export default function RegisterPage() {
                                         id={`m${i}-tShirtSize`}
                                         required
                                         value={m.tShirtSize}
-                                        onChange={(e) => onMemberChange(i, "tShirtSize", e.target.value)}
+                                        onChange={(e) => onMemberChange(i + 1, "tShirtSize", e.target.value)}
                                         placeholder="Select size"
                                         options={[
                                             { value: "XS", label: "XS" },
@@ -939,12 +942,12 @@ export default function RegisterPage() {
                         </div>
                     )}
 
-                    {members.length >= 3 && (
+                    {members.length >= 4 && (
                         <div className="text-center">
                             <p className="text-sm text-green-600 font-medium">
-                                ✅ {members.length + 1} members total.
-                                {members.length >= 3 && members.length < 5 && " You can add more members or proceed to the next step."}
-                                {members.length === 5 && " Maximum team size reached."}
+                                ✅ {members.length} members total.
+                                {members.length >= 4 && members.length < 5 && " You can add more members or proceed to the next step."}
+                                {members.length === 6 && " Maximum team size reached."}
                             </p>
                         </div>
                     )}
@@ -1078,16 +1081,16 @@ export default function RegisterPage() {
     }
 
     function renderStep4() {
-        const totalMembers = members.length + 1
+        const totalMembers = members.length
         const amountPerHead = 850
         const totalAmount = totalMembers * amountPerHead
 
         return (
-            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm max-w-4xl mx-auto">
+            <div className="bg-card/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-2xl backdrop-blur-sm max-w-5xl mx-auto">
                 <header className="mb-6 sm:mb-8 text-center">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Complete Payment</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Review & Submit</h2>
                     <p className="text-sm sm:text-base text-muted-foreground">
-                        Finalize your registration with a secure payment of ₹{amountPerHead} per member
+                        Please review your team details before submitting your registration
                     </p>
                 </header>
 
@@ -1100,12 +1103,107 @@ export default function RegisterPage() {
                     </div>
                 )}
 
-                <div className="max-w-2xl mx-auto mb-8">
+                {validationErrors.length > 0 && (
+                    <div className="mb-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4">
+                        <h4 className="font-semibold text-destructive mb-2">Validation Errors:</h4>
+                        <ul className="text-sm text-destructive space-y-1">
+                            {validationErrors.map((err, idx) => (
+                                <li key={idx}>• {err.field}: {err.message}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <div className="space-y-6 mb-8">
+                    {/* Team Information */}
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Team Information
+                        </h3>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <div className="w-full sm:w-1/2 min-w-0 p-3 bg-primary/5 rounded-lg flex items-center">
+                                <span className="text-sm text-muted-foreground">Team Name:</span>
+                                <span className="font-medium truncate ml-2">{teamName}</span>
+                            </div>
+                            <div className="w-full sm:w-1/2 p-3 bg-primary/5 rounded-lg flex items-center">
+                                <span className="text-sm text-muted-foreground">Total Members:</span>
+                                <span className="font-medium ml-2">{totalMembers}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Problem Statement */}
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <FileText className="h-5 w-5" />
+                            Problem Statement
+                        </h3>
+                        <div className="space-y-2">
+                            <div className="flex items-start gap-2">
+                                <span className="text-sm text-muted-foreground">ID:</span>
+                                <span className="font-medium text-sm">{problemStatement.psId || problemStatement.id}</span>
+                            </div>
+                            <div className="flex items-start gap-2">
+                                <span className="text-sm text-muted-foreground">Title:</span>
+                                <span className="font-medium text-sm">{problemStatement.title}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Team Members Review */}
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
+                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Team Members
+                        </h3>
+                        <div className="space-y-4">
+                            {members.map((member, index) => (
+                                <div key={index} className="p-4 bg-background/70 rounded-xl border border-border/30">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="font-semibold text-foreground">
+                                            {index === 0 ? "Team Lead" : `Member ${index}`}
+                                        </h4>
+                                        {index === 0 && (
+                                            <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Lead</span>
+                                        )}
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span className="text-muted-foreground">Name: </span>
+                                            <span className="font-medium">{member.name}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">Email: </span>
+                                            <span className="font-medium">{member.email}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">Phone: </span>
+                                            <span className="font-medium">{member.phone}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">College: </span>
+                                            <span className="font-medium">{member.collegeName}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">Department: </span>
+                                            <span className="font-medium">{member.department}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">T-Shirt: </span>
+                                            <span className="font-medium">{member.tShirtSize}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Payment Details */}
-                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50 mb-6">
+                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
                         <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
                             <CreditCard className="h-5 w-5" />
-                            Payment Details
+                            Payment Summary
                         </h3>
                         
                         <div className="space-y-4">
@@ -1122,32 +1220,15 @@ export default function RegisterPage() {
                                 <span className="text-lg font-bold text-primary">₹{totalAmount}</span>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="bg-background/50 rounded-2xl p-6 border border-border/50">
-                        <h3 className="text-lg font-semibold mb-4 text-primary flex items-center gap-2">
-                            <CheckCircle className="h-5 w-5" />
-                            Payment Process
-                        </h3>
-                        
-                        <div className="space-y-3 text-sm text-muted-foreground">
-                            <p className="text-foreground mb-4">
-                                You will be redirected to SBI Collect for secure payment processing.
+                        <div className="mt-4 p-4 bg-amber-50/50 border border-amber-200/50 rounded-lg">
+                            <p className="text-xs text-amber-800 flex items-center gap-2">
+                                <Clock className="h-4 w-4" />
+                                After registration, you'll be redirected to SBI Collect for payment. Complete payment by December 13, 2025.
                             </p>
-                            <div className="bg-blue-50/50 border border-blue-200/50 rounded-lg p-4">
-                                <h4 className="font-medium text-blue-800 mb-2">Payment Instructions:</h4>
-                                <ul className="text-blue-700 text-xs space-y-1">
-                                    <li>• Complete the payment on SBI Collect portal</li>
-                                    <li>• You will be redirected back after successful payment</li>
-                                    <li>• Keep your transaction receipt for records</li>
-                                    <li>• Registration will be confirmed upon successful payment</li>
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 </div>
-
-
 
                 <Button
                     onClick={handleSubmit}
@@ -1157,12 +1238,12 @@ export default function RegisterPage() {
                     {submitting ? (
                         <>
                             <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                            Redirecting to Payment...
+                            Submitting Registration...
                         </>
                     ) : (
                         <>
                             <CheckCircle className="h-5 w-5" />
-                            Complete Registration
+                            Submit Registration
                         </>
                     )}
                 </Button>
@@ -1341,6 +1422,19 @@ export default function RegisterPage() {
                 )}
             </section>
 
+            )}
+
+            {/* Registration Success Modal */}
+            {registrationResponse && (
+                <RegistrationSuccessModal
+                    isOpen={showSuccessModal}
+                    onClose={() => setShowSuccessModal(false)}
+                    teamName={teamName}
+                    sccId={registrationResponse.sccId}
+                    totalMembers={members.length}
+                    totalAmount={members.length * 850}
+                    onContinueToPayment={handleContinueToPayment}
+                />
             )}
 
         </main>
