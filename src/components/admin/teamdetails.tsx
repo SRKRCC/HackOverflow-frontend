@@ -4,8 +4,10 @@ import { ApiService } from "@/lib/api";
 import type { Team, Member } from "@/lib/types";
 import EditTeamModal from "./EditTeamModal";
 import EditMemberModal from "./EditMemberModal";
+import AddMemberModal from "./AddMemberModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import TeamDetailsSkeleton from "./skeletons/TeamDetailsSkeleton";
+import toast from "react-hot-toast";
 
 export default function TeamsTable() {
   const [teams, setTeams] = useState<Team[]>([]);
@@ -25,8 +27,10 @@ export default function TeamsTable() {
   // Edit modal states
   const [editTeamModalOpen, setEditTeamModalOpen] = useState(false);
   const [editMemberModalOpen, setEditMemberModalOpen] = useState(false);
+  const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
   const [selectedMemberToEdit, setSelectedMemberToEdit] = useState<Member | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletingMemberId, setDeletingMemberId] = useState<number | null>(null);
 
   const rowsPerPage = 10; // Number of rows per page
 
@@ -89,6 +93,53 @@ export default function TeamsTable() {
     setTeams((prev) => prev.map((t) => 
       t.teamId === updatedTeam.teamId ? updatedTeam : t
     ));
+  };
+
+  const handleMemberAdd = (newMember: Member) => {
+    if (!selectedTeam) return;
+
+    const updatedTeam = {
+      ...selectedTeam,
+      members: [...(selectedTeam.members || []), newMember],
+      member_count: (selectedTeam.member_count || 0) + 1
+    };
+
+    setSelectedTeam(updatedTeam);
+    setTeams((prev) => prev.map((t) => 
+      t.teamId === updatedTeam.teamId ? updatedTeam : t
+    ));
+  };
+
+  const handleMemberDelete = async (memberId: number) => {
+    if (!selectedTeam) return;
+
+    // Confirm deletion
+    if (!window.confirm("Are you sure you want to delete this member? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setDeletingMemberId(memberId);
+      await ApiService.admin.deleteMember(selectedTeam.teamId, memberId);
+      
+      const updatedTeam = {
+        ...selectedTeam,
+        members: (selectedTeam.members || []).filter((m) => m.id !== memberId),
+        member_count: (selectedTeam.member_count || 0) - 1
+      };
+
+      setSelectedTeam(updatedTeam);
+      setTeams((prev) => prev.map((t) => 
+        t.teamId === updatedTeam.teamId ? updatedTeam : t
+      ));
+      
+      toast.success("Member deleted successfully");
+    } catch (error: any) {
+      console.error("Error deleting member:", error);
+      toast.error(error.response?.data?.message || "Failed to delete member");
+    } finally {
+      setDeletingMemberId(null);
+    }
   };
 
   // Handler for deleting team
@@ -266,9 +317,23 @@ export default function TeamsTable() {
 
                   {/* Team Members */}
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                      Team Members ({selectedTeam.members?.length || 0})
-                    </h3>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="font-semibold text-gray-700 dark:text-gray-300">
+                        Team Members ({selectedTeam.members?.length || 0})
+                      </h3>
+                      {(selectedTeam.members?.length || 0) < 6 && (
+                        <button
+                          onClick={() => setAddMemberModalOpen(true)}
+                          className="flex items-center gap-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition-colors"
+                          title="Add New Member"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                          Add Member
+                        </button>
+                      )}
+                    </div>
                     <div className="space-y-4">
                       {(selectedTeam.members || []).map((member, index) => (
                         <div key={member.id} className="bg-white dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
@@ -296,6 +361,26 @@ export default function TeamsTable() {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               </button>
+                              {/* Delete Member Button (not for team lead and only if team has more than 4 members) */}
+                              {index !== 0 && (
+                                <button
+                                  onClick={() => handleMemberDelete(member.id)}
+                                  disabled={deletingMemberId === member.id}
+                                  className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  title="Delete Member"
+                                >
+                                  {deletingMemberId === member.id ? (
+                                    <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                  )}
+                                </button>
+                              )}
                             </div>
                           </div>
                           
@@ -533,6 +618,15 @@ export default function TeamsTable() {
             setSelectedMemberToEdit(null);
           }}
           onUpdate={handleMemberUpdate}
+        />
+      )}
+
+      {selectedTeam && (
+        <AddMemberModal
+          team={selectedTeam}
+          isOpen={addMemberModalOpen}
+          onClose={() => setAddMemberModalOpen(false)}
+          onAdd={handleMemberAdd}
         />
       )}
 

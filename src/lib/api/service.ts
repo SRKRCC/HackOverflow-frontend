@@ -94,6 +94,27 @@ export class ApiService {
       return response.data;
     },
 
+    // Add new member to team
+    addMember: async (teamId: number, memberData: {
+      name: string;
+      email: string;
+      phone_number: string;
+      department: string;
+      college_name: string;
+      year_of_study: number;
+      location?: string;
+      tShirtSize: string;
+    }): Promise<UpdateMemberResponse> => {
+      const response = await apiClient.post(`/admin/teams/${teamId}/members`, memberData);
+      return response.data;
+    },
+
+    // Delete member from team
+    deleteMember: async (teamId: number, memberId: number): Promise<{ success: boolean; message: string }> => {
+      const response = await apiClient.delete(`/admin/teams/${teamId}/members/${memberId}`);
+      return response.data;
+    },
+
     // Delete team
     deleteTeam: async (teamId: number): Promise<DeleteTeamResponse> => {
       const response = await apiClient.delete(`/admin/teams/${teamId}`);
