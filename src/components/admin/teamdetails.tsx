@@ -10,6 +10,7 @@ import TeamDetailsSkeleton from "./skeletons/TeamDetailsSkeleton";
 export default function TeamsTable() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [search, setSearch] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -104,12 +105,18 @@ export default function TeamsTable() {
     setPendingPaymentStatus(null);
   };
 
-  // Filter teams by ID or Title
-  const filteredTeams = teams.filter((team) =>
-    [team.teamId.toString(), team.title.toLowerCase()].some((value) =>
+  // Filter teams by ID, Title, and Payment Status
+  const filteredTeams = teams.filter((team) => {
+    const matchesSearch = [team.teamId.toString(), team.title.toLowerCase()].some((value) =>
       value.includes(search.toLowerCase())
-    )
-  );
+    );
+    
+    const matchesPayment = paymentFilter === "all" ||
+      (paymentFilter === "verified" && team.paymentVerified) ||
+      (paymentFilter === "pending" && !team.paymentVerified);
+    
+    return matchesSearch && matchesPayment;
+  });
 
   // Pagination logic
   const startIndex = page * rowsPerPage;
@@ -125,20 +132,36 @@ export default function TeamsTable() {
         HackOverflow 2K25 Teams
       </h1>
 
-      {/* Search Bar */}
-      <div className="max-w-3xl mx-auto mb-4 sm:mb-6">
-        <input
-          type="text"
-          placeholder="Search by Team ID or Team Name..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(0);
-          }}
-          className="w-full px-3 sm:px-4 py-2 border border-orange-300 dark:border-gray-600 rounded-lg shadow-sm 
-          focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-black 
-          text-sm sm:text-base text-gray-800 dark:text-gray-100"
-        />
+      {/* Search and Filter Bar */}
+      <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            placeholder="Search by Team ID or Team Name..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(0);
+            }}
+            className="flex-1 px-3 sm:px-4 py-2 border border-orange-300 dark:border-gray-600 rounded-lg shadow-sm 
+            focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-black 
+            text-sm sm:text-base text-gray-800 dark:text-gray-100"
+          />
+          <select
+            value={paymentFilter}
+            onChange={(e) => {
+              setPaymentFilter(e.target.value);
+              setPage(0);
+            }}
+            className="px-3 sm:px-4 py-2 border border-orange-300 dark:border-gray-600 rounded-lg shadow-sm 
+            focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-black 
+            text-sm sm:text-base text-gray-800 dark:text-gray-100"
+          >
+            <option value="all">All Payments</option>
+            <option value="verified">Verified</option>
+            <option value="pending">Pending</option>
+          </select>
+        </div>
       </div>
       {/* Slide-in Side Panel */}
       <AnimatePresence>
@@ -410,6 +433,7 @@ export default function TeamsTable() {
                 <th className="px-4 py-3 text-left">Team Name</th>
                 <th className="px-4 py-3 text-left">Problem Stmt</th>
                 <th className="px-4 py-3 text-left">Member Count</th>
+                <th className="px-4 py-3 text-left">Payment</th>
               </tr>
             </thead>
             <tbody>
@@ -431,6 +455,15 @@ export default function TeamsTable() {
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.ps_id}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
                       {team.member_count || 0}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                        team.paymentVerified
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                          : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+                      }`}>
+                        {team.paymentVerified ? '✓ Verified' : '⏳ Pending'}
+                      </span>
                     </td>
                   </tr>
                 ))

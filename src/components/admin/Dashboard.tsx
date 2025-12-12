@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAdminStore } from '../../lib/stores/admin';
 import { useAuth } from '../../lib/hooks';
+import { ApiService } from '../../lib/api';
+import type { Team } from '../../lib/types';
 
 const Dashboard = () => {
   const { isAuthenticated, user } = useAuth();
@@ -12,13 +14,31 @@ const Dashboard = () => {
     fetchTasks, 
     fetchLeaderboard 
   } = useAdminStore();
+  
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loadingTeams, setLoadingTeams] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'admin') {
       fetchTasks();
       fetchLeaderboard();
+      fetchTeamsData();
     }
   }, [isAuthenticated, user, fetchTasks, fetchLeaderboard]);
+  
+  const fetchTeamsData = async () => {
+    try {
+      setLoadingTeams(true);
+      const teamsData = await ApiService.admin.getAllTeams();
+      setTeams(teamsData || []);
+    } catch (err) {
+      console.error('Error fetching teams:', err);
+    } finally {
+      setLoadingTeams(false);
+    }
+  };
+  
+  const totalMembers = teams.reduce((sum, team) => sum + (team.member_count || 0), 0);
 
   const stats = [
     { 
@@ -44,6 +64,12 @@ const Dashboard = () => {
       value: leaderboard.length, 
       icon: "👥",
       gradient: "from-chart-1/20 to-chart-1/5"
+    },
+    { 
+      title: "Total Members", 
+      value: loadingTeams ? '...' : totalMembers, 
+      icon: "👤",
+      gradient: "from-blue-500/20 to-blue-500/5"
     },
   ];
 
@@ -85,7 +111,7 @@ const Dashboard = () => {
         )}
         
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6 sm:mb-8 md:mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 mb-6 sm:mb-8 md:mb-10">
           {stats.map((stat, index) => (
             <div 
               key={index} 
