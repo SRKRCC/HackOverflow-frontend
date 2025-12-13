@@ -34,7 +34,7 @@ export default function RegisterPage() {
     const navigate = useNavigate()
     
     const registrationStartDate = new Date('2025-11-28T00:00:00')
-    const registrationDeadline = new Date('2025-12-14T00:00:00')
+    const registrationDeadline = new Date('2025-12-15T00:00:00')
     const currentDate = new Date()
     const isRegistrationOpen = currentDate >= registrationStartDate && currentDate < registrationDeadline
     
