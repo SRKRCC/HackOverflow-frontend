@@ -225,7 +225,30 @@ export class ApiService {
     logout: async (): Promise<{ message: string }> => {
       const response = await apiClient.post('/admin/logout');
       return response.data;
-    }
+    },
+
+    // Member management
+    getAllMembers: async (params?: {
+      search?: string;
+      department?: string;
+      college?: string;
+      year?: number;
+      tShirtSize?: string;
+      hasTeam?: boolean;
+    }): Promise<any[]> => {
+      const response = await apiClient.get('/admin/members', { params });
+      return response.data;
+    },
+
+    getMemberFilters: async (): Promise<{
+      departments: string[];
+      colleges: string[];
+      years: number[];
+      tShirtSizes: string[];
+    }> => {
+      const response = await apiClient.get('/admin/members/filters');
+      return response.data;
+    },
   };
 
   static team = {

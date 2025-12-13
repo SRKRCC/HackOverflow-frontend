@@ -7,6 +7,7 @@ import {
   Megaphone,
   CheckCircle2,
   FileText,
+  UserCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -87,6 +88,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   const links = [
     { path: "/admin/dashboard", label: "Dashboard", icon: <Home size={20} /> },
     { path: "/admin/team-details", label: "Team Details", icon: <Users size={20} /> },
+    { path: "/admin/members", label: "Members", icon: <UserCircle size={20} /> },
     { path: "/admin/team-photos", label: "Photos", icon: <Images size={20} /> },
     { path: "/admin/leaderboard", label: "Leaderboard", icon: <Users size={20} /> },
     { path: "/admin/announcements", label: "Announcements", icon: <Megaphone size={20} /> },

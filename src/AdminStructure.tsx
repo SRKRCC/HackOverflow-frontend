@@ -7,6 +7,7 @@ import TeamPhotos from "./components/admin/TeamPhotos";
 import LeaderBoard from "./components/admin/LeaderBoard";
 import Announcements from "./components/admin/announcements"
 import ProblemStatements from "./components/admin/ProblemStatements";
+import Members from "./components/admin/Members";
 // import TasksPage from "./components/admin/TasksPage";
 import TeamTaskManagement from "./components/admin/teamtaskManagement";
 
@@ -29,6 +30,7 @@ const AdminStructure = () => {
                 <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/team-details" element={<TeamsTable />} />
+                    <Route path="/members" element={<Members />} />
                     <Route path="/team-photos" element={<TeamPhotos />} />
                     <Route path="/leaderboard" element={<LeaderBoard />}/>
                     <Route path="/announcements" element={<Announcements/>}/>
