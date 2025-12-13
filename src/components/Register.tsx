@@ -476,7 +476,7 @@ export default function RegisterPage() {
                                 <li className="flex items-start gap-3 p-3 bg-background/50 rounded-lg">
                                     <span className="text-primary mt-1 font-bold">📝</span>
                                     <span>
-                                        <strong className="text-foreground">Registration:</strong> December 15th, 2025
+                                        <strong className="text-foreground">Registration:</strong> December 13th, 2025
                                     </span>
                                 </li>
                             </ul>
