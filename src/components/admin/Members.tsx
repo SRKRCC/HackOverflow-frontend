@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ApiService } from "@/lib/api";
 import { Download, Search, Filter, X, Users } from "lucide-react";
 import toast from "react-hot-toast";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 interface Member {
   id: number;
@@ -37,7 +37,6 @@ export default function Members() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Search and Filter states
   const [search, setSearch] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [collegeFilter, setCollegeFilter] = useState("");
@@ -45,7 +44,6 @@ export default function Members() {
   const [tShirtFilter, setTShirtFilter] = useState("");
   const [teamStatusFilter, setTeamStatusFilter] = useState<string>("all");
   
-  // Filter options
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({
     departments: [],
     colleges: [],
@@ -53,14 +51,11 @@ export default function Members() {
     tShirtSizes: [],
   });
   
-  // Pagination
   const [page, setPage] = useState(0);
-  const rowsPerPage = 20;
+  const rowsPerPage = 50;
   
-  // Show filters panel
   const [showFilters, setShowFilters] = useState(false);
 
-  // Load members
   const loadMembers = async () => {
     try {
       setLoading(true);
@@ -87,7 +82,6 @@ export default function Members() {
     }
   };
 
-  // Load filter options
   const loadFilterOptions = async () => {
     try {
       const options = await ApiService.admin.getMemberFilters();
@@ -102,13 +96,11 @@ export default function Members() {
     loadFilterOptions();
   }, []);
 
-  // Apply filters
   const handleApplyFilters = () => {
     setPage(0);
     loadMembers();
   };
 
-  // Clear all filters
   const handleClearFilters = () => {
     setSearch("");
     setDepartmentFilter("");
@@ -128,7 +120,6 @@ export default function Members() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Export to Excel
   const handleExportToExcel = () => {
     try {
       const exportData = members.map((member) => ({
@@ -146,25 +137,40 @@ export default function Members() {
         "Team SCC ID": member.team?.scc_id || "N/A",
       }));
 
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Members");
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Members");
 
-      // Auto-size columns
-      const maxWidth = 30;
-      const colWidths = Object.keys(exportData[0] || {}).map((key) => ({
-        wch: Math.min(
-          maxWidth,
-          Math.max(
-            key.length,
-            ...exportData.map((row) => String(row[key as keyof typeof row]).length)
-          )
-        ),
+      worksheet.columns = Object.keys(exportData[0] || {}).map((key) => ({
+        header: key,
+        key: key,
+        width: 20,
       }));
-      worksheet["!cols"] = colWidths;
+
+      exportData.forEach((data) => {
+        worksheet.addRow(data);
+      });
+
+
+      worksheet.columns.forEach((column, colIndex) => {
+        if (!column.header) return;
+        const headerLength = column.header.length;
+        const maxDataLength = Math.max(
+          ...exportData.map(row => String(Object.values(row)[colIndex]).length)
+        );
+        column.width = Math.min(Math.max(headerLength, maxDataLength) + 2, 30);
+      });
 
       const timestamp = new Date().toISOString().split("T")[0];
-      XLSX.writeFile(workbook, `members_${timestamp}.xlsx`);
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `members_${timestamp}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
       toast.success("Members exported successfully!");
     } catch (error) {
       console.error("Error exporting to Excel:", error);
@@ -172,7 +178,6 @@ export default function Members() {
     }
   };
 
-  // Pagination
   const startIndex = page * rowsPerPage;
   const paginatedMembers = members.slice(startIndex, startIndex + rowsPerPage);
   const hasPrevious = page > 0;
