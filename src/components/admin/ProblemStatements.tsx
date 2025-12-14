@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus,
-  Upload,
   Edit,
   Trash2,
   FileText,
@@ -12,6 +11,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Eye,
 } from 'lucide-react';
 import { ApiService } from '@/lib/api';
 
@@ -168,6 +168,8 @@ const ProblemStatements = () => {
   const [showCsvUpload, setShowCsvUpload] = useState(false);
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingStatement, setViewingStatement] = useState<ProblemStatement | null>(null);
   const [notification, setNotification] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -176,6 +178,12 @@ const ProblemStatements = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+
+  // Filter and search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<'psId' | 'title' | 'teamCount'>('psId');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -285,6 +293,11 @@ const ProblemStatements = () => {
     setShowEditForm(true);
   };
 
+  const handleView = (statement: ProblemStatement) => {
+    setViewingStatement(statement);
+    setShowViewModal(true);
+  };
+
   const handleDelete = async (psId: string) => {
     if (!window.confirm('Are you sure you want to delete this problem statement?')) {
       return;
@@ -338,11 +351,38 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
     window.URL.revokeObjectURL(url);
   };
 
+  // Filter and search logic
+  const filteredStatements = problemStatements.filter((statement) => {
+    const matchesSearch = searchQuery === '' ||
+      statement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      statement.psId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      statement.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = categoryFilter === 'all' || statement.category === categoryFilter;
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  // Sort logic
+  const sortedStatements = [...filteredStatements].sort((a, b) => {
+    let compareValue = 0;
+    
+    if (sortBy === 'psId') {
+      compareValue = a.psId.localeCompare(b.psId);
+    } else if (sortBy === 'title') {
+      compareValue = a.title.localeCompare(b.title);
+    } else if (sortBy === 'teamCount') {
+      compareValue = (a.teamCount || 0) - (b.teamCount || 0);
+    }
+    
+    return sortOrder === 'asc' ? compareValue : -compareValue;
+  });
+
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = problemStatements.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(problemStatements.length / itemsPerPage);
+  const currentItems = sortedStatements.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedStatements.length / itemsPerPage);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -418,18 +458,109 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
               className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <Plus size={20} />
-              <span className="hidden sm:inline">Add Single</span>
-              <span className="sm:hidden">Add</span>
             </button>
             
-            <button
+            {/* <button
               onClick={() => setShowCsvUpload(true)}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <Upload size={20} />
               <span className="hidden sm:inline">Upload CSV</span>
               <span className="sm:hidden">CSV</span>
+            </button> */}
+          </div>
+        </div>
+
+        {/* Filter and Search Controls */}
+        <div className="mb-6 space-y-4">
+          {/* Search Bar */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by PS ID, title, or description..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-800 dark:text-white transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          {/* Filters Row */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Category Filter */}
+            <select
+              value={categoryFilter}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-800 dark:text-white transition-all duration-200"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+
+            {/* Sort By */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'psId' | 'title' | 'teamCount')}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-800 dark:text-white transition-all duration-200"
+            >
+              <option value="psId">Sort by PS ID</option>
+              <option value="title">Sort by Title</option>
+              <option value="teamCount">Sort by Team Count</option>
+            </select>
+
+            {/* Sort Order */}
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:bg-gray-800 dark:text-white transition-all duration-200 flex items-center gap-2"
+              title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortOrder === 'asc' ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                </svg>
+              )}
+              <span className="hidden sm:inline">{sortOrder === 'asc' ? 'Ascending' : 'Descending'}</span>
             </button>
+
+            {/* Clear Filters */}
+            {(searchQuery || categoryFilter !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setCategoryFilter('all');
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 flex items-center gap-2"
+              >
+                <X size={16} />
+                <span>Clear Filters</span>
+              </button>
+            )}
+          </div>
+
+          {/* Results Count */}
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Showing {filteredStatements.length === 0 ? 0 : indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedStatements.length)} of {sortedStatements.length} problem statements
+            {(searchQuery || categoryFilter !== 'all') && (
+              <span className="ml-2 text-orange-600 dark:text-orange-400">
+                (filtered from {problemStatements.length} total)
+              </span>
+            )}
           </div>
         </div>
 
@@ -538,6 +669,13 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
                         <td className="px-4 py-4 whitespace-nowrap text-right">
                           <div className="flex gap-2 justify-end">
                             <button
+                              onClick={() => handleView(statement)}
+                              className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200"
+                              title="View Details"
+                            >
+                              <Eye size={16} />
+                            </button>
+                            <button
                               onClick={() => handleEdit(statement)}
                               className="p-2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200"
                               title="Edit"
@@ -563,7 +701,7 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
               {totalPages > 1 && (
                 <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, problemStatements.length)} of {problemStatements.length} entries
+                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, sortedStatements.length)} of {sortedStatements.length} entries
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -705,6 +843,121 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
                 </button>
               </div>
             </form>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* View Modal */}
+      {showViewModal && viewingStatement && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowViewModal(false)}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white dark:bg-gray-900 rounded-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl border border-orange-200 dark:border-gray-700"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Problem Statement Details
+                </h2>
+                <span className="text-sm font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-3 py-1 rounded-lg">
+                  {viewingStatement.psId}
+                </span>
+              </div>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Title */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  Title
+                </h3>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {viewingStatement.title}
+                </p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  Description
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  {viewingStatement.description}
+                </p>
+              </div>
+
+              {/* Category */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  Category
+                </h3>
+                <span className="inline-block text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-lg">
+                  {viewingStatement.category}
+                </span>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  Tags ({viewingStatement.tags.length})
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {viewingStatement.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-md font-medium"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Team Count */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                  Teams Selected
+                </h3>
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {viewingStatement.teamCount || 0} {viewingStatement.teamCount === 1 ? 'Team' : 'Teams'}
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleEdit(viewingStatement);
+                }}
+                className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              >
+                <Edit size={16} />
+                Edit Problem Statement
+              </button>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200"
+              >
+                Close
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
