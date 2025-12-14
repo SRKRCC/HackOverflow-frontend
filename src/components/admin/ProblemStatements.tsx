@@ -10,6 +10,8 @@ import {
   AlertCircle,
   CheckCircle,
   X,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import { ApiService } from '@/lib/api';
 
@@ -19,6 +21,7 @@ interface ProblemStatement {
   description: string;
   category: string;
   tags: string[];
+  teamCount?: number;
 }
 
 interface FormData {
@@ -169,6 +172,10 @@ const ProblemStatements = () => {
     type: 'success' | 'error';
     message: string;
   } | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -331,6 +338,51 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
     window.URL.revokeObjectURL(url);
   };
 
+  // Pagination calculations
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = problemStatements.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(problemStatements.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i);
+        }
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        pages.push(1);
+        pages.push('...');
+        pages.push(currentPage - 1);
+        pages.push(currentPage);
+        pages.push(currentPage + 1);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-orange-50 dark:from-black dark:to-black px-4 sm:px-6 py-8 sm:py-12 transition-colors duration-300">
       {/* Notification */}
@@ -405,77 +457,152 @@ Example Problem 2,This is a sample problem description for AI/ML,AI/ML,"Python, 
             </button>
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {problemStatements.map((statement) => (
-              <motion.div
-                key={statement.psId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 border border-orange-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 hover:border-orange-300 dark:hover:border-gray-600"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <span className="text-xs font-semibold text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-3 py-1 rounded-lg">
-                    {statement.psId}
-                  </span>
-                  <div className="flex gap-2">
+          <>
+            {/* Table Container */}
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-orange-200 dark:border-gray-700 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-orange-50 dark:bg-gray-800 border-b border-orange-200 dark:border-gray-700">
+                    <tr>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        PS ID
+                      </th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Title
+                      </th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Category
+                      </th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Tags
+                      </th>
+                      <th className="px-4 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Teams
+                      </th>
+                      <th className="px-4 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {currentItems.map((statement, index) => (
+                      <motion.tr
+                        key={statement.psId}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="hover:bg-orange-50 dark:hover:bg-gray-800 transition-colors duration-150"
+                      >
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 rounded">
+                            {statement.psId}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white max-w-xs">
+                            <div className="line-clamp-2" title={statement.title}>
+                              {statement.title}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2" title={statement.description}>
+                              {statement.description}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 rounded">
+                            {statement.category}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="flex flex-wrap gap-1 max-w-xs">
+                            {statement.tags.slice(0, 3).map((tag, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                            {statement.tags.length > 3 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                                +{statement.tags.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                            {statement.teamCount || 0}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right">
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={() => handleEdit(statement)}
+                              className="p-2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200"
+                              title="Edit"
+                            >
+                              <Edit size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(statement.psId)}
+                              className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                              title="Delete"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, problemStatements.length)} of {problemStatements.length} entries
+                  </div>
+                  <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleEdit(statement)}
-                      className="p-2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200"
-                      title="Edit"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                     >
-                      <Edit size={16} />
+                      <ChevronLeft size={20} />
                     </button>
+                    
+                    {generatePageNumbers().map((page, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => typeof page === 'number' && handlePageChange(page)}
+                        disabled={page === '...'}
+                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                          page === currentPage
+                            ? 'bg-orange-600 text-white'
+                            : page === '...'
+                            ? 'text-gray-400 dark:text-gray-500 cursor-default'
+                            : 'border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                    
                     <button
-                      onClick={() => handleDelete(statement.psId)}
-                      className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
-                      title="Delete"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                     >
-                      <Trash2 size={16} />
+                      <ChevronRight size={20} />
                     </button>
                   </div>
                 </div>
-              
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2 overflow-hidden">
-                <span className="block" style={{
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden'
-                }}>
-                  {statement.title}
-                </span>
-              </h3>
-              
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 overflow-hidden">
-                <span className="block" style={{
-                  display: '-webkit-box',
-                  WebkitLineClamp: 3,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden'
-                }}>
-                  {statement.description}
-                </span>
-              </p>
-                
-                <div className="mb-4">
-                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-lg">
-                    {statement.category}
-                  </span>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {statement.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-md font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-            </motion.div>
-          ))}
-          </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 
