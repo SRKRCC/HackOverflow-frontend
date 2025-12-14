@@ -13,6 +13,7 @@ export default function TeamsTable() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [search, setSearch] = useState("");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [themeFilter, setThemeFilter] = useState<string>("all");
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -156,7 +157,14 @@ export default function TeamsTable() {
     setPendingPaymentStatus(null);
   };
 
-  // Filter teams by ID, Title, and Payment Status
+  // Get unique themes/categories for filter
+  const uniqueThemes = Array.from(new Set(
+    teams
+      .map(team => team?.category)
+      .filter(Boolean)
+  )).sort();
+
+  // Filter teams by ID, Title, Payment Status, and Theme
   const filteredTeams = teams.filter((team) => {
     const matchesSearch = [team.teamId.toString(), team.title.toLowerCase()].some((value) =>
       value.includes(search.toLowerCase())
@@ -166,7 +174,10 @@ export default function TeamsTable() {
       (paymentFilter === "verified" && team.paymentVerified) ||
       (paymentFilter === "pending" && !team.paymentVerified);
     
-    return matchesSearch && matchesPayment;
+    const matchesTheme = themeFilter === "all" ||
+      team?.category === themeFilter;
+    
+    return matchesSearch && matchesPayment && matchesTheme;
   });
 
   // Pagination logic
@@ -198,6 +209,23 @@ export default function TeamsTable() {
             focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-black 
             text-sm sm:text-base text-gray-800 dark:text-gray-100"
           />
+          <select
+            value={themeFilter}
+            onChange={(e) => {
+              setThemeFilter(e.target.value);
+              setPage(0);
+            }}
+            className="px-3 sm:px-4 py-2 border border-orange-300 dark:border-gray-600 rounded-lg shadow-sm 
+            focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white dark:bg-black 
+            text-sm sm:text-base text-gray-800 dark:text-gray-100"
+          >
+            <option value="all">All Themes</option>
+            {uniqueThemes.map((theme) => (
+              <option key={theme} value={theme}>
+                {theme}
+              </option>
+            ))}
+          </select>
           <select
             value={paymentFilter}
             onChange={(e) => {
@@ -310,7 +338,7 @@ export default function TeamsTable() {
                       </div>
                       <div>
                         <span className="font-medium text-gray-600 dark:text-gray-400">Problem Statement:</span>
-                        <div className="text-gray-800 dark:text-gray-200 font-medium">{selectedTeam.problem_statement?.psId}</div>
+                        <div className="text-gray-800 dark:text-gray-200 font-medium">{selectedTeam?.category}</div>
                       </div>
                     </div>
                   </div>
@@ -517,6 +545,7 @@ export default function TeamsTable() {
                 <th className="px-4 py-3 text-left">SCC ID</th>
                 <th className="px-4 py-3 text-left">Team Name</th>
                 <th className="px-4 py-3 text-left">Problem Stmt</th>
+                <th className="px-4 py-3 text-left">Theme</th>
                 <th className="px-4 py-3 text-left">Member Count</th>
                 <th className="px-4 py-3 text-left">Payment</th>
               </tr>
@@ -538,6 +567,11 @@ export default function TeamsTable() {
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.scc_id}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.title}</td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">{team.ps_id}</td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-lg bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                        {team?.category || 'N/A'}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-gray-800 dark:text-gray-100">
                       {team.member_count || 0}
                     </td>
@@ -555,7 +589,7 @@ export default function TeamsTable() {
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center px-4 py-6 text-gray-500 dark:text-gray-400 italic"
                   >
                     No matching teams found

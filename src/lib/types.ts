@@ -30,7 +30,7 @@ export interface Team {
   title: string;
   ps_id?: number;
   gallery_images?: string[];
-  problem_statement?: ProblemStatement;
+  category?: string;
   members: Member[];
   paymentVerified?: boolean;
   tasks?: Task[];
