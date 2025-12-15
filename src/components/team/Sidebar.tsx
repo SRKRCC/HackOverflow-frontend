@@ -7,6 +7,7 @@ import {
   Home,
   LogOut,
   Megaphone,
+  Info,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -87,6 +88,7 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },
     { path: "/team/gallery", label: "Gallery", icon: <Images size={20} /> },
     { path: "/team/announcements", label: "Announcements", icon: <Megaphone size={20} /> },
+    { path: "/team/general", label: "General", icon: <Info size={20} /> },
   ];
 
   const letterAnimation = {

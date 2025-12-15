@@ -11,7 +11,10 @@ import type {
   RegistrationResponse,
   UpdateTeamResponse,
   UpdateMemberResponse,
-  DeleteTeamResponse
+  DeleteTeamResponse,
+  GeneralInfoResponse,
+  GeneralInfoUpdateRequest,
+  GeneralInfoUpdateResponse
 } from '../types';
 
 /**
@@ -290,6 +293,16 @@ export class ApiService {
 
     logout: async (): Promise<{ message: string }> => {
       const response = await apiClient.post('/teams/logout');
+      return response.data;
+    },
+
+    getGeneralInfo: async (): Promise<GeneralInfoResponse> => {
+      const response = await apiClient.get('/teams/general-info');
+      return response.data;
+    },
+
+    updateGeneralInfo: async (data: GeneralInfoUpdateRequest): Promise<GeneralInfoUpdateResponse> => {
+      const response = await apiClient.patch('/teams/general-info', data);
       return response.data;
     }
   };

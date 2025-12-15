@@ -1,10 +1,7 @@
-// Simple types matching your backend API exactly
-
-// Auth types
 export interface LoginRequest {
   role: 'admin' | 'team';
-  username: string; // For admin: email, For team: scc_id 
-  password: string; // For admin: password, For team: scc_password
+  username: string;
+  password: string;
 }
 
 export interface LoginResponse {
@@ -14,15 +11,13 @@ export interface LoginResponse {
   token: string;
 }
 
-// User types
 export interface User {
   id: number;
   role: 'admin' | 'team';
-  email?: string;    // For admin users
-  scc_id?: string;   // For team users (e.g., "SCC001")
+  email?: string;
+  scc_id?: string;
 }
 
-// Team types  
 export interface Team {
   id: number;
   teamId : number ;
@@ -49,6 +44,9 @@ export interface Member {
   attendance: number;
   tShirtSize?: string;
   teamId?: number;
+  certification_name?: string | null;
+  roll_number?: string | null;
+  gender?: string | null;
 }
 
 export interface ProblemStatement {
@@ -81,7 +79,6 @@ export interface Task {
   };
 }
 
-// Leaderboard
 export interface LeaderboardEntry {
   id: number; 
   title: string;
@@ -90,7 +87,6 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
-// Request types
 export interface CreateTaskRequest {
   title: string;
   description?: string;
@@ -125,7 +121,6 @@ export type Announcement = {
   endTime: string;
 };
 
-// API Response types for PATCH operations
 export interface UpdateTeamResponse {
   success: boolean;
   message: string;
@@ -140,5 +135,29 @@ export interface UpdateMemberResponse {
 
 export interface DeleteTeamResponse {
   success: boolean;
+  message: string;
+}
+
+export interface GeneralInfoResponse {
+  success: boolean;
+  data: {
+    team: { id: number; title: string };
+    members: Member[];
+  };
+  message: string;
+}
+
+export interface GeneralInfoUpdateRequest {
+  members: Array<{
+    id: number;
+    certification_name: string;
+    roll_number: string;
+    gender: string;
+  }>;
+}
+
+export interface GeneralInfoUpdateResponse {
+  success: boolean;
+  data: Member[];
   message: string;
 }
