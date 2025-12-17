@@ -94,16 +94,16 @@ const Navbar = ({ className = "" }) => {
                             </Button>
                         ) : (
                             <div className="flex items-center space-x-3">
-                                {/* <Link to="/login">
-                                    <Button variant="outline" className="text-white bg-primary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
+                                <Link to="/login">
+                                    <Button variant="outline" className="bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
                                         Login
                                     </Button>
-                                </Link> */}
-                                <Link to="/register">
+                                </Link>
+                                {/* <Link to="/register">
                                     <Button className="bg-gradient-to-r from-primary to-secondary hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
                                         Register
                                     </Button>
-                                </Link>
+                                </Link> */}
                             </div>
                         )}
                     </div>
