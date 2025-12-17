@@ -213,25 +213,6 @@ export default function LoginPage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between">
-                                <label className="inline-flex items-center gap-3 text-sm cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        className="h-4 w-4 rounded border-border text-primary focus:ring-primary/50"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                    />
-                                    <span className="text-muted-foreground">Remember me</span>
-                                </label>
-                                <button 
-                                    type="button"
-                                    onClick={() => navigate('/admin-login')}
-                                    className="text-sm text-primary hover:text-primary/80 transition-colors font-medium"
-                                >
-                                    Admin Login
-                                </button>
-                            </div>
-
                             {error ? (
                                 <div
                                     id="login-error"

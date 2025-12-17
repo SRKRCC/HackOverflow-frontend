@@ -1,37 +1,16 @@
-import { useEffect, useState } from "react";
-import { ApiService } from "@/lib/api";
-
-interface ProblemStatementData {
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-}
+import { useEffect } from "react";
+import { useTeamStore } from "@/lib/stores/team";
 
 function ProblemStatement() {
-  const [ps, setPs] = useState<ProblemStatementData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const getProblemStatement = async () => {
-    try {
-      setLoading(true);
-      const response = await ApiService.team.getProblemStatement();
-      setPs(response);
-      
-    } catch (err: any) {
-      console.error("Error fetching problem statement:", err);
-      setError("Failed to load problem statement.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { problemStatement: ps, loading, error, fetchProblemStatements } = useTeamStore();
 
   useEffect(() => {
-    getProblemStatement();
-  }, []);
+    if (!ps) {
+      fetchProblemStatements();
+    }
+  }, [ps, fetchProblemStatements]);
 
-  if (loading) {
+  if (loading && !ps) {
     return (
       <div className="flex items-center justify-center h-screen text-lg font-semibold text-gray-600">
         Loading problem statement...
@@ -49,7 +28,6 @@ function ProblemStatement() {
 
   return (
     <>
-      {/* Floating Animated Background */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden">
         <svg
           className="absolute top-10 left-5 sm:left-15 w-20 h-20 sm:w-32 sm:h-32 text-primary animate-float"
@@ -115,7 +93,6 @@ function ProblemStatement() {
         </svg>
       </div>
 
-      {/* Main Content */}
       <div className="relative z-10 md:pb-6">
         <header className="relative py-6 sm:py-8 px-4 mb-4 sm:mb-5 text-center">
           <div className="inline-flex items-center justify-center mb-3 sm:mb-4">
@@ -132,7 +109,7 @@ function ProblemStatement() {
             <div className="w-8 sm:w-12 h-1 bg-gradient-to-l from-transparent to-secondary rounded-full"></div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black mb-3 sm:pb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent px-2">
+          <h1 className="text-3xl sm:text-3xl md:text-5xl font-black mb-3 sm:pb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent px-2">
             {ps.title}
           </h1>
 
@@ -142,7 +119,6 @@ function ProblemStatement() {
         </header>
 
         <div className="relative max-w-5xl mx-auto px-4">
-          {/* Card Border Decoration */}
           <div className="bg-card text-card-foreground p-6 sm:p-8 md:p-10 rounded-xl shadow-lg border border-border relative overflow-hidden">
             <div className="absolute inset-0 opacity-[0.03]">
               <svg
@@ -196,7 +172,6 @@ function ProblemStatement() {
                 {ps.description}
               </p>
 
-              {/* Tags */}
               {ps.tags && ps.tags.length > 0 && (
                 <div className="mt-5 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-3">
                   {ps.tags.map((tag, i) => (

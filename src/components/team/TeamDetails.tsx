@@ -1,35 +1,16 @@
-import { ApiService } from "@/lib/api";
-import type { Member } from "@/lib/types";
-import { useState, useEffect } from "react";
-
-interface TeamDetails {
-  teamId: number;
-  scc_id: string;
-  title: string;
-  members: Member[];
-}
+import { useTeamStore } from "@/lib/stores/team";
+import { useEffect } from "react";
 
 export default function TeamDetails() {
-  const [teamDetails, setTeamDetails] = useState<TeamDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const getTeamMembers = async () => {
-    try {
-      setLoading(true);
-      const response = (await ApiService.team.getDetails()) as TeamDetails;
-      setTeamDetails(response);
-    } catch (error) {
-      console.error("Failed to fetch team details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { team: teamDetails, loading, fetchTeam } = useTeamStore();
 
   useEffect(() => {
-    getTeamMembers();
-  }, []);
+    if (!teamDetails) {
+      fetchTeam();
+    }
+  }, [teamDetails, fetchTeam]);
 
-  if (loading) {
+  if (loading && !teamDetails) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -52,13 +33,9 @@ export default function TeamDetails() {
     );
   }
 
-  // Profile image removed — replaced by a name overlay and cleaner card layout
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Header */}
       <div className="relative bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 border-b border-border/40">
-        {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-secondary/10 to-transparent rounded-full blur-3xl"></div>
@@ -66,14 +43,12 @@ export default function TeamDetails() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            {/* Team title */}
             <h1 className="text-4xl md:text-6xl font-black mb-6">
               <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 {teamDetails.title}
               </span>
             </h1>
 
-            {/* Team stats */}
             <div className="flex flex-wrap justify-center gap-8 mb-8">
               <div className="bg-card/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border/40 shadow-sm">
                 <div className="text-2xl font-bold text-primary">{teamDetails.scc_id}</div>
@@ -88,21 +63,15 @@ export default function TeamDetails() {
         </div>
       </div>
 
-      {/* Team Members Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-
-        {/* Responsive grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {teamDetails.members.map((member) => {
-            // Single theme color per user's request — use primary with subtle opacities
 
             return (
               <div
                 key={member.id}
                 className={`group relative bg-card rounded-3xl p-6 border border-border/40 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-visible`}
               >
-                {/* Removed ribbon — maintaining clean, single-color design */}
-                {/* Subtle pattern overlay */}
                 <div className="absolute inset-0 rounded-3xl opacity-5 z-0 pointer-events-none">
                   <div 
                     className="w-full h-full"
@@ -114,19 +83,16 @@ export default function TeamDetails() {
                 </div>
 
                   <div className="relative z-10">
-                  {/* Name overlay — top-left, slightly outside card border */}
                     <div className="absolute -top-15 left-1/2 -translate-x-1/2 z-40">
                     <div className="px-4 py-2 text-lg rounded-full bg-background border border-primary/50 text-primary font-bold max-w-[100%] truncate shadow-sm">
                       {member.name}
                     </div>
                   </div>
 
-                  {/* Email — full width row */}
                   <div className="mt-6 w-full bg-card rounded-xl p-3 border border-border/30">
                     <p className="text-sm font-medium text-foreground truncate">{member.email}</p>
                   </div>
 
-                  {/* Details grid — 2 columns x 2 rows: Branch, Phone, College, Year */}
                   <div className="mt-4 grid grid-cols-2 gap-3">
                     <div className="grid grid-cols-[48px_1fr] items-center gap-1 p-3 rounded-xl bg-card border border-border/30">
                       <div className={`w-9 h-9 rounded-lg bg-primary/30 flex items-center justify-center flex-shrink-0 text-white`}> 
@@ -184,12 +150,10 @@ export default function TeamDetails() {
           })}
         </div>
 
-        {/* Empty state for smaller teams */}
         {teamDetails.members.length === 0 && (
           <div className="text-center py-16">
             <div className="w-28 h-28 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-border/30 shadow-sm">
               <div className="w-20 h-20 rounded-xl bg-card/40 flex items-center justify-center text-foreground/70"> 
-                {/* decorative empty cell - no logos */}
                 <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-primary/20 to-secondary/20" />
               </div>
             </div>

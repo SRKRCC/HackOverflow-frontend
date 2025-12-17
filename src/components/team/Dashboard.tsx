@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTeamStore } from "../../lib/stores/team";
 import { useAuth } from "../../lib/hooks";
 import {
@@ -10,44 +11,27 @@ import {
   AlertCircle,
   ListTodo,
 } from "lucide-react";
-import { ApiService } from "@/lib/api";
-import type { Announcement } from "@/lib/types";
 
 const TeamDashboard = () => {
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const {
     team,
-    tasks = [],
+    problemStatement,
     loading,
     error,
     fetchTeam,
-    fetchTasks,
+    announcements,
+    fetchAnnouncements,
   } = useTeamStore();
-
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "team") {
       fetchTeam();
-      fetchTasks();
-      getAnnouncements();
+      fetchAnnouncements();
     }
-  }, [isAuthenticated, user, fetchTeam, fetchTasks]);
+  }, [isAuthenticated, user, fetchTeam, fetchAnnouncements]);
 
-  const getAnnouncements = async () => {
-    try {
-      setAnnouncementsLoading(true);
-      const response = await ApiService.team.getAnnouncements();
-      setAnnouncements(response || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setAnnouncementsLoading(false);
-    }
-  };
-
-  // Helper to format ISO datetime to date string
   const formatDate = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleDateString("en-US", {
@@ -57,7 +41,6 @@ const TeamDashboard = () => {
     });
   };
 
-  // Helper to format ISO datetime to 12-hour time with AM/PM
   const formatTime = (isoString: string) => {
     const date = new Date(isoString);
     return date.toLocaleTimeString("en-US", {
@@ -67,30 +50,36 @@ const TeamDashboard = () => {
     });
   };
 
+  const tasks = team?.tasks || [];
+
   const stats = [
     {
       title: "Total Tasks",
       value: tasks.length,
       icon: <ClipboardList className="w-6 h-6" />,
       gradient: "from-secondary/20 to-secondary/5",
+      filter: "All",
     },
     {
       title: "Completed",
       value: tasks.filter((t) => t.status === "Completed").length,
       icon: <CheckCircle className="w-6 h-6" />,
       gradient: "from-chart-2/20 to-chart-2/5",
-    },
-    {
-      title: "Pending",
-      value: tasks.filter((t) => t.status === "Pending").length,
-      icon: <Hourglass className="w-6 h-6" />,
-      gradient: "from-chart-1/20 to-chart-1/5",
+      filter: "Completed",
     },
     {
       title: "In Review",
       value: tasks.filter((t) => t.status === "InReview").length,
       icon: <Timer className="w-6 h-6" />,
       gradient: "from-primary/20 to-primary/5",
+      filter: "InReview",
+    },
+    {
+      title: "Pending",
+      value: tasks.filter((t) => t.status === "Pending").length,
+      icon: <Hourglass className="w-6 h-6" />,
+      gradient: "from-chart-1/20 to-chart-1/5",
+      filter: "Pending",
     },
   ];
 
@@ -110,13 +99,10 @@ const TeamDashboard = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="min-h-screen bg-gray-100 dark:bg-transparent p-4 sm:p-6 md:p-8 relative z-10">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="mb-4 sm:mb-8">
             <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 sm:gap-4">
-                {/* Left Section */}
                 <div className="flex-1">
-                  {/* Animated Gradient Heading */}
                   <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
                     <span
                       className="bg-clip-text text-transparent bg-gradient-to-r 
@@ -126,7 +112,6 @@ const TeamDashboard = () => {
                     </span>
                   </h1>
 
-                  {/* Subtitle with animated gradient team name */}
                   <p className="text-sm sm:text-base text-muted-foreground">
                     Welcome back,{" "}
                     <span
@@ -138,7 +123,6 @@ const TeamDashboard = () => {
                   </p>
                 </div>
 
-                {/* Right Side Details */}
                 {team && (
                   <div className="flex flex-wrap gap-3">
                     <div className="px-2 py-2 rounded-lg bg-card/40 border border-border/50 backdrop-blur-sm">
@@ -182,7 +166,7 @@ const TeamDashboard = () => {
                               "linear-gradient(90deg, oklch(0.85 0.18 265), oklch(0.60 0.23 265))",
                           }}
                         >
-                          #{team.ps_id}
+                          #{problemStatement?.psId || team.ps_id}
                         </p>
                       </div>
                     )}
@@ -199,58 +183,34 @@ const TeamDashboard = () => {
             </div>
           )}
 
-          {/* Enhanced Stats Grid - Shiny, Reflective, Light */}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-10">
-            {stats.map((stat, index) => {
-              const gradients = [
-                "radial-gradient(circle at center, oklch(0.488 0.243 264.376), oklch(0.288 0.243 264.376))",
-                "radial-gradient(circle at center, oklch(0.696 0.17 162.48), oklch(0.496 0.17 162.48))",
-                "radial-gradient(circle at center, oklch(0.627 0.265 303.9), oklch(0.427 0.265 303.9))",
-                "radial-gradient(circle at center, oklch(0.645 0.246 16.439), oklch(0.445 0.246 16.439))",
-              ];
-
-              return (
-                <div
-                  key={index}
-                  className="group relative overflow-hidden rounded-xl p-5 hover:scale-[1.03] transition-all duration-300 cursor-pointer shadow-xl animate-radial-pulse"
-                  style={{
-                    background: gradients[index % 4],
-                    backgroundSize: "150% 150%",
-                  }}
-                >
-                  {/* Soft glow overlay */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700 animate-radial-pulse"
-                    style={{
-                      background: gradients[index % 4],
-                      backgroundSize: "160% 160%",
-                    }}
-                  />
-
-                  <div className="relative z-10">
-                    <div className="text-white mb-3 text-3xl opacity-90 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 w-fit">
-                      {stats[index % 4].icon}
-                    </div>
-
-                    <p className="text-white/70 text-xs font-semibold mb-2 uppercase tracking-wide">
+            {stats.map((stat, index) => (
+              <div
+                key={index}
+                onClick={() => navigate(`/team/tasks?filter=${stat.filter}`)}
+                className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-xl p-5 hover:scale-105 transition-transform duration-300 cursor-pointer`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
                       {stat.title}
                     </p>
-
-                    <p className="text-4xl font-bold text-white tracking-tight group-hover:scale-105 transition-transform duration-300 origin-left">
+                    <p className="text-4xl font-bold text-foreground truncate">
                       {stat.value}
                     </p>
                   </div>
+                  <div className="text-4xl opacity-30 shrink-0 ml-2">
+                    {stat.icon}
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
-          {/* Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* My Tasks - Primary Color Theme (Amber) */}
             <section className="relative rounded-2xl overflow-hidden group">
               <div className="relative bg-card/30 backdrop-blur-md border border-primary/30 rounded-2xl p-6 hover:border-primary/60 transition-all duration-300 hover:bg-card/50">
-                {/* Subtle glow on hover */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
@@ -279,7 +239,8 @@ const TeamDashboard = () => {
                       tasks.slice(0, 8).map((task) => (
                         <div
                           key={task.id}
-                          className="group/task bg-card/40 sm:bg-card/20 sm:hover:bg-card/40 border border-primary/30 sm:border-border/40 rounded-xl p-4 transition-all duration-300 sm:hover:border-primary/50 shadow-lg sm:shadow-none sm:hover:shadow-lg"
+                          onClick={() => navigate(`/team/tasks?filter=${task.status}`)}
+                          className="group/task bg-card/40 sm:bg-card/20 sm:hover:bg-card/40 border border-primary/30 sm:border-border/40 rounded-xl p-4 transition-all duration-300 sm:hover:border-primary/50 shadow-lg sm:shadow-none sm:hover:shadow-lg cursor-pointer"
                         >
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex-1">
@@ -310,7 +271,6 @@ const TeamDashboard = () => {
                             <span
                               className="px-3 py-1 text-xs font-semibold uppercase whitespace-nowrap w-fit rounded-lg relative"
                               style={{
-                                // FIRST: border layer
                                 background:
                                   (task.status === "Completed"
                                     ? "radial-gradient(circle at center, oklch(0.696 0.17 162.48), oklch(0.496 0.17 162.48))"
@@ -324,11 +284,9 @@ const TeamDashboard = () => {
                                 border: "2px solid transparent",
                                 borderRadius: "6px",
 
-                                // TEXT GRADIENT
                                 WebkitBackgroundClip: "text",
                                 color: "transparent",
 
-                                // INNER GLOW
                                 boxShadow:
                                   "0 0 10px " +
                                   (task.status === "Completed"
@@ -356,10 +314,8 @@ const TeamDashboard = () => {
               </div>
             </section>
 
-            {/* Announcements - Secondary Color Theme (Tech Blue) */}
             <section className="relative rounded-2xl overflow-hidden group">
               <div className="relative bg-card/30 backdrop-blur-md border border-secondary/30 rounded-2xl p-6 hover:border-secondary/60 transition-all duration-300 hover:bg-card/50">
-                {/* Subtle glow on hover */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
@@ -379,16 +335,7 @@ const TeamDashboard = () => {
                   </div>
 
                   <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
-                    {announcementsLoading ? (
-                      <div className="min-h-[360px] flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="w-12 h-12 border-4 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                          <p className="text-sm text-muted-foreground">
-                            Loading announcements...
-                          </p>
-                        </div>
-                      </div>
-                    ) : announcements.length > 0 ? (
+                    {announcements && announcements.length > 0 ? (
                       announcements.slice(0, 8).map((announcement) => (
                         <div
                           key={announcement.id}
@@ -402,11 +349,11 @@ const TeamDashboard = () => {
                               {announcement.description}
                             </p>
                             <div className="space-y-2">
-                              <div className="flex items-center justify-between text-xs">
+                              <div className="flex items-center text-xs">
                                 <span className="text-green-600 dark:text-green-400 font-semibold">
                                   Start:
                                 </span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 ml-2">
                                   <span className="text-foreground/80">
                                     {formatDate(announcement.startTime)}
                                   </span>
@@ -415,11 +362,11 @@ const TeamDashboard = () => {
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex items-center justify-between text-xs">
+                              <div className="flex items-center text-xs">
                                 <span className="text-red-600 dark:text-red-400 font-semibold">
                                   End:
                                 </span>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 ml-2">
                                   <span className="text-foreground/80">
                                     {formatDate(announcement.endTime)}
                                   </span>

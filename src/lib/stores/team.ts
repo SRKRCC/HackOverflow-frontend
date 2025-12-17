@@ -1,20 +1,17 @@
 import { create } from 'zustand';
 import { ApiService } from '../api';
 import { auth } from '../auth';
-import type { Team, Task, ProblemStatement, TaskSubmissionRequest, Announcement, GeneralInfoResponse, Member } from '../types';
+import type { Team, ProblemStatement, Announcement, GeneralInfoResponse, Member } from '../types';
 
 interface TeamStore {
   team: Team | null;
-  tasks: Task[];
-  problemStatements: ProblemStatement[];
+  problemStatement: ProblemStatement | null;
   announcements: Announcement[];
   generalInfo: GeneralInfoResponse | null;
   loading: boolean;
   error: string | null;
   
   fetchTeam: () => Promise<void>;
-  fetchTasks: () => Promise<void>;
-  submitTask: (taskId: number, submission: TaskSubmissionRequest) => Promise<void>;
   fetchProblemStatements: () => Promise<void>;
   fetchAnnouncements: () => Promise<void>;
   fetchGeneralInfo: () => Promise<void>;
@@ -25,8 +22,7 @@ interface TeamStore {
 
 export const useTeamStore = create<TeamStore>((set) => ({
   team: null,
-  tasks: [],
-  problemStatements: [],
+  problemStatement: null,
   announcements: [],
   generalInfo: null,
   loading: false,
@@ -49,49 +45,23 @@ export const useTeamStore = create<TeamStore>((set) => ({
     try {
       set({ loading: true, error: null });
       const team = await ApiService.team.getDetails();
-      set({ team, loading: false });
+      const problemStatement = team.problem_statement || null;
+      set({ team, problemStatement, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
-    }
-  },
-  
-  fetchTasks: async () => {
-    const user = auth.getUser();
-    if (!user || user.role !== 'team') return;
-    
-    try {
-      set({ loading: true, error: null });
-      const tasks = await ApiService.team.getTasks();
-      set({ tasks, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
-    }
-  },
-  
-  submitTask: async (taskId, submission) => {
-    const user = auth.getUser();
-    if (!user || user.role !== 'team') return;
-    
-    try {
-      set({ loading: true, error: null });
-      const result = await ApiService.team.submitTask(taskId, submission);
-      set(state => ({
-        tasks: state.tasks.map(task => 
-          task.id === taskId ? result.task : task
-        ),
-        loading: false
-      }));
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
-      throw error;
     }
   },
   
   fetchProblemStatements: async () => {
+    const state = useTeamStore.getState();
+    if (state.problemStatement) {
+      return;
+    }
+    
     try {
       set({ loading: true, error: null });
-      const problemStatements = await ApiService.public.getProblemStatements();
-      set({ problemStatements, loading: false });
+      const problemStatement = await ApiService.team.getProblemStatement();
+      set({ problemStatement, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }

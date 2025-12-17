@@ -26,6 +26,7 @@ export interface Team {
   ps_id?: number;
   gallery_images?: string[];
   category?: string;
+  problem_statement?: ProblemStatement;
   members: Member[];
   paymentVerified?: boolean;
   tasks?: Task[];

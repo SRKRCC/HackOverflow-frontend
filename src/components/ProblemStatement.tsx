@@ -20,7 +20,6 @@ const ProblemStatements: React.FC = () => {
         const data = await ApiService.public.getProblemStatements()
         setProblemStatements(data)
         
-        // Extract unique categories for filter dropdown
         const categories = [...new Set(data.map(ps => ps.category).filter(Boolean))]
         setAvailableCategories(categories.sort())
       } catch (err) {
@@ -34,7 +33,6 @@ const ProblemStatements: React.FC = () => {
     fetchProblemStatements()
   }, [])
 
-  // Handle keyboard events for modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && selectedPS) {
@@ -44,7 +42,7 @@ const ProblemStatements: React.FC = () => {
 
     if (selectedPS) {
       document.addEventListener("keydown", handleKeyDown)
-      document.body.style.overflow = "hidden" // Prevent background scrolling
+      document.body.style.overflow = "hidden"
     }
 
     return () => {
@@ -79,7 +77,6 @@ const ProblemStatements: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background/50 via-muted/30 to-muted/30 px-6 lg:px-12 py-10">
-      {/* Header */}
       <div className="text-center mb-12">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-fade-in">
           Problem Statements
@@ -89,10 +86,8 @@ const ProblemStatements: React.FC = () => {
         </p>
       </div>
 
-      {/* Search and Filters */}
       <div className="flex flex-col lg:flex-row gap-4 justify-center mb-8">
         <div className="flex flex-col sm:flex-row gap-4 flex-1 max-w-4xl">
-          {/* Search Input */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <input
@@ -104,7 +99,6 @@ const ProblemStatements: React.FC = () => {
             />
           </div>
           
-          {/* Category Filter */}
           <div className="relative min-w-[200px]">
             <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
@@ -126,7 +120,7 @@ const ProblemStatements: React.FC = () => {
             </select>
           </div>
           
-          {/* Sort By */}
+
           <div className="relative min-w-[180px]">
             <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
@@ -144,9 +138,8 @@ const ProblemStatements: React.FC = () => {
             <option value="category">Sort by Category</option>
             </select>
           </div>
-        </div>        {/* Action Buttons */}
+        </div>
         <div className="flex gap-3">
-          {/* Clear Filters */}
           {(searchQuery || categoryFilter) && (
             <button
               onClick={() => {
@@ -159,7 +152,6 @@ const ProblemStatements: React.FC = () => {
             </button>
           )}
           
-          {/* Refresh Button */}
           <button
             onClick={() => window.location.reload()}
             className="px-5 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20 rounded-xl hover:from-primary/20 hover:to-secondary/20 transition-all duration-200 shadow-sm hover:shadow-md flex items-center gap-2 font-medium"
@@ -171,7 +163,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       </div>
 
-      {/* Loading State */}
       {loading && (
         <div className="flex flex-col justify-center items-center py-20">
           <div className="relative">
@@ -183,7 +174,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       )}
 
-      {/* Error State */}
       {error && (
         <div className="text-center py-20">
           <div className="text-red-500 mb-4">⚠️ {error}</div>
@@ -196,7 +186,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       )}
 
-      {/* Main Table */}
       {!loading && !error && filteredData.length > 0 && (
         <div className="overflow-hidden bg-card/90 backdrop-blur-md shadow-2xl rounded-2xl border border-border/50 animate-fade-in">
           <div className="overflow-x-auto">
@@ -269,7 +258,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       )}
 
-      {/* No Results State */}
       {!loading && !error && filteredData.length === 0 && problemStatements.length > 0 && (
         <div className="text-center py-16 bg-card/50 backdrop-blur-sm rounded-2xl border border-border">
           <div className="flex justify-center mb-4">
@@ -291,7 +279,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       )}
 
-      {/* Empty State */}
       {!loading && !error && problemStatements.length === 0 && (
         <div className="text-center py-16 bg-card/50 backdrop-blur-sm rounded-2xl border border-border">
           <div className="flex justify-center mb-4">
@@ -304,7 +291,6 @@ const ProblemStatements: React.FC = () => {
         </div>
       )}
 
-      {/* Modal Overlay */}
       {selectedPS && (
         <div 
           className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4"
@@ -316,7 +302,6 @@ const ProblemStatements: React.FC = () => {
           }}
         >
           <div className="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-fade-in">
-            {/* Header */}
             <div className="flex justify-between items-center px-6 py-4 rounded-t-2xl bg-primary text-primary-foreground">
               <div>
                 <h2 className="text-xl font-bold">Problem Statement Details</h2>
@@ -331,22 +316,18 @@ const ProblemStatements: React.FC = () => {
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-6 max-h-[calc(90vh-80px)] overflow-y-auto">
               <div className="space-y-6">
-                {/* Title */}
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">{selectedPS.title}</h3>
                 </div>
 
-                {/* Category Badge */}
                 <div>
                   <span className="inline-block px-4 py-2 rounded-full bg-secondary/20 text-secondary font-medium text-sm">
                     {selectedPS.category}
                   </span>
                 </div>
 
-                {/* Description */}
                 <div>
                   <h4 className="font-semibold text-foreground mb-3">Description</h4>
                   <div className="p-4 bg-muted/50 rounded-lg border border-border">
@@ -356,7 +337,6 @@ const ProblemStatements: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Tags */}
                 <div>
                   <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
                     <Tag className="w-4 h-4" />

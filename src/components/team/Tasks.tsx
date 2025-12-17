@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle,
@@ -14,8 +15,13 @@ import { ApiService } from "@/lib/api";
 import type { Task } from "@/lib/types";
 
 export default function TaskStatusManager() {
+  const [searchParams] = useSearchParams();
+  const urlFilter = searchParams.get("filter");
+  
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filter, setFilter] = useState<"All" | "Pending" | "InReview" | "Completed">("All");
+  const [filter, setFilter] = useState<"All" | "Pending" | "InReview" | "Completed">(
+    (urlFilter as "All" | "Pending" | "InReview" | "Completed") || "All"
+  );
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [teamNote, setTeamNote] = useState("");
@@ -42,11 +48,15 @@ export default function TaskStatusManager() {
     fetchTasks();
   }, []);
 
-  // Helper: Format date
+  useEffect(() => {
+    if (urlFilter && ["All", "Pending", "InReview", "Completed"].includes(urlFilter)) {
+      setFilter(urlFilter as "All" | "Pending" | "InReview" | "Completed");
+    }
+  }, [urlFilter]);
+
   const formatDate = (iso?: string) =>
     iso ? new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) : "";
 
-  // Submit for Review
 const handleSubmitForReview = async (id: number, noteText: string) => {
   try {
     setLoading(true);
@@ -76,7 +86,6 @@ const handleSubmitForReview = async (id: number, noteText: string) => {
 };
 
 
-  // Modal Controls
   const openSubmitModal = (task: Task) => {
     setSelectedTask(task);
     setTeamNote(task.teamNotes ?? "");
@@ -123,7 +132,6 @@ const handleSubmitForReview = async (id: number, noteText: string) => {
 
   return (
     <div className="p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
-      {/* ---- Header + Filter ---- */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
           <h2 className="text-xl sm:text-2xl font-semibold">My Tasks</h2>
@@ -146,7 +154,6 @@ const handleSubmitForReview = async (id: number, noteText: string) => {
         </div>
       </div>
 
-      {/* ---- Loading / Error States ---- */}
       {loading ? (
         <div className="flex justify-center items-center mt-10 sm:mt-20">
           <Loader2 className="animate-spin text-orange-500 w-6 h-6 sm:w-8 sm:h-8" />
