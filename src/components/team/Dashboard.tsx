@@ -98,7 +98,7 @@ const TeamDashboard = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="min-h-screen bg-gray-100 dark:bg-transparent p-4 sm:p-6 md:p-8 relative z-10">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-11/12 mx-auto">
           <div className="mb-4 sm:mb-8">
             <div className="bg-card/30 backdrop-blur-sm border border-border/40 rounded-2xl p-6 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 sm:gap-4">
@@ -166,7 +166,7 @@ const TeamDashboard = () => {
                               "linear-gradient(90deg, oklch(0.85 0.18 265), oklch(0.60 0.23 265))",
                           }}
                         >
-                          #{problemStatement?.psId || team.ps_id}
+                          {problemStatement?.psId || team.ps_id}
                         </p>
                       </div>
                     )}

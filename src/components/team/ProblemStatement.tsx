@@ -109,12 +109,21 @@ function ProblemStatement() {
             <div className="w-8 sm:w-12 h-1 bg-gradient-to-l from-transparent to-secondary rounded-full"></div>
           </div>
 
-          <h1 className="text-3xl sm:text-3xl md:text-5xl font-black mb-3 sm:pb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent px-2">
+          <h1 className="text-3xl sm:text-3xl md:text-4xl font-black mb-3 sm:pb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent px-2">
             {ps.title}
           </h1>
 
-          <div className="text-lg sm:text-2xl font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-3 sm:mt-4 px-2">
-            {ps.category}
+          <div className="inline-flex items-center gap-2 mt-3 sm:mt-4 px-4 py-2 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-full border-2 border-primary/30 backdrop-blur-sm">
+            <svg
+              className="w-5 h-5 sm:w-6 sm:h-6 text-primary"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z" />
+            </svg>
+            <span className="text-base sm:text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              {ps.category}
+            </span>
           </div>
         </header>
 
@@ -179,7 +188,7 @@ function ProblemStatement() {
                       key={i}
                       className="px-3 sm:px-4 py-1 bg-primary/10 text-primary font-medium rounded-full text-xs sm:text-sm border border-primary/20"
                     >
-                      #{tag}
+                      {tag}
                     </span>
                   ))}
                 </div>
