@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { ApiService } from "@/lib/api";
 import type { Task } from "@/lib/types";
+import { isFeatureUnlocked } from "@/utils/featureUnlock";
 
 export default function TaskStatusManager() {
   const [searchParams] = useSearchParams();
@@ -28,8 +29,12 @@ export default function TaskStatusManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Fetch tasks dynamically
   useEffect(() => {
+    if (!isFeatureUnlocked('tasks')) {
+      setLoading(false);
+      return;
+    }
+
     const fetchTasks = async () => {
       try {
         setLoading(true);

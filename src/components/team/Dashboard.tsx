@@ -11,6 +11,7 @@ import {
   AlertCircle,
   ListTodo,
 } from "lucide-react";
+import { isFeatureUnlocked } from "../../utils/featureUnlock";
 
 const TeamDashboard = () => {
   const navigate = useNavigate();
@@ -27,7 +28,9 @@ const TeamDashboard = () => {
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "team") {
-      fetchTeam();
+      if (isFeatureUnlocked('tasks')) {
+        fetchTeam();
+      }
       fetchAnnouncements();
     }
   }, [isAuthenticated, user, fetchTeam, fetchAnnouncements]);
@@ -184,59 +187,62 @@ const TeamDashboard = () => {
           )}
 
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-10">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                onClick={() => navigate(`/team/tasks?filter=${stat.filter}`)}
-                className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-xl p-5 hover:scale-105 transition-transform duration-300 cursor-pointer`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
-                      {stat.title}
-                    </p>
-                    <p className="text-4xl font-bold text-foreground truncate">
-                      {stat.value}
-                    </p>
-                  </div>
-                  <div className="text-4xl opacity-30 shrink-0 ml-2">
-                    {stat.icon}
+          {isFeatureUnlocked('tasks') && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-10">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  onClick={() => navigate(`/team/tasks?filter=${stat.filter}`)}
+                  className={`relative overflow-hidden bg-gradient-to-br ${stat.gradient} border border-border rounded-xl p-5 hover:scale-105 transition-transform duration-300 cursor-pointer`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
+                        {stat.title}
+                      </p>
+                      <p className="text-4xl font-bold text-foreground truncate">
+                        {stat.value}
+                      </p>
+                    </div>
+                    <div className="text-4xl opacity-30 shrink-0 ml-2">
+                      {stat.icon}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <section className="relative rounded-2xl overflow-hidden group">
-              <div className="relative bg-card/30 backdrop-blur-md border border-primary/30 rounded-2xl p-6 hover:border-primary/60 transition-all duration-300 hover:bg-card/50">
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(circle at top right, oklch(0.65 0.15 70 / 0.1), transparent 70%)",
-                  }}
-                />
+          <div className={`grid grid-cols-1 ${isFeatureUnlocked('tasks') ? 'lg:grid-cols-2' : ''} gap-6`}>
+            {isFeatureUnlocked('tasks') && (
+              <section className="relative rounded-2xl overflow-hidden group">
+                <div className="relative bg-card/30 backdrop-blur-md border border-primary/30 rounded-2xl p-6 hover:border-primary/60 transition-all duration-300 hover:bg-card/50">
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(circle at top right, oklch(0.65 0.15 70 / 0.1), transparent 70%)",
+                    }}
+                  />
 
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/30">
-                        <ListTodo className="w-5 h-5 text-primary" />
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/30">
+                          <ListTodo className="w-5 h-5 text-primary" />
+                        </div>
+                        <h2 className="text-xl font-bold text-primary">
+                          My Tasks
+                        </h2>
                       </div>
-                      <h2 className="text-xl font-bold text-primary">
-                        My Tasks
-                      </h2>
+                      <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-primary/10 text-primary border border-primary/30">
+                        {tasks.length}
+                      </span>
                     </div>
-                    <span className="px-3 py-1 rounded-lg text-sm font-semibold bg-primary/10 text-primary border border-primary/30">
-                      {tasks.length}
-                    </span>
-                  </div>
 
-                  <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
-                    {tasks.length > 0 ? (
-                      tasks.slice(0, 8).map((task) => (
+                    <div className="space-y-3 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
+                      {tasks.length > 0 ? (
+                        tasks.slice(0, 8).map((task) => (
                         <div
                           key={task.id}
                           onClick={() => navigate(`/team/tasks?filter=${task.status}`)}
@@ -313,6 +319,7 @@ const TeamDashboard = () => {
                 </div>
               </div>
             </section>
+            )}
 
             <section className="relative rounded-2xl overflow-hidden group">
               <div className="relative bg-card/30 backdrop-blur-md border border-secondary/30 rounded-2xl p-6 hover:border-secondary/60 transition-all duration-300 hover:bg-card/50">

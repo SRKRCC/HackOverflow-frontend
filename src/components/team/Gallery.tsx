@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Download, Loader2, ZoomIn } from 'lucide-react';
 import { ApiService } from '@/lib/api';
+import { isFeatureUnlocked } from '@/utils/featureUnlock';
 
 const Gallery: React.FC = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -25,6 +26,10 @@ const Gallery: React.FC = () => {
 
 
   useEffect(() => {
+    if (!isFeatureUnlocked('gallery')) {
+      setLoading(false);
+      return;
+    }
     loadImages();
   }, []);
 
