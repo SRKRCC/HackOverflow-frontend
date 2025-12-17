@@ -70,7 +70,7 @@ export default function TeamDetails() {
             return (
               <div
                 key={member.id}
-                className={`group relative bg-card rounded-3xl p-6 border border-border/40 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-visible`}
+                className={`group relative bg-card rounded-3xl p-6 border border-border/150 hover:border-primary/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-visible`}
               >
                 <div className="absolute inset-0 rounded-3xl opacity-5 z-0 pointer-events-none">
                   <div 
@@ -84,63 +84,43 @@ export default function TeamDetails() {
 
                   <div className="relative z-10">
                     <div className="absolute -top-15 left-1/2 -translate-x-1/2 z-40">
-                    <div className="px-4 py-2 text-lg rounded-full bg-background border border-primary/50 text-primary font-bold max-w-[100%] truncate shadow-sm">
+                    <div className="px-4 py-2 text-lg rounded-full bg-background border border-primary/150 text-primary font-bold max-w-[100%] truncate shadow-sm">
                       {member.name}
                     </div>
                   </div>
 
-                  <div className="mt-6 w-full bg-card rounded-xl p-3 border border-border/30">
-                    <p className="text-sm font-medium text-foreground truncate">{member.email}</p>
+                  <div className="mt-6 w-full bg-card rounded-xl p-2 border border-border/150">
+                    <p className="text-sm font-medium text-foreground truncate">Email: {member.email}</p>
                   </div>
 
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="grid grid-cols-[48px_1fr] items-center gap-1 p-3 rounded-xl bg-card border border-border/30">
-                      <div className={`w-9 h-9 rounded-lg bg-primary/30 flex items-center justify-center flex-shrink-0 text-white`}> 
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7H7v6H3v8h18v-8h-6V7z" />
-                        </svg>
-                      </div>
-                      <div className="flex items-center justify-left">
-                        <p className="text-sm font-semibold text-foreground">{member.department}</p>
+                  <div className="mt-2 w-full bg-card rounded-xl p-2 border border-border/150">
+                    <p className="text-sm font-medium text-foreground truncate">Name: {member.certification_name || "Not Provided Certification Name"}</p>
+                  </div>
+
+                  <div className="mt-2 w-full bg-card rounded-xl p-2 border border-border/150">
+                    <p className="text-sm font-medium text-foreground truncate">College: {member.college_name}</p>
+                  </div>
+
+                  <div className="mt-2 grid grid-cols-2 gap-3">
+                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
+                        <p className="text-sm font-medium text-foreground">Dept: {member.department}</p>
+                    </div>
+
+                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
+                      <div>
+                          <p className="text-sm font-medium text-foreground">Year: {member.year_of_study}</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-[48px_1fr] items-center p-3 rounded-xl bg-card border border-border/30">
-                      <div className={`w-9 h-9 rounded-lg bg-primary/30 flex items-center justify-center flex-shrink-0 text-white`}> 
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                      </div>
+                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
                       <div>
-                        <div className="flex items-center justify-left">
-                          <p className="text-sm font-medium text-foreground">{member.phone_number}</p>
-                        </div>
+                        <p className="text-sm font-medium text-foreground">Ph:{member.phone_number}</p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-[48px_1fr] items-center gap-3 p-3 rounded-xl bg-card border border-border/30">
-                      <div className={`w-9 h-9 rounded-lg bg-primary/30 flex items-center justify-center flex-shrink-0 text-white`}> 
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                      </div>
+                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
                       <div>
-                        <div className="flex items-center justify-left">
-                          <p className="text-sm font-medium text-foreground">{member.college_name}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-[48px_1fr] items-center gap-3 p-3 rounded-xl bg-card border border-border/30">
-                      <div className={`w-9 h-9 rounded-lg bg-primary/30 flex items-center justify-center flex-shrink-0 text-white`}> 
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-left">
-                          <p className="text-sm font-medium text-foreground">Year {member.year_of_study}</p>
-                        </div>
+                          <p className="text-sm font-medium text-foreground">Reg: {member.roll_number || 'N/A'}</p>
                       </div>
                     </div>
                   </div>

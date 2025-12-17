@@ -17,6 +17,9 @@ interface Member {
   location?: string | null;
   attendance: number;
   tShirtSize?: string | null;
+  certification_name?: string | null,
+  roll_number?: string | null,
+  gender?: string | null;
   teamId?: number | null;
   team?: {
     id: number;
@@ -124,9 +127,11 @@ export default function Members() {
     try {
       const exportData = members.map((member) => ({
         "ID": member.id,
-        "Name": member.name,
+        "Name": member.certification_name?.trim() || member.name,
         "Email": member.email,
         "Phone": member.phone_number,
+        "Gender": member.gender || "N/A",
+        "REG Number": member.roll_number || "N/A",
         "Department": member.department || "N/A",
         "College": member.college_name,
         "Year of Study": member.year_of_study || "N/A",

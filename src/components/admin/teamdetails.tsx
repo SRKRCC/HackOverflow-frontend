@@ -25,7 +25,6 @@ export default function TeamsTable() {
   const [hasChanges, setHasChanges] = useState(false);
   const [pendingPaymentStatus, setPendingPaymentStatus] = useState<boolean | null>(null);
 
-  // Edit modal states
   const [editTeamModalOpen, setEditTeamModalOpen] = useState(false);
   const [editMemberModalOpen, setEditMemberModalOpen] = useState(false);
   const [addMemberModalOpen, setAddMemberModalOpen] = useState(false);
@@ -33,9 +32,8 @@ export default function TeamsTable() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletingMemberId, setDeletingMemberId] = useState<number | null>(null);
 
-  const rowsPerPage = 10; // Number of rows per page
+  const rowsPerPage = 10;
 
-  // Load teams from API
   const loadTeams = async () => {
     try {
       setLoading(true);
@@ -70,7 +68,6 @@ export default function TeamsTable() {
     }
   };
 
-  // Handler for updating team after edit
   const handleTeamUpdate = (updatedTeam: Team) => {
     if (!selectedTeam) return;
     
@@ -114,7 +111,6 @@ export default function TeamsTable() {
   const handleMemberDelete = async (memberId: number) => {
     if (!selectedTeam) return;
 
-    // Confirm deletion
     if (!window.confirm("Are you sure you want to delete this member? This action cannot be undone.")) {
       return;
     }
@@ -143,12 +139,9 @@ export default function TeamsTable() {
     }
   };
 
-  // Handler for deleting team
   const handleTeamDelete = (deletedTeamId: number) => {
-    // Remove team from the list
     setTeams((prev) => prev.filter((t) => t.teamId !== deletedTeamId));
     
-    // Close the panel
     setPanelOpen(false);
     setSelectedTeam(null);
     setPanelError(null);
@@ -157,14 +150,12 @@ export default function TeamsTable() {
     setPendingPaymentStatus(null);
   };
 
-  // Get unique themes/categories for filter
   const uniqueThemes = Array.from(new Set(
     teams
       .map(team => team?.category)
       .filter(Boolean)
   )).sort();
 
-  // Filter teams by ID, Title, Payment Status, and Theme
   const filteredTeams = teams.filter((team) => {
     const matchesSearch = [team.teamId.toString(), team.title.toLowerCase()].some((value) =>
       value.includes(search.toLowerCase())
@@ -180,21 +171,17 @@ export default function TeamsTable() {
     return matchesSearch && matchesPayment && matchesTheme;
   });
 
-  // Pagination logic
   const startIndex = page * rowsPerPage;
   const paginatedTeams = filteredTeams.slice(startIndex, startIndex + rowsPerPage);
   const hasPrevious = page > 0;
   const hasNext = startIndex + rowsPerPage < filteredTeams.length;
 
-  // Render UI
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-orange-50 dark:from-black dark:to-black px-4 sm:px-6 py-8 sm:py-12 transition-colors duration-300">
-      {/* Page Heading */}
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center text-orange-600 dark:text-orange-400 mb-6 sm:mb-8 px-2">
         HackOverflow 2K25 Teams
       </h1>
 
-      {/* Search and Filter Bar */}
       <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
           <input
@@ -242,7 +229,6 @@ export default function TeamsTable() {
           </select>
         </div>
       </div>
-      {/* Slide-in Side Panel */}
       <AnimatePresence>
         {panelOpen && (
           <motion.div
@@ -251,7 +237,6 @@ export default function TeamsTable() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* Background overlay */}
             <div
               className="absolute inset-0 bg-black/30"
               onClick={() => {
@@ -264,7 +249,6 @@ export default function TeamsTable() {
               }}
             />
 
-            {/* Panel */}
             <motion.div
               className="relative bg-white dark:bg-gray-900 shadow-xl w-full sm:w-[500px] max-h-screen overflow-auto p-6 border-l border-gray-200 dark:border-gray-700"
               initial={{ x: '100%' }}
@@ -275,7 +259,6 @@ export default function TeamsTable() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-800 dark:text-white">Team Details</h2>
                 <div className="flex items-center gap-2">
-                  {/* Edit Team Button */}
                   <button
                     onClick={() => setEditTeamModalOpen(true)}
                     className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20 rounded-lg transition-colors group"
@@ -286,7 +269,6 @@ export default function TeamsTable() {
                     </svg>
                   </button>
                   
-                  {/* Delete Team Button */}
                   <button
                     onClick={() => setDeleteModalOpen(true)}
                     className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20 rounded-lg transition-colors group"
@@ -297,7 +279,6 @@ export default function TeamsTable() {
                     </svg>
                   </button>
                   
-                  {/* Close Button */}
                   <button
                     onClick={() => {
                       setPanelOpen(false);
@@ -320,7 +301,6 @@ export default function TeamsTable() {
                 <TeamDetailsSkeleton />
               ) : selectedTeam ? (
                 <div className="space-y-4">
-                  {/* Team Basic Info */}
                   <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
                     <h3 className="font-semibold text-orange-700 dark:text-orange-300 mb-3">Team Information</h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
@@ -343,7 +323,6 @@ export default function TeamsTable() {
                     </div>
                   </div>
 
-                  {/* Team Members */}
                   <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-700 dark:text-gray-300">
@@ -376,7 +355,6 @@ export default function TeamsTable() {
                               <span className="text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded">
                                 Year {member.year_of_study}
                               </span>
-                              {/* Edit Member Button */}
                               <button
                                 onClick={() => {
                                   setSelectedMemberToEdit(member);
@@ -389,7 +367,6 @@ export default function TeamsTable() {
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               </button>
-                              {/* Delete Member Button (not for team lead and only if team has more than 4 members) */}
                               {index !== 0 && (
                                 <button
                                   onClick={() => handleMemberDelete(member.id)}
@@ -440,8 +417,16 @@ export default function TeamsTable() {
                               </div>
                             )}
                             <div>
-                              <span className="font-medium">Attendance:</span>
-                              <div className="text-gray-800 dark:text-gray-300">{member.attendance}</div>
+                              <span className="font-medium">Gender:</span>
+                              <div className="text-gray-800 dark:text-gray-300">{member.gender || 'N/A'}</div>
+                            </div>
+                            <div>
+                              <span className="font-medium">Formal Name:</span>
+                              <div className="text-gray-800 dark:text-gray-300">{member.certification_name || 'N/A'}</div>
+                            </div>
+                            <div>
+                              <span className="font-medium">REG Number:</span>
+                              <div className="text-gray-800 dark:text-gray-300">{member.roll_number || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
@@ -449,7 +434,6 @@ export default function TeamsTable() {
                     </div>
                   </div>
 
-                  {/* Payment Verification Section */}
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                     <h3 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">Payment Status</h3>
                     <div className="mb-4">
@@ -475,7 +459,6 @@ export default function TeamsTable() {
                       </label>
                     </div>
 
-                    {/* Save Button */}
                     {hasChanges && (
                       <div className="flex gap-2">
                         <button
@@ -487,7 +470,6 @@ export default function TeamsTable() {
                               setPanelError(null);
                               await ApiService.admin.verifyTeamPayment(selectedTeam.teamId, pendingPaymentStatus);
                               
-                              // Update local UI
                               const updatedTeam = { ...selectedTeam, paymentVerified: pendingPaymentStatus };
                               setSelectedTeam(updatedTeam);
                               setTeams((prev) => prev.map((t) => 
@@ -530,7 +512,6 @@ export default function TeamsTable() {
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
       <div className="max-w-5xl mx-auto">
         {loading ? (
           <div className="text-center py-10 text-sm sm:text-base text-gray-500 dark:text-gray-400">
@@ -560,7 +541,7 @@ export default function TeamsTable() {
                       setPanelOpen(true);
                       setPanelError(null);
                       setHasChanges(false);
-                      setSelectedTeam(null); // Clear previous team
+                      setSelectedTeam(null);
                       loadTeamDetails(team.teamId);
                     }}
                   >
@@ -600,7 +581,6 @@ export default function TeamsTable() {
           </table>
         )}
 
-        {/* Pagination Controls */}
         {!loading && !error && (
           <div className="flex flex-col sm:flex-row justify-center sm:justify-end text-xs sm:text-sm items-center gap-3 sm:gap-4 mt-4 sm:mt-6 px-2">
             <button
@@ -632,7 +612,6 @@ export default function TeamsTable() {
         )}
       </div>
 
-      {/* Edit Modals */}
       {selectedTeam && (
         <EditTeamModal
           team={selectedTeam}
