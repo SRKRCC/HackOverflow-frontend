@@ -60,8 +60,13 @@ export class ApiService {
       return response.data;
     },
 
-    completeTask: async (id: number, reviewNotes?: string): Promise<Task> => {
-      const response = await apiClient.post(`/admin/tasks/${id}/complete`, { reviewNotes });
+    completeTask: async (id: number, reviewNotes?: string, points_earned?: number): Promise<Task> => {
+      const response = await apiClient.post(`/admin/tasks/${id}/complete`, { reviewNotes, points_earned });
+      return response.data;
+    },
+
+    moveTaskToPending: async (id: number): Promise<Task> => {
+      const response = await apiClient.post(`/admin/tasks/${id}/move-to-pending`);
       return response.data;
     },
 

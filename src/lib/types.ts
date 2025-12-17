@@ -66,6 +66,7 @@ export interface Task {
   difficulty?: 'easy' | 'medium' | 'hard';
   round_num: number;
   points: number;
+  points_earned?: number;
   status: 'Pending' | 'InReview' | 'Completed';
   completed: boolean;
   in_review: boolean;

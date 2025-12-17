@@ -15,6 +15,7 @@ import {
   Menu,
   Filter,
   ChevronDown,
+  Trash2,
 } from "lucide-react";
 import { ApiService } from "../../lib/api";
 import { useAuth } from "../../lib/hooks";
@@ -34,9 +35,12 @@ export default function TeamTaskManagement() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [teamSearchTerm, setTeamSearchTerm] = useState<string>("");
   const [selectedTeamId, setSelectedTeamId] = useState<number | null>(null);
-  const [modalMode, setModalMode] = useState<"create" | "edit">("edit");
+  const [modalMode, setModalMode] = useState<"create" | "edit" | "approve">("edit");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<"moveToPending" | "delete" | null>(null);
+  const [pointsEarned, setPointsEarned] = useState<number>(0);
   const [newTask, setNewTask] = useState<CreateTaskRequest>({
     title: "",
     description: "",
@@ -46,7 +50,6 @@ export default function TeamTaskManagement() {
     teamId: "",
   });
 
-  // Load data on component mount
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
       loadTasks();
@@ -113,12 +116,32 @@ export default function TeamTaskManagement() {
     return configs[status] || configs.Pending;
   };
 
-  // const openEditModal = (task: Task) => {
-  //   setModalMode("edit")
-  //   setSelectedTask({ ...task })
-  //   setIsModalOpen(true)
-  //   setSuccessMessage(false)
-  // }
+  const openEditModal = (task: Task) => {
+    setModalMode("edit");
+    setSelectedTask({ ...task });
+    setIsModalOpen(true);
+    setSuccessMessage(false);
+  };
+
+  const openApproveModal = (task: Task) => {
+    setModalMode("approve");
+    setSelectedTask(task);
+    setPointsEarned(task.points || 0);
+    setIsModalOpen(true);
+    setSuccessMessage(false);
+  };
+
+  const openMoveToPendingConfirm = (task: Task) => {
+    setSelectedTask(task);
+    setConfirmAction("moveToPending");
+    setIsConfirmModalOpen(true);
+  };
+
+  const openDeleteConfirm = (task: Task) => {
+    setSelectedTask(task);
+    setConfirmAction("delete");
+    setIsConfirmModalOpen(true);
+  };
 
   const openCreateModal = () => {
     setModalMode("create");
@@ -140,6 +163,13 @@ export default function TeamTaskManagement() {
     setSelectedTask(null);
     setSuccessMessage(false);
     setSubmitting(false);
+    setPointsEarned(0);
+  };
+
+  const closeConfirmModal = () => {
+    setIsConfirmModalOpen(false);
+    setSelectedTask(null);
+    setConfirmAction(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,6 +192,13 @@ export default function TeamTaskManagement() {
           round_num: selectedTask.round_num,
           points: selectedTask.points,
         });
+        setSuccessMessage(true);
+        setTimeout(() => {
+          closeModal();
+          loadTasks();
+        }, 1200);
+      } else if (selectedTask && modalMode === "approve") {
+        await ApiService.admin.completeTask(selectedTask.id, "Task approved by admin", pointsEarned);
         setSuccessMessage(true);
         setTimeout(() => {
           closeModal();
@@ -226,15 +263,28 @@ export default function TeamTaskManagement() {
       team.scc_id?.toLowerCase().includes(teamSearchTerm.toLowerCase())
   );
 
-  const approveTask = async (id: number) => {
+  const handleConfirmAction = async () => {
+    if (!selectedTask || !confirmAction) return;
+
     try {
-      await ApiService.admin.completeTask(id, "Task approved by admin");
-      await loadTasks();
-      setSuccessMessage(true);
-      setTimeout(() => setSuccessMessage(false), 2000);
+      setSubmitting(true);
+      if (confirmAction === "moveToPending") {
+        await ApiService.admin.moveTaskToPending(selectedTask.id);
+        setSuccessMessage(true);
+        setTimeout(() => setSuccessMessage(false), 2000);
+        await loadTasks();
+      } else if (confirmAction === "delete") {
+        await ApiService.admin.deleteTask(selectedTask.id);
+        setSuccessMessage(true);
+        setTimeout(() => setSuccessMessage(false), 2000);
+        await loadTasks();
+      }
+      closeConfirmModal();
     } catch (err) {
-      setError("Failed to approve task");
-      console.error("Error approving task:", err);
+      setError("Failed to perform action");
+      console.error("Error performing action:", err);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -747,22 +797,42 @@ export default function TeamTaskManagement() {
                       )}
 
                       <div className="flex gap-2 mt-4">
-                        {task.status === "InReview" && (
-                          <button
-                            onClick={() => approveTask(task.id)}
-                            className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
-                          >
-                            <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                            Approve
-                          </button>
+                        {task.status === "Pending" && (
+                          <>
+                            <button
+                              className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
+                              onClick={() => openEditModal(task)}
+                            >
+                              <Edit className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                              Edit
+                            </button>
+                            <button
+                              className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
+                              onClick={() => openDeleteConfirm(task)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                              Delete
+                            </button>
+                          </>
                         )}
-                        {/* <button
-                          className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
-                          onClick={() => openEditModal(task)}
-                        >
-                          <Edit className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                          Edit
-                        </button> */}
+                        {task.status === "InReview" && (
+                          <>
+                            <button
+                              onClick={() => openApproveModal(task)}
+                              className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
+                            >
+                              <CheckCircle className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => openMoveToPendingConfirm(task)}
+                              className="flex-1 px-3 py-2 lg:py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-lg font-medium transition-all shadow-sm flex items-center justify-center gap-2 text-xs lg:text-sm"
+                            >
+                              <Clock className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
+                              Move to Pending
+                            </button>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   );
@@ -792,6 +862,13 @@ export default function TeamTaskManagement() {
                           <Plus className="h-4 w-4 lg:h-5 lg:w-5 text-orange-600" />
                         </div>
                         Create New Task
+                      </>
+                    ) : modalMode === "approve" ? (
+                      <>
+                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                          <CheckCircle className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
+                        </div>
+                        Approve Task
                       </>
                     ) : (
                       <>
@@ -828,6 +905,42 @@ export default function TeamTaskManagement() {
                   onSubmit={handleSubmit}
                   className="space-y-5 lg:space-y-5"
                 >
+                  {modalMode === "approve" && selectedTask ? (
+                    <>
+                      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm">
+                        <p className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                          Task: {selectedTask.title}
+                        </p>
+                        <p className="text-blue-700 dark:text-blue-300">
+                          Maximum Points: {selectedTask.points}
+                        </p>
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold mb-2 text-sm lg:text-sm">
+                          Points Earned *
+                        </label>
+                        <input
+                          name="points_earned"
+                          type="number"
+                          min="0"
+                          max={selectedTask.points}
+                          className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:px-4 py-3 lg:py-2.5 text-sm lg:text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all disabled:opacity-50"
+                          value={pointsEarned}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 0;
+                            setPointsEarned(Math.min(Math.max(0, val), selectedTask.points));
+                          }}
+                          disabled={submitting}
+                          required
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Enter points between 0 and {selectedTask.points}
+                        </p>
+                      </div>
+                    </>
+                  ) : null}
+
                   {modalMode === "create" && (
                     <div>
                       <label className="block font-semibold mb-2 text-sm lg:text-sm">
@@ -851,6 +964,8 @@ export default function TeamTaskManagement() {
                     </div>
                   )}
 
+                  {modalMode !== "approve" && (
+                    <>
                   <div>
                     <label className="block font-semibold mb-2 text-sm lg:text-sm">
                       Task Title *
@@ -953,6 +1068,8 @@ export default function TeamTaskManagement() {
                       </select>
                     </div>
                   </div>
+                  </>
+                  )}
 
                   <div className="flex gap-2 lg:gap-3 pt-4">
                     <button
@@ -966,26 +1083,123 @@ export default function TeamTaskManagement() {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="flex-1 px-4 lg:px-4 py-3 lg:py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white rounded-lg font-medium transition-all shadow-lg flex items-center justify-center gap-2 text-sm lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      className={`flex-1 px-4 lg:px-4 py-3 lg:py-2.5 ${
+                        modalMode === "approve"
+                          ? "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+                          : "bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
+                      } text-white rounded-lg font-medium transition-all shadow-lg flex items-center justify-center gap-2 text-sm lg:text-sm disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {submitting ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
                           {modalMode === "create"
                             ? "Creating..."
+                            : modalMode === "approve"
+                            ? "Approving..."
                             : "Updating..."}
                         </>
                       ) : (
                         <>
-                          <Save className="h-4 w-4" />
-                          {modalMode === "create"
-                            ? "Create Task"
-                            : "Update Task"}
+                          {modalMode === "approve" ? (
+                            <>
+                              <CheckCircle className="h-4 w-4" />
+                              Approve Task
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4" />
+                              {modalMode === "create"
+                                ? "Create Task"
+                                : "Update Task"}
+                            </>
+                          )}
                         </>
                       )}
                     </button>
                   </div>
                 </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isConfirmModalOpen && selectedTask && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <motion.div
+              className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-800/50 rounded-2xl shadow-2xl w-full max-w-md"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+            >
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-3 rounded-full ${
+                    confirmAction === "delete"
+                      ? "bg-red-100 dark:bg-red-900/30"
+                      : "bg-amber-100 dark:bg-amber-900/30"
+                  }`}>
+                    {confirmAction === "delete" ? (
+                      <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    ) : (
+                      <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold">Confirm Action</h3>
+                </div>
+
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  {confirmAction === "delete" ? (
+                    <>
+                      Are you sure you want to delete task <span className="font-semibold text-gray-900 dark:text-gray-100">"{selectedTask.title}"</span>? This action cannot be undone.
+                    </>
+                  ) : (
+                    <>
+                      Are you sure you want to move task <span className="font-semibold text-gray-900 dark:text-gray-100">"{selectedTask.title}"</span> back to pending status?
+                    </>
+                  )}
+                </p>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={closeConfirmModal}
+                    disabled={submitting}
+                    className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmAction}
+                    disabled={submitting}
+                    className={`flex-1 px-4 py-2.5 bg-gradient-to-r ${
+                      confirmAction === "delete"
+                        ? "from-red-600 to-red-700 hover:from-red-700 hover:to-red-800"
+                        : "from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800"
+                    } text-white rounded-lg font-medium transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50`}
+                  >
+                    {submitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {confirmAction === "delete" ? "Deleting..." : "Moving..."}
+                      </>
+                    ) : (
+                      <>
+                        {confirmAction === "delete" ? (
+                          <>
+                            <Trash2 className="h-4 w-4" />
+                            Delete Task
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="h-4 w-4" />
+                            Move to Pending
+                          </>
+                        )}
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>

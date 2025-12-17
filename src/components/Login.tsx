@@ -14,7 +14,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState("")
     const role = 'team' as const
     const [showPassword, setShowPassword] = useState(false)
-    const [rememberMe, setRememberMe] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     const loading = authLoading
@@ -28,7 +27,6 @@ export default function LoginPage() {
             return
         }
 
-        // Validation for team login
         if (!/^SCC\d{3}$/.test(username.toUpperCase())) {
             setError("Please enter a valid SCC ID (format: SCC001).")
             return
