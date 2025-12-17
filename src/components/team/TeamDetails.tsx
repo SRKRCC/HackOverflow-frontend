@@ -70,60 +70,71 @@ export default function TeamDetails() {
             return (
               <div
                 key={member.id}
-                className={`group relative bg-card rounded-3xl p-6 border border-border/150 hover:border-primary/80 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-visible`}
+                className="group relative bg-card rounded-2xl p-6 border border-primary/90 hover:shadow-md hover:-translate-y-1 transform transition duration-200"
               >
-                <div className="absolute inset-0 rounded-3xl opacity-5 z-0 pointer-events-none">
-                  <div 
-                    className="w-full h-full"
-                    style={{
-                      backgroundImage: "radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)",
-                      backgroundSize: "20px 20px"
-                    }}
-                  />
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold text-lg">
+                    {member.certification_name?.trim()?.[0]?.toUpperCase() || member.name?.[0]?.toUpperCase() || 'U'}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-lg font-bold text-foreground truncate" title={member.certification_name || member.name}>
+                      {member.certification_name?.trim() || member.name}
+                    </div>
+                    <div className="text-sm text-muted-foreground truncate">
+                      {member.department || '—'} • Year {member.year_of_study || '—'}
+                    </div>
+                  </div>
                 </div>
 
-                  <div className="relative z-10">
-                    <div className="absolute -top-15 left-1/2 -translate-x-1/2 z-40">
-                    <div className="px-4 py-2 text-lg rounded-full bg-background border border-primary/150 text-primary font-bold max-w-[100%] truncate shadow-sm">
-                      {member.name}
+                <div className="mt-4 grid gap-2 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                      <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">Email</div>
+                    <div className="sm:col-span-3 text-sm text-foreground truncate">
+                      <a className="text-primary/90 italic" href={`mailto:${member.email}`} title={member.email}>
+                        {member.email || 'N/A'}
+                      </a>
                     </div>
                   </div>
 
-                  <div className="mt-6 w-full bg-card rounded-xl p-2 border border-border/150">
-                    <p className="text-sm font-medium text-foreground truncate">Email: {member.email}</p>
-                  </div>
-
-                  <div className="mt-2 w-full bg-card rounded-xl p-2 border border-border/150">
-                    <p className="text-sm font-medium text-foreground truncate">Name: {member.certification_name || "Not Provided Certification Name"}</p>
-                  </div>
-
-                  <div className="mt-2 w-full bg-card rounded-xl p-2 border border-border/150">
-                    <p className="text-sm font-medium text-foreground truncate">College: {member.college_name}</p>
-                  </div>
-
-                  <div className="mt-2 grid grid-cols-2 gap-3">
-                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
-                        <p className="text-sm font-medium text-foreground">Dept: {member.department}</p>
-                    </div>
-
-                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
-                      <div>
-                          <p className="text-sm font-medium text-foreground">Year: {member.year_of_study}</p>
-                      </div>
-                    </div>
-
-                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
-                      <div>
-                        <p className="text-sm font-medium text-foreground">Ph:{member.phone_number}</p>
-                      </div>
-                    </div>
-
-                    <div className="gap-1 p-3 rounded-xl bg-card border border-border/150">
-                      <div>
-                          <p className="text-sm font-medium text-foreground">Reg: {member.roll_number || 'N/A'}</p>
-                      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                      <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">Phone</div>
+                    <div className="sm:col-span-3 text-sm text-foreground truncate">
+                      <a className="italic" href={`tel:${member.phone_number}`} title={member.phone_number}>
+                        {member.phone_number || 'N/A'}
+                      </a>
                     </div>
                   </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                      <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">College</div>
+                    <div className="sm:col-span-3 text-sm text-foreground truncate">{member.college_name || 'N/A'}</div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                      <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">Reg. No</div>
+                    <div className="sm:col-span-3 text-sm text-foreground truncate">{member.roll_number || 'N/A'}</div>
+                  </div>
+
+                  {member.tShirtSize && (
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                        <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">T-Shirt</div>
+                      <div className="sm:col-span-3 text-sm text-foreground truncate">{member.tShirtSize}</div>
+                    </div>
+                  )}
+
+                  {member.gender && (
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                        <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">Gender</div>
+                      <div className="sm:col-span-3 text-sm text-foreground truncate">{member.gender}</div>
+                    </div>
+                  )}
+
+                  {member.location && (
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-center py-2 px-2 border-t border-border/50 first:border-t-0">
+                        <div className="sm:col-span-1 text-sm text-muted-foreground font-medium">Location</div>
+                      <div className="sm:col-span-3 text-sm text-foreground truncate">{member.location}</div>
+                    </div>
+                  )}
                 </div>
               </div>
             );

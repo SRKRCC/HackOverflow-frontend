@@ -12,6 +12,8 @@ const HeroSection = () => {
     seconds: 0,
   })
   const [isHovering, setIsHovering] = useState<string | null>(null)
+  const [eventPhase, setEventPhase] = useState<'before' | 'during' | 'ended'>('before')
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const navigate = useNavigate();
 
   const scrollToAbout = () => {
@@ -22,10 +24,34 @@ const HeroSection = () => {
   };
 
   useEffect(() => {
-    const targetDate = new Date("2025-12-19T00:00:00").getTime()
+    const hackathonStartDate = new Date(2025, 11, 19, 9, 30, 0).getTime()
+    const hackathonEndDate = new Date(2025, 11, 20, 9, 30, 0).getTime()
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
+      
+      let currentPhase: 'before' | 'during' | 'ended'
+      let targetDate: number
+      
+      if (now < hackathonStartDate) {
+        currentPhase = 'before'
+        targetDate = hackathonStartDate
+      } else if (now < hackathonEndDate) {
+        currentPhase = 'during'
+        targetDate = hackathonEndDate
+      } else {
+        currentPhase = 'ended'
+        targetDate = hackathonEndDate
+      }
+
+      if (currentPhase !== eventPhase) {
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setEventPhase(currentPhase)
+          setTimeout(() => setIsTransitioning(false), 300)
+        }, 300)
+      }
+
       const difference = targetDate - now
 
       if (difference > 0) {
@@ -35,11 +61,18 @@ const HeroSection = () => {
           minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
           seconds: Math.floor((difference % (1000 * 60)) / 1000),
         })
+      } else if (currentPhase === 'ended') {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        })
       }
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [])
+  }, [eventPhase])
 
   return (
     <div
@@ -87,15 +120,15 @@ const HeroSection = () => {
         </div>
 
         <div className="animate-slide-up mt-8 sm:mt-10 lg:mt-12" style={{ animationDelay: "0.4s" }}>
-          <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 max-w-lg sm:max-w-none mx-auto lg:mx-0">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 sm:gap-3 md:gap-4 max-w-lg sm:max-w-none mx-auto lg:mx-0">
             {[
               { icon: Calendar, label: "Duration", value: "24H" },
-              { icon: Users, label: "Hackers", value: "500+" },
+              { icon: Users, label: "Hackers", value: "280+" },
               { icon: Trophy, label: "Prizes", value: "35K" },
             ].map((stat, idx) => (
               <div
                 key={stat.label}
-                className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/30 backdrop-blur-md p-4 sm:p-5 hover:border-primary/60 transition-all duration-300 hover:bg-card/50"
+                className="group relative overflow-hidden rounded-xl border border-border/40 bg-card/30 backdrop-blur-md p-3 sm:p-4 hover:border-primary/60 transition-all duration-300 hover:bg-card/50"
                 style={{
                   animation: `slide-up 0.6s ease-out ${0.5 + idx * 0.1}s forwards`,
                   opacity: 0,
@@ -117,13 +150,24 @@ const HeroSection = () => {
         </div>
 
         <div className="animate-slide-up mt-10 sm:mt-12 lg:mt-16" style={{ animationDelay: "0.6s" }}>
-          <div className="flex items-center justify-center lg:justify-start gap-3 mb-6 sm:mb-8">
-            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-spin" style={{ animationDuration: "3s" }} />
-            <span className="text-xs font-mono text-muted-foreground font-bold uppercase tracking-widest">
-              Event Countdown
+          <div className={`flex items-center justify-center lg:justify-start gap-3 mb-6 sm:mb-8 transition-all duration-500 ${isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}>
+            <Clock 
+              className={`w-4 h-4 sm:w-5 sm:h-5 text-primary transition-all duration-300 ${
+                eventPhase === 'ended' ? 'animate-none' : 'animate-spin'
+              }`} 
+              style={{ animationDuration: "3s" }} 
+            />
+            <span className={`text-xs font-mono font-bold uppercase tracking-widest transition-colors duration-300 ${
+              eventPhase === 'ended' ? 'text-muted-foreground/60' : 'text-muted-foreground'
+            }`}>
+              {eventPhase === 'before' && 'Event Countdown'}
+              {eventPhase === 'during' && 'Hackathon ends in'}
+              {eventPhase === 'ended' && 'Hackathon Ended'}
             </span>
           </div>
-          <div className="flex gap-2 sm:gap-3 md:gap-4 justify-center lg:justify-start">
+          <div className={`flex gap-2 sm:gap-3 md:gap-4 justify-center lg:justify-start transition-all duration-500 ${
+            isTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+          }`}>
             {Object.entries(timeLeft).map(([unit, value], idx) => (
               <div
                 key={unit}
@@ -133,13 +177,23 @@ const HeroSection = () => {
                   opacity: 0,
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-primary/10 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                <div className="relative bg-gradient-to-br from-card/60 to-card/30 border border-primary/30 backdrop-blur-xl rounded-xl p-2 sm:p-3 md:p-6 min-w-[55px] sm:min-w-[65px] md:min-w-[85px] text-center hover:border-primary/70 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/30 hover:from-card/80 hover:to-card/50 group-hover:scale-110">
+                <div className={`absolute inset-0 bg-gradient-to-br from-primary/40 to-primary/10 rounded-xl blur-xl transition-all duration-500 ${
+                  eventPhase === 'ended' ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                }`} />
+                <div className={`relative bg-gradient-to-br from-card/60 to-card/30 border backdrop-blur-xl rounded-xl p-2 sm:p-3 md:p-4 min-w-[45px] sm:min-w-[55px] md:min-w-[65px] text-center transition-all duration-300 ${
+                  eventPhase === 'ended' 
+                    ? 'border-muted/30 opacity-60' 
+                    : 'border-primary/30 hover:border-primary/70 hover:shadow-2xl hover:shadow-primary/30 hover:from-card/80 hover:to-card/50 group-hover:scale-110'
+                }`}>
                   <div className="flex flex-col items-center gap-2 sm:gap-3">
-                    <div className="text-xl sm:text-2xl md:text-4xl font-black text-primary font-mono tracking-tighter">
+                    <div className={`text-xl sm:text-2xl md:text-4xl font-black font-mono tracking-tighter transition-colors duration-300 ${
+                      eventPhase === 'ended' ? 'text-muted-foreground/60' : 'text-primary'
+                    }`}>
                       {String(value).padStart(2, "0")}
                     </div>
-                    <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+                    <div className={`h-px w-full bg-gradient-to-r from-transparent to-transparent transition-all duration-300 ${
+                      eventPhase === 'ended' ? 'via-muted/30' : 'via-primary/40'
+                    }`} />
                     <div className="text-[9px] sm:text-[10px] md:text-xs font-mono text-muted-foreground font-bold uppercase tracking-widest">
                       {unit}
                     </div>
@@ -150,7 +204,6 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Enhanced button section with improved interactions */}
         <div className="animate-slide-up flex flex-row gap-3 sm:gap-4 mt-8 sm:mt-10 lg:mt-12 justify-center lg:justify-start" style={{ animationDelay: "0.8s" }}>
           <button
             onMouseEnter={() => setIsHovering("register")}
@@ -158,7 +211,6 @@ const HeroSection = () => {
             onClick={() => navigate('/register')}
             className="group relative overflow-hidden rounded-lg px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-primary/85 text-primary-foreground font-bold text-base sm:text-lg transition-all duration-300 hover:shadow-2xl hover:shadow-primary/50 active:scale-95"
           >
-            {/* Animated background gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
 
             <span className="relative z-10 flex items-center justify-center gap-2">
@@ -175,7 +227,6 @@ const HeroSection = () => {
             onClick={scrollToAbout}
             className="group relative overflow-hidden rounded-lg px-6 sm:px-8 py-3 sm:py-4 border-2 border-primary/50 text-primary hover:border-primary/100 font-semibold text-base sm:text-lg bg-transparent backdrop-blur-sm transition-all duration-300 hover:bg-primary/10 hover:shadow-xl hover:shadow-primary/20 active:scale-95"
           >
-            {/* Animated border glow */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/10 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
 
             <span className="relative z-10">Learn More</span>

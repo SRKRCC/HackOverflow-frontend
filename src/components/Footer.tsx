@@ -74,7 +74,7 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
               {[
                 { icon: Calendar, label: "Dec 19-20, 2025" },
                 { icon: Clock, label: "24 Hours" },
-                { icon: Users, label: "500+ Hackers" },
+                { icon: Users, label: "280+ Hackers" },
                 { icon: Trophy, label: "₹35K+ Prizes" },
               ].map((item, index) => (
                 <div
@@ -201,7 +201,7 @@ const Footer: FC<FooterProps> = ({ className = "" }) => {
         {/* Stats Section
         <div className={`bg-gray-800 rounded-xl p-6 mb-8 grid grid-cols-2 md:grid-cols-4 gap-6 ${isVisible ? 'animate-slide-up opacity-100' : 'translate-y-10 opacity-0'}`} style={{ animationDelay: "0.8s" }}>
           {[
-            { number: "500+", label: "Participants" },
+            { number: "280+", label: "Participants" },
             { number: "₹10L+", label: "Prize Pool" },
             { number: "48", label: "Hours" },
             { number: "8", label: "Tracks" },
