@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Button from "./ui/button"
 import { Lock, ShieldCheck, Zap, Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
@@ -9,7 +9,7 @@ import { useAuth } from "../lib/hooks"
 
 export default function LoginPage() {
     const navigate = useNavigate()
-    const { login, loading: authLoading } = useAuth()
+    const { login, loading: authLoading, isAuthenticated, isTeam } = useAuth()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const role = 'team' as const
@@ -17,6 +17,12 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null)
 
     const loading = authLoading
+
+    useEffect(() => {
+        if (isAuthenticated && isTeam) {
+            navigate("/team", { replace: true })
+        }
+    }, [isAuthenticated, isTeam, navigate])
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()

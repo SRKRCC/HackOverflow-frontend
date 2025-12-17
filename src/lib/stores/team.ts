@@ -1,7 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { ApiService } from '../api';
-import { auth } from '../auth';
-import type { Team, ProblemStatement, Announcement, GeneralInfoResponse, Member } from '../types';
+import type { Team, ProblemStatement, Announcement, GeneralInfoResponse, Member, User } from '../types';
 
 interface TeamStore {
   team: Team | null;
@@ -10,6 +10,13 @@ interface TeamStore {
   generalInfo: GeneralInfoResponse | null;
   loading: boolean;
   error: string | null;
+  
+
+  user: User | null;
+  isAuthenticated: boolean;
+  
+  setUser: (user: User) => void;
+  logout: () => void;
   
   fetchTeam: () => Promise<void>;
   fetchProblemStatements: () => Promise<void>;
@@ -20,13 +27,32 @@ interface TeamStore {
   clearError: () => void;
 }
 
-export const useTeamStore = create<TeamStore>((set) => ({
+export const useTeamStore = create<TeamStore>()(persist((set, get) => ({
   team: null,
   problemStatement: null,
   announcements: [],
   generalInfo: null,
   loading: false,
   error: null,
+  
+  user: null,
+  isAuthenticated: false,
+  
+  setUser: (user: User) => {
+    set({ user, isAuthenticated: true });
+  },
+  
+  logout: () => {
+    set({ 
+      user: null, 
+      isAuthenticated: false,
+      team: null,
+      problemStatement: null,
+      generalInfo: null,
+      announcements: [],
+      error: null
+    });
+  },
 
   fetchAnnouncements: async () => {
     try {
@@ -39,7 +65,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
   },
   
   fetchTeam: async () => {
-    const user = auth.getUser();
+    const { user } = get();
     if (!user || user.role !== 'team') return;
     
     try {
@@ -68,7 +94,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
   },
 
   fetchGeneralInfo: async () => {
-    const user = auth.getUser();
+    const { user } = get();
     if (!user || user.role !== 'team') return;
     
     try {
@@ -82,7 +108,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
   },
 
   updateGeneralInfo: async (members) => {
-    const user = auth.getUser();
+    const { user } = get();
     if (!user || user.role !== 'team') throw new Error('Unauthorized');
     
     try {
@@ -100,4 +126,7 @@ export const useTeamStore = create<TeamStore>((set) => ({
   },
   
   clearError: () => set({ error: null }),
+}), {
+  name: 'hackoverflow-auth',
+  partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
 }));

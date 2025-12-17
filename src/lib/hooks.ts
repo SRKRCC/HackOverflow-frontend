@@ -1,24 +1,13 @@
-import { useState, useEffect } from 'react';
-import { auth } from './auth';
+import { useState } from 'react';
+import { useTeamStore } from './stores/team';
 import { ApiService } from './api';
-import type { User, LoginRequest } from './types';
+import type { LoginRequest } from './types';
 
 // Auth hook
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(auth.getUser());
+  const { user, isAuthenticated, setUser, logout: storeLogout } = useTeamStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  useEffect(() => {
-    auth.init();
-    setUser(auth.getUser());
-    
-    const unsubscribe = auth.subscribe((newUser: User | null) => {
-      setUser(newUser);
-    });
-    
-    return unsubscribe;
-  }, []);
   
   const login = async (credentials: LoginRequest) => {
     try {
@@ -27,14 +16,14 @@ export function useAuth() {
       
       const response = await ApiService.auth.login(credentials);
       
-      const user: User = {
+      const user = {
         id: response.userID,
         role: response.role,
         email: credentials.role === 'admin' ? credentials.username : undefined,
         scc_id: credentials.role === 'team' ? credentials.username : undefined,
       };
       
-      auth.setUser(user);
+      setUser(user);
       setLoading(false);
       
       return response;
@@ -46,7 +35,7 @@ export function useAuth() {
   };
   
   const logout = () => {
-    auth.logout();
+    storeLogout();
     setError(null);
   };
   
@@ -56,7 +45,7 @@ export function useAuth() {
     error,
     login,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated,
     isAdmin: user?.role === 'admin',
     isTeam: user?.role === 'team',
     clearError: () => setError(null),
