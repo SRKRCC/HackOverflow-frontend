@@ -19,13 +19,14 @@ import {
 } from "lucide-react";
 import { ApiService } from "../../lib/api";
 import { useAuth } from "../../lib/hooks";
-import type { Task, Team, CreateTaskRequest } from "../../lib/types";
+import type { Task, TeamSummary, CreateTaskRequest } from "../../lib/types";
 
 export default function TeamTaskManagement() {
   const { isAuthenticated, user } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [teams, setTeams] = useState<Team[]>([]);
+  const [teamSummaries, setTeamSummaries] = useState<TeamSummary[]>([]);
+  const [selectedTeamTasks, setSelectedTeamTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -52,33 +53,43 @@ export default function TeamTaskManagement() {
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
-      loadTasks();
-      loadTeams();
+      loadTeamSummaries();
     }
   }, [isAuthenticated, user]);
 
-  const loadTasks = async () => {
+  useEffect(() => {
+    if (selectedTeamId !== null) {
+      loadTeamTasks(selectedTeamId);
+    } else {
+      setSelectedTeamTasks([]);
+    }
+  }, [selectedTeamId]);
+
+  const loadTeamSummaries = async () => {
     try {
       setLoading(true);
       setError(null);
-      const tasksData = await ApiService.admin.getAllTasks();
-
-      setTasks(tasksData);
+      const summaries = await ApiService.admin.getAllTasks();
+      setTeamSummaries(summaries);
     } catch (err) {
-      setError("Failed to load tasks");
-      console.error("Error loading tasks:", err);
+      setError("Failed to load teams");
+      console.error("Error loading teams:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadTeams = async () => {
+  const loadTeamTasks = async (teamId: number) => {
     try {
-      const teamsData = await ApiService.admin.getAllTeams();
-      setTeams(teamsData);
+      setTasksLoading(true);
+      setError(null);
+      const tasks = await ApiService.admin.getTeamTasks(teamId);
+      setSelectedTeamTasks(tasks);
     } catch (err) {
-      setError("Failed to load teams");
-      console.error("Error loading teams:", err);
+      setError("Failed to load team tasks");
+      console.error("Error loading team tasks:", err);
+    } finally {
+      setTasksLoading(false);
     }
   };
 
@@ -182,7 +193,10 @@ export default function TeamTaskManagement() {
         setSuccessMessage(true);
         setTimeout(() => {
           closeModal();
-          loadTasks();
+          loadTeamSummaries();
+          if (selectedTeamId !== null) {
+            loadTeamTasks(selectedTeamId);
+          }
         }, 1200);
       } else if (selectedTask && modalMode === "edit") {
         await ApiService.admin.updateTask(selectedTask.id, {
@@ -195,14 +209,19 @@ export default function TeamTaskManagement() {
         setSuccessMessage(true);
         setTimeout(() => {
           closeModal();
-          loadTasks();
+          if (selectedTeamId !== null) {
+            loadTeamTasks(selectedTeamId);
+          }
         }, 1200);
       } else if (selectedTask && modalMode === "approve") {
         await ApiService.admin.completeTask(selectedTask.id, "Task approved by admin", pointsEarned);
         setSuccessMessage(true);
         setTimeout(() => {
           closeModal();
-          loadTasks();
+          loadTeamSummaries();
+          if (selectedTeamId !== null) {
+            loadTeamTasks(selectedTeamId);
+          }
         }, 1200);
       }
     } catch (err) {
@@ -238,26 +257,17 @@ export default function TeamTaskManagement() {
     }
   };
 
-  // Client-side filtering
-  const filteredTasks = tasks.filter((task) => {
-    // Status filter
+  const filteredTasks = selectedTeamTasks.filter((task) => {
     const matchesStatus =
       filterStatus === "all" ||
       (filterStatus === "pending" && task.status === "Pending") ||
       (filterStatus === "in-review" && task.status === "InReview") ||
       (filterStatus === "completed" && task.status === "Completed");
 
-    // Team filter - check multiple possible team identifier formats
-    const matchesTeam =
-      selectedTeamId === null ||
-      task.team?.id === selectedTeamId ||
-      task.teamId === selectedTeamId;
-
-    return matchesStatus && matchesTeam;
+    return matchesStatus;
   });
 
-  // Filter teams by search
-  const filteredTeams = teams.filter(
+  const filteredTeams = teamSummaries.filter(
     (team) =>
       team.title?.toLowerCase().includes(teamSearchTerm.toLowerCase()) ||
       team.scc_id?.toLowerCase().includes(teamSearchTerm.toLowerCase())
@@ -272,12 +282,18 @@ export default function TeamTaskManagement() {
         await ApiService.admin.moveTaskToPending(selectedTask.id);
         setSuccessMessage(true);
         setTimeout(() => setSuccessMessage(false), 2000);
-        await loadTasks();
+        loadTeamSummaries();
+        if (selectedTeamId !== null) {
+          await loadTeamTasks(selectedTeamId);
+        }
       } else if (confirmAction === "delete") {
         await ApiService.admin.deleteTask(selectedTask.id);
         setSuccessMessage(true);
         setTimeout(() => setSuccessMessage(false), 2000);
-        await loadTasks();
+        loadTeamSummaries();
+        if (selectedTeamId !== null) {
+          await loadTeamTasks(selectedTeamId);
+        }
       }
       closeConfirmModal();
     } catch (err) {
@@ -289,9 +305,8 @@ export default function TeamTaskManagement() {
   };
 
   const getTeamTaskCount = (teamId: number) => {
-    return tasks.filter(
-      (task) => task.team?.id === teamId || task.teamId === teamId
-    ).length;
+    const team = teamSummaries.find(t => t.teamId === teamId);
+    return team?.tasks_count || 0;
   };
 
   const statusFilters = [
@@ -299,29 +314,30 @@ export default function TeamTaskManagement() {
       id: "all",
       label: "All",
       color: "bg-orange-600 hover:bg-orange-700",
-      count: tasks.length,
+      count: selectedTeamTasks.length,
     },
     {
       id: "pending",
       label: "Pending",
       color: "bg-amber-600 hover:bg-amber-700",
-      count: tasks.filter((t) => t.status === "Pending").length,
+      count: selectedTeamTasks.filter((t) => t.status === "Pending").length,
     },
     {
       id: "in-review",
       label: "In Review",
       color: "bg-purple-600 hover:bg-purple-700",
-      count: tasks.filter((t) => t.status === "InReview").length,
+      count: selectedTeamTasks.filter((t) => t.status === "InReview").length,
     },
     {
       id: "completed",
       label: "Completed",
       color: "bg-green-600 hover:bg-green-700",
-      count: tasks.filter((t) => t.status === "Completed").length,
+      count: selectedTeamTasks.filter((t) => t.status === "Completed").length,
     },
   ];
 
-  const selectedTeam = teams.find((t) => t.teamId === selectedTeamId);
+  const selectedTeam = teamSummaries.find((t) => t.teamId === selectedTeamId);
+  const totalTeamsCount = teamSummaries.reduce((sum, team) => sum + team.tasks_count, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-100 dark:from-gray-950 dark:via-orange-950/10 dark:to-black">
@@ -386,13 +402,13 @@ export default function TeamTaskManagement() {
                       : "bg-gray-200 dark:bg-gray-700"
                   }`}
                 >
-                  {tasks.length}
+                  {totalTeamsCount}
                 </span>
               </button>
 
               {filteredTeams.map((team) => (
                 <button
-                  key={team.id}
+                  key={team.teamId}
                   onClick={() => {
                     setSelectedTeamId(team?.teamId);
                     setIsMobileMenuOpen(false);
@@ -468,7 +484,7 @@ export default function TeamTaskManagement() {
                     : "bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
                 }`}
               >
-                {tasks.length}
+                {totalTeamsCount}
               </span>
             </button>
 
@@ -594,10 +610,21 @@ export default function TeamTaskManagement() {
                   Filter by Status
                 </h2>
                 <span className="text-xs lg:text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {filteredTasks.length}
-                  </span>{" "}
-                  of {tasks.length}
+                  {selectedTeamId !== null ? (
+                    <>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        {filteredTasks.length}
+                      </span>{" "}
+                      of {selectedTeamTasks.length}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        {teamSummaries.length}
+                      </span>{" "}
+                      teams
+                    </>
+                  )}
                 </span>
               </div>
 
@@ -677,8 +704,63 @@ export default function TeamTaskManagement() {
               </div>
             </div>
 
-            {/* Tasks Grid */}
-            {loading ? (
+            {/* Teams Grid or Tasks Grid */}
+            {selectedTeamId === null ? (
+              loading ? (
+                <div className="text-center py-12 lg:py-20">
+                  <Loader2 className="h-10 w-10 lg:h-12 lg:w-12 animate-spin mx-auto text-orange-600 mb-4" />
+                  <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
+                    Loading teams...
+                  </p>
+                </div>
+              ) : teamSummaries.length === 0 ? (
+                <div className="text-center py-12 lg:py-20 bg-white/50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm">
+                  <div className="p-3 lg:p-4 bg-gray-100 dark:bg-gray-800 rounded-full w-12 h-12 lg:w-16 lg:h-16 mx-auto flex items-center justify-center mb-4">
+                    <Users className="h-6 w-6 lg:h-8 lg:w-8 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 text-base lg:text-lg font-medium">
+                    No teams found
+                  </p>
+                  <p className="text-xs lg:text-sm text-gray-500 dark:text-gray-500 mt-2">
+                    Teams will appear here once registered
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+                  {filteredTeams.map((team) => (
+                    <motion.div
+                      key={team.teamId}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-800/50 rounded-2xl p-4 lg:p-6 shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                      whileHover={{ y: -4 }}
+                      onClick={() => setSelectedTeamId(team.teamId)}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                          <Users className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <span className="text-xs font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                          {team.scc_id}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold mb-2 line-clamp-1">
+                        {team.title || team.scc_id}
+                      </h3>
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          Total Tasks
+                        </span>
+                        <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                          {team.tasks_count}
+                        </span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )
+            ) : tasksLoading ? (
               <div className="text-center py-12 lg:py-20">
                 <Loader2 className="h-10 w-10 lg:h-12 lg:w-12 animate-spin mx-auto text-orange-600 mb-4" />
                 <p className="text-sm lg:text-base text-gray-600 dark:text-gray-400">
@@ -955,9 +1037,9 @@ export default function TeamTaskManagement() {
                         required
                       >
                         <option value="">Select a team...</option>
-                        {teams.map((team) => (
-                          <option key={team.id} value={team.scc_id}>
-                            {team.scc_id} - {team.title}
+                        {teamSummaries.map((team) => (
+                          <option key={team.teamId} value={team.scc_id}>
+                            {team.scc_id} {team.title ? `- ${team.title}` : ''}
                           </option>
                         ))}
                       </select>

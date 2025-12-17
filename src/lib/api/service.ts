@@ -3,7 +3,9 @@ import type {
   LoginRequest, 
   LoginResponse, 
   Team, 
-  Task, 
+  TeamSummary,
+  Task,
+  TasksOverview,
   LeaderboardEntry, 
   ProblemStatement,
   CreateTaskRequest,
@@ -40,8 +42,18 @@ export class ApiService {
       return response.data;
     },
 
-    getAllTasks: async (): Promise<Task[]> => {
+    getAllTasks: async (): Promise<TeamSummary[]> => {
       const response = await apiClient.get('/admin/tasks');
+      return response.data;
+    },
+
+    getTasksOverview: async (): Promise<TasksOverview> => {
+      const response = await apiClient.get('/admin/tasks/overview');
+      return response.data;
+    },
+
+    getTeamTasks: async (teamId: number): Promise<Task[]> => {
+      const response = await apiClient.get(`/admin/tasks/team/${teamId}`);
       return response.data;
     },
     

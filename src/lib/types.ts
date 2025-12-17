@@ -33,6 +33,22 @@ export interface Team {
   member_count?: number;
 }
 
+export interface TeamSummary {
+  teamId: number;
+  scc_id: string;
+  title?: string;
+  tasks_count: number;
+}
+
+export interface TasksOverview {
+  recentTasks: Task[];
+  stats: {
+    total: number;
+    completed: number;
+    in_review: number;
+  };
+}
+
 export interface Member {
   id: number;
   name: string;

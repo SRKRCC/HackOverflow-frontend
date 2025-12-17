@@ -2,29 +2,39 @@ import { useEffect, useState } from 'react';
 import { useAdminStore } from '../../lib/stores/admin';
 import { useAuth } from '../../lib/hooks';
 import { ApiService } from '../../lib/api';
-import type { Team } from '../../lib/types';
+import type { TasksOverview, Team } from '../../lib/types';
 
 const Dashboard = () => {
   const { isAuthenticated, user } = useAuth();
   const { 
-    tasks, 
     leaderboard, 
-    loading, 
-    error,
-    fetchTasks, 
     fetchLeaderboard 
   } = useAdminStore();
   
+  const [tasksOverview, setTasksOverview] = useState<TasksOverview | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(false);
   const [loadingTeams, setLoadingTeams] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'admin') {
-      fetchTasks();
+      fetchDashboardData();
       fetchLeaderboard();
       fetchTeamsData();
     }
-  }, [isAuthenticated, user, fetchTasks, fetchLeaderboard]);
+  }, [isAuthenticated, user, fetchLeaderboard]);
+  
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const overview = await ApiService.admin.getTasksOverview();
+      setTasksOverview(overview);
+    } catch (err) {
+      console.error('Error fetching tasks overview:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   const fetchTeamsData = async () => {
     try {
@@ -43,19 +53,19 @@ const Dashboard = () => {
   const stats = [
     { 
       title: "Total Tasks", 
-      value: tasks.length, 
+      value: tasksOverview?.stats.total || 0, 
       icon: "📋",
       gradient: "from-secondary/20 to-secondary/5"
     },
     { 
       title: "Completed", 
-      value: tasks.filter(t => t.completed).length, 
+      value: tasksOverview?.stats.completed || 0, 
       icon: "✓",
       gradient: "from-chart-2/20 to-chart-2/5"
     },
     { 
       title: "In Review", 
-      value: tasks.filter(t => t.in_review).length, 
+      value: tasksOverview?.stats.in_review || 0, 
       icon: "⏱",
       gradient: "from-primary/20 to-primary/5"
     },
@@ -101,14 +111,14 @@ const Dashboard = () => {
           </p>
         </div>
         
-        {error && (
+        {/* {error && (
           <div className="bg-destructive/10 border border-destructive/50 text-destructive px-4 sm:px-6 py-3 sm:py-4 rounded-xl mb-6 sm:mb-8">
             <div className="flex items-center gap-2 sm:gap-3">
               <span className="text-lg sm:text-xl">⚠️</span>
               <span className="text-sm sm:text-base">{error}</span>
             </div>
           </div>
-        )}
+        )} */}
         
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 mb-6 sm:mb-8 md:mb-10">
@@ -142,13 +152,13 @@ const Dashboard = () => {
                 <span>Recent Tasks</span>
               </h2>
               <span className="px-2 sm:px-3 py-1 bg-secondary/10 text-secondary rounded-lg text-[10px] sm:text-xs font-medium">
-                {tasks.length}
+                {tasksOverview?.recentTasks.length ?? 0}
               </span>
             </div>
 
-            {tasks.length > 0 ? (
+            {tasksOverview?.recentTasks && tasksOverview.recentTasks.length > 0 ? (
               <div className="space-y-2 sm:space-y-3 flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-border/40 scrollbar-track-transparent max-h-[400px] sm:max-h-none">
-                {tasks.slice(0, 5).map((task) => (
+                {tasksOverview.recentTasks.map((task) => (
                   <div
                     key={task.id}
                     className="group bg-muted/40 border border-border hover:border-accent/40 rounded-lg p-3 sm:p-4 transition-all hover:shadow-sm"
