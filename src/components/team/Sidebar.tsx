@@ -14,7 +14,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import { ApiService } from "@/lib/api";
 import { useTeamStore } from "@/lib/stores/team";
-import { isFeatureUnlocked } from "@/utils/featureUnlock";
 
 interface SidebarProps {
   openSidebar: boolean;
@@ -88,11 +87,11 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
     { path: "/team", label: "Home", icon: <Home size={20} /> },
     { path: "/team/problem-statement", label: "Problem Statement", icon: <FileText size={20} /> },
     { path: "/team/team-details", label: "Team Details", icon: <Users size={20} /> },
-    { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} />, locked: !isFeatureUnlocked('tasks') },
-    { path: "/team/gallery", label: "Gallery", icon: <Images size={20} />, locked: !isFeatureUnlocked('gallery') },
+    { path: "/team/tasks", label: "Tasks", icon: <CheckSquare size={20} /> },
+    { path: "/team/gallery", label: "Gallery", icon: <Images size={20} /> },
     { path: "/team/announcements", label: "Announcements", icon: <Megaphone size={20} /> },
     { path: "/team/general", label: "General", icon: <Info size={20} /> },
-  ].filter(link => !link.locked);
+  ];
 
   const letterAnimation = {
     hidden: { opacity: 0, x: -5 },

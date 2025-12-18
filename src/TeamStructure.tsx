@@ -9,7 +9,6 @@ import AnnouncementsTeam from "./components/team/Announcements"
 import TaskStatusManager from "./components/team/Tasks";
 import Dashboard from "./components/team/Dashboard";
 import General from "./components/team/General";
-import { isFeatureUnlocked } from "./utils/featureUnlock";
 
 const TeamStructure = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
@@ -37,7 +36,7 @@ const TeamStructure = () => {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/announcements" element={<AnnouncementsTeam />} />
           <Route path="/general" element={<General />} />
-           <Route path="/teamtasks" element={isFeatureUnlocked('tasks') ? <TaskStatusManager/> : <Navigate to="/team" replace />} />
+           <Route path="/teamtasks" element={<TaskStatusManager />} />
         </Routes>
       </div>
     </div>
