@@ -14,9 +14,11 @@ interface TeamStore {
 
   user: User | null;
   isAuthenticated: boolean;
+  sessionChecked: boolean;
   
   setUser: (user: User) => void;
   logout: () => void;
+  initAuth: () => Promise<void>;
   
   fetchTeam: () => Promise<void>;
   fetchProblemStatements: () => Promise<void>;
@@ -37,21 +39,47 @@ export const useTeamStore = create<TeamStore>()(persist((set, get) => ({
   
   user: null,
   isAuthenticated: false,
+  sessionChecked: false,
   
   setUser: (user: User) => {
-    set({ user, isAuthenticated: true });
+    set({ user, isAuthenticated: true, sessionChecked: true });
   },
   
   logout: () => {
+    // Clear cookies
+    document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    document.cookie = 'team_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
     set({ 
       user: null, 
       isAuthenticated: false,
+      sessionChecked: true,
       team: null,
       problemStatement: null,
       generalInfo: null,
       announcements: [],
       error: null
     });
+  },
+
+  initAuth: async () => {
+    const { sessionChecked } = get();
+    if (sessionChecked) return;
+
+    try {
+      const result = await ApiService.auth.verifySession();
+      if (result.valid && result.user) {
+        set({ 
+          user: result.user, 
+          isAuthenticated: true, 
+          sessionChecked: true 
+        });
+      } else {
+        set({ sessionChecked: true });
+      }
+    } catch (error) {
+      set({ sessionChecked: true });
+    }
   },
 
   fetchAnnouncements: async () => {
@@ -128,5 +156,9 @@ export const useTeamStore = create<TeamStore>()(persist((set, get) => ({
   clearError: () => set({ error: null }),
 }), {
   name: 'hackoverflow-auth',
-  partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+  partialize: (state) => ({ 
+    user: state.user, 
+    isAuthenticated: state.isAuthenticated,
+    sessionChecked: state.sessionChecked 
+  }),
 }));

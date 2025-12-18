@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTeamStore } from './stores/team';
 import { ApiService } from './api';
 import type { LoginRequest } from './types';
 
 // Auth hook
 export function useAuth() {
-  const { user, isAuthenticated, setUser, logout: storeLogout } = useTeamStore();
-  const [loading, setLoading] = useState(false);
+  const { user, isAuthenticated, sessionChecked, setUser, logout: storeLogout, initAuth } = useTeamStore();
+  const [loading, setLoading] = useState(!sessionChecked);
   const [error, setError] = useState<string | null>(null);
+  
+  // Initialize auth on mount
+  useEffect(() => {
+    if (!sessionChecked) {
+      initAuth().finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [sessionChecked, initAuth]);
   
   const login = async (credentials: LoginRequest) => {
     try {

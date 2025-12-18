@@ -23,6 +23,12 @@ const LeaderBoard: React.FC = () => {
     };
 
     fetchLeaderboard();
+
+    // Auto-refresh every 30 seconds
+    const intervalId = setInterval(fetchLeaderboard, 30000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const top3 = leaderboard.slice(0, 3);

@@ -831,6 +831,16 @@ export default function TeamTaskManagement() {
                             {task.points}
                           </span>
                         </div>
+                        {task.points_earned !== undefined && task.points_earned !== null && (
+                          <div className="flex justify-between items-center text-xs lg:text-sm">
+                            <span className="text-gray-600 dark:text-gray-400">
+                              Points Earned
+                            </span>
+                            <span className="font-bold text-green-600 dark:text-green-400">
+                              {task.points_earned}
+                            </span>
+                          </div>
+                        )}
                         {task.difficulty && (
                           <div className="flex justify-between items-center text-xs lg:text-sm">
                             <span className="text-gray-600 dark:text-gray-400">

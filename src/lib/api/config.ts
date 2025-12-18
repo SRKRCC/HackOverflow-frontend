@@ -15,11 +15,18 @@ export const apiClient = axios.create({
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    // Get token from cookie
-    const token = document.cookie
+    // Get token from cookies - check both admin_token and team_token
+    const adminToken = document.cookie
       .split('; ')
-      .find(row => row.startsWith('token='))
+      .find(row => row.startsWith('admin_token='))
       ?.split('=')[1];
+    
+    const teamToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('team_token='))
+      ?.split('=')[1];
+    
+    const token = adminToken || teamToken;
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -42,8 +49,9 @@ apiClient.interceptors.response.use(
     
     if (response?.status === 401) {
       // Clear auth state and redirect to login
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      localStorage.removeItem('user');
+      document.cookie = 'admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      document.cookie = 'team_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      localStorage.removeItem('hackoverflow-auth');
       
       // Only redirect if not already on login page
       if (!window.location.pathname.includes('/login')) {

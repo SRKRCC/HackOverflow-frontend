@@ -33,8 +33,8 @@ const TeamStructure = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/problem-statement" element={<ProblemStatement />} />
           <Route path="/team-details" element={<TeamDetails />} />
-          <Route path="/tasks" element={isFeatureUnlocked('tasks') ? <Tasks /> : <Navigate to="/team" replace />} />
-          <Route path="/gallery" element={isFeatureUnlocked('gallery') ? <Gallery /> : <Navigate to="/team" replace />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/announcements" element={<AnnouncementsTeam />} />
           <Route path="/general" element={<General />} />
            <Route path="/teamtasks" element={isFeatureUnlocked('tasks') ? <TaskStatusManager/> : <Navigate to="/team" replace />} />

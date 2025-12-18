@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import { ApiService } from "@/lib/api";
+import { useTeamStore } from "@/lib/stores/team";
 import { isFeatureUnlocked } from "@/utils/featureUnlock";
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ interface SidebarProps {
 const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout: storeLogout } = useTeamStore();
 
   const [isMobile, setIsMobile] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -70,13 +72,14 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
       // Call backend logout API
       await ApiService.team.logout();
 
-      // Clear all local storage & session data
-      localStorage.clear();
-      sessionStorage.clear();
+      // Clear auth state and cookies
+      storeLogout();
 
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
+      // Still clear local state even if API call fails
+      storeLogout();
       navigate("/", { replace: true });
     }
   };

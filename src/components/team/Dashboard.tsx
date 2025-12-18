@@ -11,7 +11,6 @@ import {
   AlertCircle,
   ListTodo,
 } from "lucide-react";
-import { isFeatureUnlocked } from "../../utils/featureUnlock";
 
 const TeamDashboard = () => {
   const navigate = useNavigate();
@@ -28,9 +27,7 @@ const TeamDashboard = () => {
 
   useEffect(() => {
     if (isAuthenticated && user?.role === "team") {
-      if (isFeatureUnlocked('tasks')) {
-        fetchTeam();
-      }
+      fetchTeam();
       fetchAnnouncements();
     }
   }, [isAuthenticated, user, fetchTeam, fetchAnnouncements]);
@@ -187,8 +184,7 @@ const TeamDashboard = () => {
           )}
 
 
-          {isFeatureUnlocked('tasks') && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-10">
               {stats.map((stat, index) => (
                 <div
                   key={index}
@@ -211,10 +207,8 @@ const TeamDashboard = () => {
                 </div>
               ))}
             </div>
-          )}
 
-          <div className={`grid grid-cols-1 ${isFeatureUnlocked('tasks') ? 'lg:grid-cols-2' : ''} gap-6`}>
-            {isFeatureUnlocked('tasks') && (
+          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6`}>
               <section className="relative rounded-2xl overflow-hidden group">
                 <div className="relative bg-card/30 backdrop-blur-md border border-primary/30 rounded-2xl p-6 hover:border-primary/60 transition-all duration-300 hover:bg-card/50">
                   <div
@@ -319,7 +313,6 @@ const TeamDashboard = () => {
                 </div>
               </div>
             </section>
-            )}
 
             <section className="relative rounded-2xl overflow-hidden group">
               <div className="relative bg-card/30 backdrop-blur-md border border-secondary/30 rounded-2xl p-6 hover:border-secondary/60 transition-all duration-300 hover:bg-card/50">

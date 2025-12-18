@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle";
 import { ApiService } from "@/lib/api";
+import { useTeamStore } from "@/lib/stores/team";
 
 interface SidebarProps {
   openSidebar: boolean;
@@ -22,6 +23,7 @@ interface SidebarProps {
 const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout: storeLogout } = useTeamStore();
 
   const [isMobile, setIsMobile] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -60,19 +62,19 @@ const Sidebar = ({ openSidebar, setOpenSidebar }: SidebarProps) => {
   const handleLogout = async () => {
     try {
       await ApiService.admin.logout();
+      
+      // Clear auth state and cookies
+      storeLogout();
+      
+      setShowLogoutConfirm(false);
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
+      // Still clear local state even if API call fails
+      storeLogout();
+      setShowLogoutConfirm(false);
+      navigate("/", { replace: true });
     }
-
-    localStorage.clear();
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-    });
-
-    setShowLogoutConfirm(false);
-    navigate("/");
   };
 
   const handleTheme = () => {

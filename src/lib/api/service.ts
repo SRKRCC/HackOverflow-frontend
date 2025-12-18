@@ -34,6 +34,51 @@ export class ApiService {
       const response = await apiClient.post('/auth/logout');
       return response.data;
     },
+
+    // Verify current session by checking if cookies are valid
+    verifySession: async (): Promise<{ valid: boolean; user?: any }> => {
+      try {
+        // Try to fetch user data to verify token is valid
+        const adminToken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('admin_token='))
+          ?.split('=')[1];
+        
+        const teamToken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('team_token='))
+          ?.split('=')[1];
+
+        if (!adminToken && !teamToken) {
+          return { valid: false };
+        }
+
+        if (teamToken) {
+          const response = await apiClient.get('/team/details');
+          return {
+            valid: true,
+            user: {
+              id: response.data.id,
+              role: 'team',
+              scc_id: response.data.scc_id,
+            }
+          };
+        } else if (adminToken) {
+          const response = await apiClient.get('/admin/dashboard');
+          return {
+            valid: true,
+            user: {
+              id: response.data.admin?.id || 1,
+              role: 'admin',
+            }
+          };
+        }
+
+        return { valid: false };
+      } catch (error) {
+        return { valid: false };
+      }
+    },
   };
 
   static admin = {
