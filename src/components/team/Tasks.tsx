@@ -6,7 +6,6 @@ import {
   CheckCircle,
   Send,
   Clock,
-  ClipboardList,
   AlertCircle,
   X,
   Loader2,

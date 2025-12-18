@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Sidebar from "./components/team/Sidebar";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import ProblemStatement from "./components/team/ProblemStatement";
 import TeamDetails from "./components/team/TeamDetails";
 import Tasks from "./components/team/Tasks";
