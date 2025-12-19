@@ -25,7 +25,7 @@ const HeroSection = () => {
 
   useEffect(() => {
     const hackathonStartDate = new Date(2025, 11, 19, 9, 30, 0).getTime()
-    const hackathonEndDate = new Date(2025, 11, 20, 9, 30, 0).getTime()
+    const hackathonEndDate = new Date(2025, 11, 20, 10, 0, 0).getTime()
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
